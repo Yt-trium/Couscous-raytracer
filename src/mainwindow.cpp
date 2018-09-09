@@ -1,6 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#include "render.h"
+#include "ray.h"
+
 #include <glm/vec3.hpp>
+
+using glm::vec3;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,24 +25,35 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_render_pushButton_clicked()
 {
-    int size_x = 200;
-    int size_y = 100;
+    int size_x = 800;
+    int size_y = 400;
 
     QImage image(size_x, size_y, QImage::Format_RGB32);
     QPixmap pixmap;
 
     int x, y;
+
+    Render render;
+
+    vec3 lower_left_corner(-2.0, -1.0, -1.0);
+    vec3 horizontal(4.0, 0.0, 0.0);
+    vec3 vertical(0.0, 2.0, 0.0);
+    vec3 origin(0.0, 0.0, 0.0);
+
     for(x=0;x<size_x;x++)
     {
         for(y=0;y<size_y;y++)
         {
-            glm::vec3 color(double(y) / double(size_y), double(x) / double(size_x), 0.2);
+            float u = float(x) / float(size_x);
+            float v = float(y) / float(size_y);
 
-            int ir = int(255.99*color[0]);
-            int ig = int(255.99*color[1]);
-            int ib = int(255.99*color[2]);
+            Ray r(origin, lower_left_corner + u*horizontal + v*vertical);
+            vec3 color = render.getRayColor(r);
 
-            image.setPixelColor(x, y, QColor(ir, ig, ib));
+            int ir = int(255.99 * color[0]);
+            int ig = int(255.99 * color[1]);
+            int ib = int(255.99 * color[2]);
+            image.setPixelColor(size_x-1-x, size_y-1-y, QColor(ir, ig, ib));
         }
     }
 

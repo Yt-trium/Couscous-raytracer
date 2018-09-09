@@ -1,7 +1,7 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include<glm/vec3.hpp>
+#include <glm/vec3.hpp>
 
 using glm::vec3;
 

@@ -25,11 +25,13 @@ CONFIG += c++11
 SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
-    src/ray.cpp
+    src/ray.cpp \
+    src/render.cpp
 
 HEADERS += \
         src/mainwindow.h \
-    src/ray.h
+    src/ray.h \
+    src/render.h
 
 FORMS += \
         src/mainwindow.ui
