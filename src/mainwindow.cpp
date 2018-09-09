@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <glm/vec3.hpp>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
