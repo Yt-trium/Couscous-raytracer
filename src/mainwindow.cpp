@@ -30,13 +30,11 @@ void MainWindow::on_render_pushButton_clicked()
     {
         for(y=0;y<size_y;y++)
         {
-            double r = double(y) / double(size_y);
-            double g = double(x) / double(size_x);
-            double b = 0.2;
+            glm::vec3 color(double(y) / double(size_y), double(x) / double(size_x), 0.2);
 
-            int ir = int(255.99*r);
-            int ig = int(255.99*g);
-            int ib = int(255.99*b);
+            int ir = int(255.99*color[0]);
+            int ig = int(255.99*color[1]);
+            int ib = int(255.99*color[2]);
 
             image.setPixelColor(x, y, QColor(ir, ig, ib));
         }
