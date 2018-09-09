@@ -5,15 +5,16 @@
 
 #include <glm/glm.hpp>
 
-using glm::vec3;
-
 class Render
 {
 public:
     Render();
 
     vec3 getRayColor(const Ray& r);
-    bool rayHitSphere(const vec3& center, float radius, const Ray& r);
+    float rayHitSphere(const vec3& center, float radius, const Ray& r);
+
+private:
+    vec3 unitVec3(vec3 v);
 };
 
 #endif // RENDER_H

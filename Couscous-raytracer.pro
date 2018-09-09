@@ -26,12 +26,17 @@ SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
     src/ray.cpp \
-    src/render.cpp
+    src/render.cpp \
+    src/usualshapes.cpp \
+    src/visualobjectlist.cpp
 
 HEADERS += \
         src/mainwindow.h \
     src/ray.h \
-    src/render.h
+    src/render.h \
+    src/visualobject.h \
+    src/usualshapes.h \
+    src/visualobjectlist.h
 
 FORMS += \
         src/mainwindow.ui

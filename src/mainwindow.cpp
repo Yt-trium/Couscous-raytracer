@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QGraphicsScene *scene = new QGraphicsScene(ui->graphicsView);
     ui->graphicsView->setScene(scene);
+    ui->graphicsView->scale(4,4);
 }
 
 MainWindow::~MainWindow()
@@ -25,8 +26,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_render_pushButton_clicked()
 {
-    int size_x = 800;
-    int size_y = 400;
+    int size_x = 200;
+    int size_y = 100;
 
     QImage image(size_x, size_y, QImage::Format_RGB32);
     QPixmap pixmap;
