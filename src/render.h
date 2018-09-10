@@ -12,9 +12,6 @@ public:
 
     vec3 getRayColor(const Ray& r);
     float rayHitSphere(const vec3& center, float radius, const Ray& r);
-
-private:
-    vec3 unitVec3(vec3 v);
 };
 
 #endif // RENDER_H
