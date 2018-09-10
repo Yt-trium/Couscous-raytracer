@@ -5,11 +5,8 @@
 
 #include <glm/glm.hpp>
 
-class UsualShapes
+namespace UsualShapes
 {
-public:
-    UsualShapes();
-
     class Sphere:public VisualObject
     {
     public:

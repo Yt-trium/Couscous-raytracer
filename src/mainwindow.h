@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+#include "usualshapes.h"
+#include "visualobjectlist.h"
+
 namespace Ui {
 class MainWindow;
 }

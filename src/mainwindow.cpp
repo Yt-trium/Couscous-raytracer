@@ -41,6 +41,10 @@ void MainWindow::on_render_pushButton_clicked()
     vec3 vertical(0.0, 2.0, 0.0);
     vec3 origin(0.0, 0.0, 0.0);
 
+    VisualObjectList world;
+    world.objectList.push_back(new UsualShapes::Sphere(vec3(0,0,-1), 0.5));
+    world.objectList.push_back(new UsualShapes::Sphere(vec3(0,-100.5,-1), 100));
+
     for(x=0;x<size_x;x++)
     {
         for(y=0;y<size_y;y++)
@@ -49,11 +53,11 @@ void MainWindow::on_render_pushButton_clicked()
             float v = float(y) / float(size_y);
 
             Ray r(origin, lower_left_corner + u*horizontal + v*vertical);
-            vec3 color = render.getRayColor(r);
+            vec3 color = render.getRayColor(r, world);
 
-            int ir = int(255.99 * color[0]);
-            int ig = int(255.99 * color[1]);
-            int ib = int(255.99 * color[2]);
+            int ir = int(255.0f * color[0]);
+            int ig = int(255.0f * color[1]);
+            int ib = int(255.0f * color[2]);
             image.setPixel(size_x-1-x, size_y-1-y, QColor(ir, ig, ib).rgb());
         }
     }

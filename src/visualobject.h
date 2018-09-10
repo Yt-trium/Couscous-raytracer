@@ -14,8 +14,7 @@ public:
 class VisualObject
 {
 public:
-    virtual ~VisualObject() {}
-    virtual bool hit(const Ray& r, float t_min, float t_max, HitRecord& rec) const = 0;
+    virtual bool hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const = 0;
 };
 
 #endif // VISUALOBJECT_H

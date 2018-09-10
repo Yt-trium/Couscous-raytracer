@@ -1,10 +1,5 @@
 #include "usualshapes.h"
 
-UsualShapes::UsualShapes()
-{
-
-}
-
 UsualShapes::Sphere::Sphere()
 {
 

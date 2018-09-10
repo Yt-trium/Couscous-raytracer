@@ -1,11 +1,11 @@
 #include "visualobjectlist.h"
-/*
+
 VisualObjectList::VisualObjectList()
 {
 
 }
 
-VisualObjectList::VisualObjectList(std::vector<VisualObject> l)
+VisualObjectList::VisualObjectList(std::vector<VisualObject*> l)
 {
     objectList = l;
 }
@@ -14,11 +14,11 @@ bool VisualObjectList::hit(const Ray &r, float tmin, float tmax, HitRecord &rec)
 {
     HitRecord tmp_rec;
     bool hit_something = false;
-    double closest_so_far = tmax;
-    int i;
+    float closest_so_far = tmax;
+    std::size_t i;
     for(i=0;i<objectList.size();i++)
     {
-        if(objectList[i].hit(r, tmin, closest_so_far, tmp_rec))
+        if(objectList[i]->hit(r, tmin, closest_so_far, tmp_rec))
         {
             hit_something = true;
             closest_so_far = tmp_rec.t;
@@ -27,4 +27,3 @@ bool VisualObjectList::hit(const Ray &r, float tmin, float tmax, HitRecord &rec)
     }
     return hit_something;
 }
-*/
