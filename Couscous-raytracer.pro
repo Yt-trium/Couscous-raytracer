@@ -28,7 +28,8 @@ SOURCES += \
     src/ray.cpp \
     src/render.cpp \
     src/usualshapes.cpp \
-    src/visualobjectlist.cpp
+    src/visualobjectlist.cpp \
+    src/renderer/camera.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -36,7 +37,8 @@ HEADERS += \
     src/render.h \
     src/visualobject.h \
     src/usualshapes.h \
-    src/visualobjectlist.h
+    src/visualobjectlist.h \
+    src/renderer/camera.h
 
 FORMS += \
         src/gui/mainwindow.ui
