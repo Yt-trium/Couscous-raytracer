@@ -22,7 +22,7 @@ bool UsualShapes::Sphere::hit(const Ray &r, float tmin, float tmax, HitRecord &r
 
     if(d > 0)
     {
-        float tmp = (-b-glm::sqrt(b*b-a*c))/a;
+        float tmp = (-b-glm::sqrt(d))/(2*a);
         if(tmp < tmax && tmp > tmin)
         {
             rec.t = tmp;
@@ -30,7 +30,7 @@ bool UsualShapes::Sphere::hit(const Ray &r, float tmin, float tmax, HitRecord &r
             rec.normal = (rec.p - center) / radius;
             return true;
         }
-        tmp = (-b+glm::sqrt(b*b-a*c))/a;
+        tmp = (-b+glm::sqrt(d))/(2*a);
         if(tmp < tmax && tmp > tmin)
         {
             rec.t = tmp;
