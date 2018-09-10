@@ -1,28 +1,32 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-
+// coucous includes.
 #include "usualshapes.h"
 #include "visualobjectlist.h"
 
-namespace Ui {
-class MainWindow;
-}
+// Qt includes.
+#include <QMainWindow>
 
+// Forward declarations.
+namespace Ui { class MainWindow; }
+
+// Main window
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-public:
+  public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
-    void on_render_pushButton_clicked();
+  private:
+    Ui::MainWindow* ui;
 
-private:
-    Ui::MainWindow *ui;
+  private slots:
+    void slot_do_render();
+
 };
 
 #endif // MAINWINDOW_H
+

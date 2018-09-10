@@ -1,22 +1,29 @@
+
+// Interface.
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+// couscous includes.
 #include "render.h"
 #include "ray.h"
 
-#include <glm/vec3.hpp>
+// math includes.
+#include <glm/glm.hpp>
 
-using glm::vec3;
+using namespace glm;
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+  : QMainWindow(parent)
+  , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     QGraphicsScene *scene = new QGraphicsScene(ui->graphicsView);
     ui->graphicsView->setScene(scene);
     ui->graphicsView->scale(4,4);
+
+    // Connect widgets events.
+    connect(ui->do_render, SIGNAL(released()), SLOT(slot_do_render()));
 }
 
 MainWindow::~MainWindow()
@@ -24,7 +31,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_render_pushButton_clicked()
+void MainWindow::slot_do_render()
 {
     int size_x = 200;
     int size_y = 100;
@@ -66,3 +73,4 @@ void MainWindow::on_render_pushButton_clicked()
     ui->graphicsView->scene()->clear();
     ui->graphicsView->scene()->addPixmap(pixmap);
 }
+

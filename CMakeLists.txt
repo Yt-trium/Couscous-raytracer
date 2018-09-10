@@ -48,6 +48,6 @@ include_directories(src)
 add_executable(${PROJECT_NAME} ${couscous_sources})
 
 target_link_libraries (${PROJECT_NAME}
-    Qt4
+    Qt4::QtGui
     ${OPENGL_LIBRARY}
 )
