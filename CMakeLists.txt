@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 set (sources
     src/main.cpp
-    src/mainwindow.cpp
-    src/mainwindow.h
-    src/mainwindow.ui
     src/ray.h
     src/ray.cpp
     src/render.cpp
@@ -28,6 +25,9 @@ list (APPEND couscous_sources
     ${renderer_sources})
 
 set (gui_srouces
+    src/gui/mainwindow.cpp
+    src/gui/mainwindow.h
+    src/gui/mainwindow.ui
 )
 
 list (APPEND couscous_sources

@@ -1,4 +1,7 @@
-#include "mainwindow.h"
+// coucous includes.
+#include "gui/mainwindow.h"
+
+// Qt includes.
 #include <QApplication>
 
 int main(int argc, char *argv[])
