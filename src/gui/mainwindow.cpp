@@ -75,3 +75,8 @@ void MainWindow::slot_do_render()
     ui->graphicsView->scene()->addPixmap(pixmap);
 }
 
+void MainWindow::slot_save_as_image()
+{
+
+}
+

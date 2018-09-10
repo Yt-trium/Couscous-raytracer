@@ -22,6 +22,11 @@ class Camera
 {
   public:
     Camera();
+    Camera(glm::vec3 pos,
+           glm::vec3 target,
+           glm::vec3 direction,
+           glm::vec3 up,
+           glm::vec3 right);
 
     // Compute the ray going through pixel `i`, `j`.
     Ray compute_ray(
