@@ -41,7 +41,7 @@ HEADERS += \
 FORMS += \
         src/gui/mainwindow.ui
 
-INCLUDEPATH += glm
+INCLUDEPATH += glm src
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
