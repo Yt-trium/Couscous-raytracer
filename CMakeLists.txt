@@ -24,7 +24,7 @@ set (renderer_sources
 list (APPEND couscous_sources
     ${renderer_sources})
 
-set (gui_srouces
+set (gui_sources
     src/gui/mainwindow.cpp
     src/gui/mainwindow.h
     src/gui/mainwindow.ui

@@ -4,6 +4,8 @@
 // glm headers.
 #include <glm/glm.hpp>
 
+class Ray;
+
 // 3D movable camera.
 //
 // Retreive pixel coordinate from the camera:
@@ -21,8 +23,23 @@ class Camera
   public:
     Camera();
 
+    // Compute the ray going through pixel `i`, `j`.
+    Ray compute_ray(
+        const size_t i,
+        const size_t j,
+        const size_t width,
+        const size_t height
+        ) const;
+
+  private:
     glm::vec3 m_pos;
     glm::vec3 m_target;
+    glm::vec3 m_direction;
+    glm::vec3 m_up;
+    glm::vec3 m_right;
+
+    // Compute direction, up and right vectors.
+    void update();
 };
 
 #endif // RENDERER_CAMERA_H

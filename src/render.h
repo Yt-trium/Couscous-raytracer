@@ -1,20 +1,27 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+// couscous includes.
 #include "ray.h"
 #include "visualobject.h"
 #include "visualobjectlist.h"
 
-
-#include <glm/glm.hpp>
+// Math includes.
+#include <glm/vec3.hpp>
 
 class Render
 {
-public:
+  public:
     Render();
 
-    vec3 getRayColor(const Ray& r, VisualObjectList world);
-    float rayHitSphere(const vec3& center, float radius, const Ray& r);
+    glm::vec3 getRayColor(
+        const Ray&          r,
+        VisualObjectList    world);
+
+    float rayHitSphere(
+        const glm::vec3&    center,
+        float               radius,
+        const Ray&          r);
 };
 
 #endif // RENDER_H

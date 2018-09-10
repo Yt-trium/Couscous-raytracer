@@ -1,24 +1,23 @@
 #ifndef RAY_H
 #define RAY_H
 
+// glm includes.
 #include <glm/vec3.hpp>
 
-using glm::vec3;
-
+// 3D line.
 class Ray
 {
-public:
+  public:
     Ray();
-    Ray(const vec3& a, const vec3& b);
+    Ray(const glm::vec3& a, const glm::vec3& b);
 
-    vec3 origin() const;
-    vec3 direction() const;
-    vec3 pointAtParameter(float t) const;
+    glm::vec3 origin() const;
+    glm::vec3 direction() const;
+    glm::vec3 pointAtParameter(float t) const;
 
-private:
-    vec3 A;
-    vec3 B;
-
+  private:
+    glm::vec3 A; // origin of the line
+    glm::vec3 B; // direction of the line
 };
 
 #endif // RAY_H

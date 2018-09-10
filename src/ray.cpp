@@ -1,28 +1,30 @@
 #include "ray.h"
 
+using namespace glm;
+
 Ray::Ray()
 {
-    A = glm::vec3();
-    B = glm::vec3();
+    A = vec3();
+    B = vec3();
 }
 
-Ray::Ray(const glm::vec3 &a, const glm::vec3 &b)
+Ray::Ray(const vec3& a, const vec3& b)
 {
     A = a;
     B = b;
 }
 
-glm::vec3 Ray::origin() const
+vec3 Ray::origin() const
 {
     return A;
 }
 
-glm::vec3 Ray::direction() const
+vec3 Ray::direction() const
 {
     return B;
 }
 
-glm::vec3 Ray::pointAtParameter(float t) const
+vec3 Ray::pointAtParameter(float t) const
 {
     return A + t*B;
 }

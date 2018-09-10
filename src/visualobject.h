@@ -1,20 +1,28 @@
 #ifndef VISUALOBJECT_H
 #define VISUALOBJECT_H
 
+// couscous includes.
 #include "ray.h"
+
+// Math includes.
+#include <glm/vec3.hpp>
 
 class HitRecord
 {
-public:
-    float t;
-    vec3 p;
-    vec3 normal;
+  public:
+    float       t;
+    glm::vec3   p;
+    glm::vec3   normal;
 };
 
 class VisualObject
 {
-public:
-    virtual bool hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const = 0;
+  public:
+    virtual bool hit(
+        const Ray& r,
+        float tmin,
+        float tmax,
+        HitRecord& rec) const = 0;
 };
 
 #endif // VISUALOBJECT_H
