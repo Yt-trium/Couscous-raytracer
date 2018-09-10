@@ -12,6 +12,16 @@ Camera::Camera()
     update();
 }
 
+Camera::Camera(vec3 pos, vec3 target, vec3 direction, vec3 up, vec3 right)
+    : m_pos(pos)
+    , m_target(target)
+    , m_direction(direction)
+    , m_up(up)
+    , m_right(right)
+{
+
+}
+
 Ray Camera::compute_ray(
     const size_t i,
     const size_t j,

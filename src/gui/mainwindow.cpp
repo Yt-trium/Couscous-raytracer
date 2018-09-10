@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 
 // couscous includes.
+#include "renderer/camera.h"
 #include "render.h"
 #include "ray.h"
 
