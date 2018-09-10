@@ -24,14 +24,14 @@ CONFIG += c++11
 
 SOURCES += \
         src/main.cpp \
-        src/mainwindow.cpp \
+        src/gui/mainwindow.cpp \
     src/ray.cpp \
     src/render.cpp \
     src/usualshapes.cpp \
     src/visualobjectlist.cpp
 
 HEADERS += \
-        src/mainwindow.h \
+        src/gui/mainwindow.h \
     src/ray.h \
     src/render.h \
     src/visualobject.h \
@@ -39,7 +39,7 @@ HEADERS += \
     src/visualobjectlist.h
 
 FORMS += \
-        src/mainwindow.ui
+        src/gui/mainwindow.ui
 
 INCLUDEPATH += glm
 
