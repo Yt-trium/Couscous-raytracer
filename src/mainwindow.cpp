@@ -54,7 +54,7 @@ void MainWindow::on_render_pushButton_clicked()
             int ir = int(255.99 * color[0]);
             int ig = int(255.99 * color[1]);
             int ib = int(255.99 * color[2]);
-            image.setPixelColor(size_x-1-x, size_y-1-y, QColor(ir, ig, ib));
+            image.setPixel(size_x-1-x, size_y-1-y, QColor(ir, ig, ib).rgb());
         }
     }
 
