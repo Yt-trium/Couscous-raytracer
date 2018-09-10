@@ -63,6 +63,9 @@
    <property name="text">
     <string>Save As Image</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
