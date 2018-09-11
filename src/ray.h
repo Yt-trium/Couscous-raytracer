@@ -15,7 +15,6 @@ class Ray
     glm::vec3 direction() const;
     glm::vec3 pointAtParameter(float t) const;
 
-  private:
     glm::vec3 A; // origin of the line
     glm::vec3 B; // direction of the line
 };

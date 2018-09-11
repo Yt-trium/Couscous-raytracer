@@ -8,7 +8,7 @@
 #include "render.h"
 #include "ray.h"
 
-// math includes.
+// glm includes.
 #include <glm/glm.hpp>
 
 using namespace glm;
@@ -44,10 +44,16 @@ void MainWindow::slot_do_render()
 
     Render render;
 
-    vec3 lower_left_corner(-2.0, -1.0, -1.0);
-    vec3 horizontal(4.0, 0.0, 0.0);
-    vec3 vertical(0.0, 2.0, 0.0);
-    vec3 origin(0.0, 0.0, 0.0);
+    Camera camera;
+    const vec3& eye = camera.get_position();
+
+    vec3 lower_left_corner, horizontal, vertical;
+    camera.get_plane_vectors(
+        lower_left_corner,
+        horizontal,
+        vertical,
+        size_x,
+        size_y);
 
     VisualObjectList world;
     world.objectList.push_back(new UsualShapes::Sphere(vec3(0,0,-1), 0.5));
@@ -60,7 +66,8 @@ void MainWindow::slot_do_render()
             float u = float(x) / float(size_x);
             float v = float(y) / float(size_y);
 
-            Ray r(origin, lower_left_corner + u*horizontal + v*vertical);
+            Ray r(eye, lower_left_corner + u*horizontal + v*vertical);
+
             vec3 color = render.getRayColor(r, world);
 
             int ir = int(255.0f * color[0]);
