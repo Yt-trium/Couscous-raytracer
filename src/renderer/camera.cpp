@@ -1,10 +1,7 @@
 // Interface.
 #include "renderer/camera.h"
 
-// couscous includes.
-#include "ray.h"
-
-// Math includes.
+// glm includes.
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace glm;

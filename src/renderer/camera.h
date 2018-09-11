@@ -4,8 +4,6 @@
 // glm headers.
 #include <glm/glm.hpp>
 
-class Ray;
-
 // 3D movable camera.
 //
 // Retreive pixel coordinate from the camera:
