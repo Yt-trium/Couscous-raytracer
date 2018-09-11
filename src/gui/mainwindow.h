@@ -6,6 +6,8 @@
 #include "visualobjectlist.h"
 
 // Qt includes.
+#include <QDebug>
+#include <QFileDialog>
 #include <QMainWindow>
 
 // Forward declarations.
@@ -25,7 +27,7 @@ class MainWindow : public QMainWindow
 
   private slots:
     void slot_do_render();
-
+    void slot_save_as_image();
 };
 
 #endif // MAINWINDOW_H
