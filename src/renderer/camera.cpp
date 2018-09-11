@@ -40,9 +40,9 @@ mat4 Camera::get_projection_matrix(
     const size_t    height) const
 {
     return perspective(
-        m_fov,
+        radians(m_fov),
         static_cast<float>(width) / static_cast<float>(height),
-        0.001f, 1000.0f);
+        0.1f, 100.0f);
 }
 
 void Camera::get_plane_vectors(

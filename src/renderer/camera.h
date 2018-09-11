@@ -26,7 +26,7 @@ class Camera
         const glm::vec3&    up = glm::vec3(0.0f, 1.0f, 0.0f),
         const float&        yaw = -90.0f,
         const float&        pitch = 0.0f,
-        const float&        fov = 65.0f);
+        const float&        fov = 85.0f);
 
     const glm::vec3& get_position() const;
 
