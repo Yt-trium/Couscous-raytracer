@@ -1,6 +1,9 @@
 #ifndef RENDERER_CAMERA_H
 #define RENDERER_CAMERA_H
 
+// couscous includes.
+#include "ray.h"
+
 // glm headers.
 #include <glm/glm.hpp>
 
@@ -24,7 +27,9 @@ class Camera
         const glm::vec3&    up = glm::vec3(0.0f, 1.0f, 0.0f),
         const float&        yaw = -90.0f,
         const float&        pitch = 0.0f,
-        const float&        fov = 85.0f);
+        const float&        fov = 85.0f,
+        const size_t&       width = 800,
+        const size_t&       height = 600);
 
     const glm::vec3& get_position() const;
 
@@ -34,13 +39,7 @@ class Camera
         const size_t        width,
         const size_t        height) const;
 
-    // Calculate the world position of the final 2D image.
-    void get_plane_vectors(
-        glm::vec3&          lower_left,
-        glm::vec3&          horizontal,
-        glm::vec3&          vertical,
-        const size_t        width,
-        const size_t        height) const;
+    Ray get_ray(float u, float v) const;
 
   private:
     glm::vec3   m_position;
@@ -48,9 +47,14 @@ class Camera
     glm::vec3   m_world_up;
     glm::vec3   m_right;
     glm::vec3   m_front;
+    glm::vec3   m_lower_left;
+    glm::vec3   m_horizontal;
+    glm::vec3   m_vertical;
     float       m_yaw;
     float       m_pitch;
     float       m_fov;
+    size_t      m_width;
+    size_t      m_height;
 
     // Compute direction, up and right vectors.
     void update_vectors();

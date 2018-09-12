@@ -45,17 +45,8 @@ void MainWindow::slot_do_render()
 
     Render render;
 
-    Camera camera;
-    const vec3& eye = camera.get_position();
-
-    vec3 lower_left_corner, horizontal, vertical;
-    camera.get_plane_vectors(
-        lower_left_corner,
-        horizontal,
-        vertical,
-        size_x,
-        size_y);
-
+    Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
+                  -90.0f, 0.0f, 85.0f, size_x, size_y);
     VisualObjectList world;
     world.objectList.push_back(new UsualShapes::Sphere(vec3(0,0,-1), 0.5));
     world.objectList.push_back(new UsualShapes::Sphere(vec3(0,-100.5,-1), 100));
@@ -67,9 +58,7 @@ void MainWindow::slot_do_render()
             float u = float(x) / float(size_x);
             float v = float(y) / float(size_y);
 
-            Ray r(eye, lower_left_corner + u*horizontal + v*vertical);
-
-            vec3 color = render.getRayColor(r, world);
+            vec3 color = render.getRayColor(camera.get_ray(u, v), world);
 
             int ir = int(255.0f * color[0]);
             int ig = int(255.0f * color[1]);
