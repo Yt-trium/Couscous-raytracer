@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->scale(4,4);
 
     // Connect widgets events.
-    connect(ui->do_render, SIGNAL(released()), SLOT(slot_do_render()));
+    connect(ui->pushButton_render, SIGNAL(released()), SLOT(slot_do_render()));
     connect(ui->actionSave_As_Image, SIGNAL(triggered()), SLOT(slot_save_as_image()));
 }
 
@@ -36,9 +36,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::slot_do_render()
 {
-    size_t width = 200;
-    size_t height = 100;
-    size_t samples = 100;
+    size_t width = size_t(ui->spinBox_width->value());
+    size_t height = size_t(ui->spinBox_height->value());
+    size_t samples = size_t(ui->spinBox_spp->value());
     QImage image(int(width), int(height), QImage::Format_RGB32);
 
     Render render;
@@ -67,10 +67,9 @@ void MainWindow::slot_do_render()
 
 void MainWindow::slot_save_as_image()
 {
-
-    size_t width = 200;
-    size_t height = 100;
-    size_t samples = 100;
+    size_t width = size_t(ui->spinBox_width->value());
+    size_t height = size_t(ui->spinBox_height->value());
+    size_t samples = size_t(ui->spinBox_spp->value());
     QImage image(int(width), int(height), QImage::Format_RGB32);
 
     Render render;
