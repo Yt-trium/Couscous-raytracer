@@ -25,16 +25,16 @@ CONFIG += c++11
 SOURCES += \
         src/main.cpp \
         src/gui/mainwindow.cpp \
-    src/ray.cpp \
-    src/render.cpp \
+    src/renderer/ray.cpp \
+    src/renderer/render.cpp \
     src/usualshapes.cpp \
     src/visualobjectlist.cpp \
     src/renderer/camera.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
-    src/ray.h \
-    src/render.h \
+    src/renderer/ray.h \
+    src/renderer/render.h \
     src/visualobject.h \
     src/usualshapes.h \
     src/visualobjectlist.h \
