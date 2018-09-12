@@ -39,6 +39,7 @@ void MainWindow::slot_do_render()
     size_t width = 200;
     size_t height = 100;
     size_t samples = 100;
+    QImage image(int(width), int(height), QImage::Format_RGB32);
 
     Render render;
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
@@ -49,7 +50,9 @@ void MainWindow::slot_do_render()
     world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
     world.object_list.push_back(new Sphere(vec3(0,-100.5,-1), 100));
 
-    pixmap.convertFromImage(render.get_render_image(width, height, samples, camera, world));
+    render.get_render_image(width, height, samples, camera, world, image);
+
+    pixmap.convertFromImage(image);
     ui->graphicsView->scene()->clear();
     ui->graphicsView->scene()->addPixmap(pixmap);
 }
@@ -60,6 +63,7 @@ void MainWindow::slot_save_as_image()
     size_t width = 200;
     size_t height = 100;
     size_t samples = 100;
+    QImage image(int(width), int(height), QImage::Format_RGB32);
 
     Render render;
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
@@ -70,7 +74,7 @@ void MainWindow::slot_save_as_image()
     world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
     world.object_list.push_back(new Sphere(vec3(0,-100.5,-1), 100));
 
-    QImage image = render.get_render_image(width, height, samples, camera, world);
+    render.get_render_image(width, height, samples, camera, world, image);
 
     // Create file filters.
     QString selected_filter =  "PNG (*.png)";

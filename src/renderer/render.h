@@ -4,6 +4,7 @@
 // QT includes.
 #include <QImage>
 #include <QColor>
+#include <QProgressDialog>
 
 // couscous includes.
 #include "renderer/camera.h"
@@ -32,7 +33,8 @@ class Render
         size_t &height,
         size_t &samples,
         Camera &camera,
-        VisualObjectList &world) const;
+        VisualObjectList &world,
+        QImage &image) const;
 
 };
 

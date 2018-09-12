@@ -62,15 +62,25 @@ QImage Render::get_render_image(
     size_t &height,
     size_t &samples,
     Camera &camera,
-    VisualObjectList &world) const
+    VisualObjectList &world,
+    QImage &image) const
 {
     size_t x, y, s;
-    QImage image(int(width), int(height), QImage::Format_RGB32);
+
+    QProgressDialog progress("Rendering...", "Abort", 0, int(width*height), 0);
+    progress.setWindowModality(Qt::WindowModal);
+
+    progress.show();
 
     for(x=0;x<width;x++)
     {
         for(y=0;y<height;y++)
         {
+            if (progress.wasCanceled())
+                return image;
+
+            progress.setValue(int(x*width+y));
+
             vec3 color(0.0f, 0.0f, 0.0f);
             for(s=0;s<samples;s++)
             {
@@ -88,6 +98,7 @@ QImage Render::get_render_image(
             image.setPixel(width-1-x, height-1-y, QColor(ir, ig, ib).rgb());
         }
     }
+    progress.setValue(int(x*y));
 
     return image;
 }
