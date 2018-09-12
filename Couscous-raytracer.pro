@@ -27,17 +27,14 @@ SOURCES += \
         src/gui/mainwindow.cpp \
     src/renderer/ray.cpp \
     src/renderer/render.cpp \
-    src/usualshapes.cpp \
-    src/visualobjectlist.cpp \
+    src/renderer/visualobject.cpp \
     src/renderer/camera.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
     src/renderer/ray.h \
     src/renderer/render.h \
-    src/visualobject.h \
-    src/usualshapes.h \
-    src/visualobjectlist.h \
+    src/renderer/visualobject.h \
     src/renderer/camera.h
 
 FORMS += \

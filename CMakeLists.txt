@@ -2,15 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 set (sources
     src/main.cpp
-    src/ray.h
-    src/ray.cpp
-    src/render.cpp
-    src/render.h
-    src/usualshapes.cpp
-    src/usualshapes.h
-    src/visualobject.h
-    src/visualobjectlist.cpp
-    src/visualobjectlist.h
 )
 
 list (APPEND couscous_sources
@@ -19,6 +10,12 @@ list (APPEND couscous_sources
 set (renderer_sources
     src/renderer/camera.cpp
     src/renderer/camera.h
+    src/renderer/ray.cpp
+    src/renderer/ray.h
+    src/renderer/render.h
+    src/renderer/render.cpp
+    src/renderer/visualobject.cpp
+    src/renderer/visualobject.h
 )
 
 list (APPEND couscous_sources

@@ -2,9 +2,8 @@
 #define RENDER_H
 
 // couscous includes.
-#include "ray.h"
-#include "visualobject.h"
-#include "visualobjectlist.h"
+#include "renderer/ray.h"
+#include "renderer/visualobject.h"
 
 // Math includes.
 #include <glm/vec3.hpp>

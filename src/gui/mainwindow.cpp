@@ -7,6 +7,7 @@
 #include "renderer/camera.h"
 #include "renderer/render.h"
 #include "renderer/ray.h"
+#include "renderer/visualobject.h"
 
 // glm includes.
 #include <glm/glm.hpp>
@@ -48,9 +49,10 @@ void MainWindow::slot_do_render()
 
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 85.0f, size_x, size_y);
+
     VisualObjectList world;
-    world.objectList.push_back(new UsualShapes::Sphere(vec3(0,0,-1), 0.5));
-    world.objectList.push_back(new UsualShapes::Sphere(vec3(0,-100.5,-1), 100));
+    world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
+    world.object_list.push_back(new Sphere(vec3(0,-100.5,-1), 100));
 
     for(x=0;x<size_x;x++)
     {
@@ -98,8 +100,8 @@ void MainWindow::slot_save_as_image()
     vec3 origin(0.0, 0.0, 0.0);
 
     VisualObjectList world;
-    world.objectList.push_back(new UsualShapes::Sphere(vec3(0,0,-1), 0.5));
-    world.objectList.push_back(new UsualShapes::Sphere(vec3(0,-100.5,-1), 100));
+    world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
+    world.object_list.push_back(new Sphere(vec3(0,-100.5,-1), 100));
 
     for(x=0;x<size_x;x++)
     {

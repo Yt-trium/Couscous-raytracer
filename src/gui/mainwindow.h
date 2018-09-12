@@ -1,10 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-// coucous includes.
-#include "usualshapes.h"
-#include "visualobjectlist.h"
-
 // Qt includes.
 #include <QDebug>
 #include <QFileDialog>
