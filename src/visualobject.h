@@ -2,7 +2,7 @@
 #define VISUALOBJECT_H
 
 // couscous includes.
-#include "ray.h"
+#include "renderer/ray.h"
 
 // Math includes.
 #include <glm/vec3.hpp>

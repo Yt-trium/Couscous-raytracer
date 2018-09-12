@@ -5,8 +5,8 @@
 
 // couscous includes.
 #include "renderer/camera.h"
-#include "render.h"
-#include "ray.h"
+#include "renderer/render.h"
+#include "renderer/ray.h"
 
 // glm includes.
 #include <glm/glm.hpp>

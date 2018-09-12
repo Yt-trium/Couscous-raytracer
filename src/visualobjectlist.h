@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "ray.h"
+#include "renderer/ray.h"
 #include "visualobject.h"
 
 class VisualObjectList : public VisualObject
