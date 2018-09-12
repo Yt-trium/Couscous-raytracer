@@ -92,12 +92,12 @@ bool Sphere::hit(
 
 
 Triangle::Triangle(
-    const float v1,
-    const float v2,
-    const float v3)
-  : v1(v1)
+    const glm::vec3&    v0,
+    const glm::vec3&    v1,
+    const glm::vec3&    v2)
+  : v0(v0)
+  , v1(v1)
   , v2(v2)
-  , v3(v3)
 {
 }
 
@@ -107,5 +107,67 @@ bool Triangle::hit(
     float               tmax,
     HitRecord&          rec) const
 {
-    return false;
+    static const float epsilon = 0.001f;
+
+    // Compute triangle's normal.
+    const vec3 v0v1 = v1 - v0;
+    const vec3 v0v2 = v2 - v0;
+    rec.normal = cross(v0v1, v0v2);
+
+    // Calculate triangle's area.
+    const float area2 = rec.normal.length();
+
+    // 1.
+    // Find the intersection point with the ray and the plane lying on
+    // the triangle.
+
+    // Parallel test between the plane and the ray.
+    const float n_dot_ray_dir = dot(rec.normal, r.B);
+
+    // Near 0.
+    if (fabs(n_dot_ray_dir) < epsilon)
+        return false;
+
+    // Compute the parameter d that gives the direction to P.
+    const float d = dot(rec.normal, v0);
+
+    // Compute the parameter t that satisfies
+    // origin + t * dir = P
+    rec.t = (dot(rec.normal, r.A) + d) / n_dot_ray_dir;
+
+    // Is the triangle behind the ray ?
+    if (rec.t < 0.0f)
+        return false;
+
+    // Calculate Ray/Plane intersection point.
+    rec.p = r.A + rec.t * r.B;
+
+    // 2.
+    // Check if the point P is inside the triangle.
+    vec3 c;
+
+    // First edge.
+    const vec3& edge0 = v0v1;
+    const vec3 vp0 = rec.p - v0;
+    c = cross(edge0, vp0);
+    if (dot(rec.normal, c) < 0.0f)
+        return false;
+
+    // Second ege.
+    const vec3 edge1 = v2 - v1;
+    const vec3 vp1 = rec.p - v1;
+    c = cross(edge1, vp1);
+    if (dot(rec.normal, c) < 0.0f)
+        return false;
+
+    // Third ege.
+    const vec3 edge2 = v0 - v2;
+    const vec3 vp2 = rec.p - v2;
+    c = cross(edge2, vp2);
+    if (dot(rec.normal, c) < 0.0f)
+        return false;
+
+    rec.normal = normalize(rec.normal);
+
+    return true;
 }

@@ -80,19 +80,20 @@ class Triangle : public VisualObject
 {
   public:
     Triangle(
-        const float v1,
-        const float v2,
-        const float v3);
+        const glm::vec3&    v0,
+        const glm::vec3&    v1,
+        const glm::vec3&    v2);
 
+    // Möller-Trumbore algorithm.
     bool hit(
         const Ray&          r,
         float               tmin,
         float               tmax,
         HitRecord&          rec) const override;
 
-    float v1;
-    float v2;
-    float v3;
+    glm::vec3 v0;
+    glm::vec3 v1;
+    glm::vec3 v2;
 };
 
 #endif // VISUALOBJECT_H
