@@ -20,7 +20,7 @@ bool UsualShapes::Sphere::hit(const Ray &r, float tmin, float tmax, HitRecord &r
 {
     vec3 oc = r.origin() - center;
     float a = dot(r.direction(), r.direction());
-    float b = 2.0 * dot(oc, r.direction());
+    float b = 2.0f * dot(oc, r.direction());
     float c = dot(oc, oc) - radius*radius;
     float d = b*b - 4*a*c;
 
