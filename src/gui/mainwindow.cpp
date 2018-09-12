@@ -37,11 +37,12 @@ void MainWindow::slot_do_render()
 {
     int size_x = 200;
     int size_y = 100;
+    int ns = 100;
 
     QImage image(size_x, size_y, QImage::Format_RGB32);
     QPixmap pixmap;
 
-    int x, y;
+    int x, y, s;
 
     Render render;
 
@@ -55,10 +56,17 @@ void MainWindow::slot_do_render()
     {
         for(y=0;y<size_y;y++)
         {
-            float u = float(x) / float(size_x);
-            float v = float(y) / float(size_y);
+            vec3 color(0.0f, 0.0f, 0.0f);
+            for(s=0;s<ns;s++)
+            {
+                float u = float(x+drand48()) / float(size_x);
+                float v = float(y+drand48()) / float(size_y);
+                Ray r = camera.get_ray(u, v);
+                color += render.getRayColor(r, world);
+            }
+            color /= float(ns);
 
-            vec3 color = render.getRayColor(camera.get_ray(u, v), world);
+            // color += render.getRayColor(camera.get_ray(u, v), world);
 
             int ir = int(255.0f * color[0]);
             int ig = int(255.0f * color[1]);
