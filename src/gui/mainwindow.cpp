@@ -121,17 +121,45 @@ void MainWindow::slot_save_as_image()
         }
     }
 
-    QString path = QFileDialog::getSaveFileName(this, tr("Save As Image"), QDir::currentPath(), tr("Image Files (*.png *.jpg *.bmp)"));
-    /*
-    // Future code for more advanced options (maybe ask for quality)
-    QFileDialog pathDialog(this);
-    pathDialog.setFileMode(QFileDialog::AnyFile);
-    pathDialog.setViewMode(QFileDialog::Detail);
-    pathDialog.setNameFilter(tr("Images (*.png *.jpg *.bmp)"));
-    */
+    // Create file filters.
+    QString selected_filter =  "PNG (*.png)";
 
+    QStringList filter_list;
+    filter_list << selected_filter;
+    filter_list << "JPG (*.jpg)";
+    filter_list << "JPEG (*.jpeg)";
+    filter_list << "PBM (*.pbm)";
+    filter_list << "All Files (*.*)";
 
+    QString path = QFileDialog::getSaveFileName(
+        this,
+        tr("Save Image"),
+        QDir::currentPath(),
+        filter_list.join(";;"),
+        &selected_filter);
+
+    if (path.isEmpty())
+        return;
+
+    QFileInfo file_info(path);
+
+    // Set the default extension.
+    // If the file name has no extension and the selected filter has a single extension
+    // (i.e. it contains one *.ext substring) then add that extension to the file name.
+    if (file_info.suffix().isEmpty() && selected_filter.count('*') == 1)
+    {
+        const int begin = selected_filter.indexOf("*") + 1;
+        const int end = selected_filter.indexOf(")", begin);
+        assert(begin > 0 && end > begin);
+        path += selected_filter.mid(begin, end - begin);
+    }
 
     image.save(path);
+
+    // Future code for more advanced options (maybe ask for quality).
+    // QFileDialog pathDialog(this);
+    // pathDialog.setFileMode(QFileDialog::AnyFile);
+    // pathDialog.setViewMode(QFileDialog::Detail);
+    // pathDialog.setNameFilter(tr("Images (*.png *.jpg *.bmp)"));
 }
 
