@@ -17,12 +17,12 @@ using namespace glm;
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
   , ui(new Ui::MainWindow)
+  , m_frame_viewer(200, 100)
 {
     ui->setupUi(this);
 
-    QGraphicsScene *scene = new QGraphicsScene(ui->graphicsView);
-    ui->graphicsView->setScene(scene);
-    ui->graphicsView->scale(4,4);
+    // Add the image viewer.
+    ui->viewer_container_layout->addWidget(&m_frame_viewer);
 
     // Connect widgets events.
     connect(ui->pushButton_render, SIGNAL(released()), SLOT(slot_do_render()));
@@ -39,12 +39,13 @@ void MainWindow::slot_do_render()
     size_t width = size_t(ui->spinBox_width->value());
     size_t height = size_t(ui->spinBox_height->value());
     size_t samples = size_t(ui->spinBox_spp->value());
-    QImage image(int(width), int(height), QImage::Format_RGB32);
+    QImage image(int(width), int(height), QImage::Format_RGB888);
+
+    m_frame_viewer.on_render_begin();
 
     Render render;
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 85.0f, width, height);
-    QPixmap pixmap;
 
     VisualObjectList world;
     world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
@@ -60,9 +61,7 @@ void MainWindow::slot_do_render()
 
     render.get_render_image(width, height, samples, camera, world, image);
 
-    pixmap.convertFromImage(image);
-    ui->graphicsView->scene()->clear();
-    ui->graphicsView->scene()->addPixmap(pixmap);
+    m_frame_viewer.on_render_end(image);
 }
 
 void MainWindow::slot_save_as_image()
@@ -75,8 +74,6 @@ void MainWindow::slot_save_as_image()
     Render render;
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 85.0f, width, height);
-    QPixmap pixmap;
-
     VisualObjectList world;
     world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
     world.object_list.push_back(new Sphere(vec3(0,-100.5,-1), 100));
@@ -117,11 +114,5 @@ void MainWindow::slot_save_as_image()
     }
 
     image.save(path);
-
-    // Future code for more advanced options (maybe ask for quality).
-    // QFileDialog pathDialog(this);
-    // pathDialog.setFileMode(QFileDialog::AnyFile);
-    // pathDialog.setViewMode(QFileDialog::Detail);
-    // pathDialog.setNameFilter(tr("Images (*.png *.jpg *.bmp)"));
 }
 

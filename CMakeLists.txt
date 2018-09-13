@@ -22,6 +22,8 @@ list (APPEND couscous_sources
     ${renderer_sources})
 
 set (gui_sources
+    src/gui/frameviewer.cpp
+    src/gui/frameviewer.h
     src/gui/mainwindow.cpp
     src/gui/mainwindow.h
     src/gui/mainwindow.ui
@@ -33,6 +35,7 @@ list (APPEND couscous_sources
 project(Couscous-raytracer)
 
 find_package (Qt4 REQUIRED)
+find_package (OpenGL REQUIRED)
 set (QT_USE_QTOPENGL TRUE)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -46,5 +49,8 @@ add_executable(${PROJECT_NAME} ${couscous_sources})
 
 target_link_libraries (${PROJECT_NAME}
     Qt4::QtGui
-    ${OPENGL_LIBRARY}
+    Qt4::QtCore
+    Qt4::QtOpenGL
+    Qt4::QtMultimedia
+    ${OPENGL_LIBRARIES}
 )

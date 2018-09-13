@@ -1,9 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-// Qt includes.
-#include <QDebug>
+// couscous headers.
+#include "gui/frameviewer.h"
+
+// Qt headers.
 #include <QFileDialog>
+#include <QImage>
 #include <QMainWindow>
 
 // Forward declarations.
@@ -18,8 +21,13 @@ class MainWindow : public QMainWindow
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+  signals:
+    void signal_rendering_finished(const QImage&) const;
+
   private:
     Ui::MainWindow* ui;
+    QImage          m_image;
+    FrameViewer     m_frame_viewer;
 
   private slots:
     void slot_do_render();
