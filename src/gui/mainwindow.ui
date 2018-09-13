@@ -127,7 +127,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_spp">
        <property name="text">
-        <string>Samples /Pixel</string>
+        <string>Samples/Pixel</string>
        </property>
       </widget>
      </item>
