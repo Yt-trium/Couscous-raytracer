@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/pushButton">
+        <file>baseline_zoom_in_black_18dp.png</file>
+        <file>baseline_zoom_out_black_18dp.png</file>
+    </qresource>
+</RCC>

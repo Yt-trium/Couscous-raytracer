@@ -32,6 +32,8 @@ class MainWindow : public QMainWindow
   private slots:
     void slot_do_render();
     void slot_save_as_image();
+    void slot_zoom_in();
+    void slot_zoom_out();
 };
 
 #endif // MAINWINDOW_H

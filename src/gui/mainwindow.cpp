@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
     // Connect widgets events.
     connect(ui->pushButton_render, SIGNAL(released()), SLOT(slot_do_render()));
     connect(ui->actionSave_As_Image, SIGNAL(triggered()), SLOT(slot_save_as_image()));
+    connect(ui->pushButton_zoom_in, SIGNAL(released()), SLOT(slot_zoom_in()));
+    connect(ui->pushButton_zoom_out, SIGNAL(released()), SLOT(slot_zoom_out()));
 }
 
 MainWindow::~MainWindow()
@@ -114,5 +116,15 @@ void MainWindow::slot_save_as_image()
     }
 
     image.save(path);
+}
+
+void MainWindow::slot_zoom_in()
+{
+    m_frame_viewer.zoom_viewport(2.0f);
+}
+
+void MainWindow::slot_zoom_out()
+{
+    m_frame_viewer.zoom_viewport(-2.0f);
 }
 
