@@ -77,9 +77,12 @@ QImage Render::get_render_image(
         for(y=0;y<height;y++)
         {
             if (progress.wasCanceled())
+            {
+                QMessageBox::critical(nullptr, "Rendering aborted", "Rendering aborted");
                 return image;
+            }
 
-            progress.setValue(int(x*width+y));
+            progress.setValue(int(x*height+y+1));
 
             vec3 color(0.0f, 0.0f, 0.0f);
             for(s=0;s<samples;s++)
@@ -98,7 +101,7 @@ QImage Render::get_render_image(
             image.setPixel(width-1-x, height-1-y, QColor(ir, ig, ib).rgb());
         }
     }
-    progress.setValue(int(x*y));
+    progress.setValue(int(width*height));
 
     return image;
 }
