@@ -4,6 +4,7 @@
 // QT includes.
 #include <QImage>
 #include <QColor>
+#include <QMessageBox>
 #include <QProgressDialog>
 
 // couscous includes.
