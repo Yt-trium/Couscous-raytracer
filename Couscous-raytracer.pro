@@ -28,14 +28,16 @@ SOURCES += \
     src/renderer/ray.cpp \
     src/renderer/render.cpp \
     src/renderer/visualobject.cpp \
-    src/renderer/camera.cpp
+    src/renderer/camera.cpp \
+    src/gui/frameviewer.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
     src/renderer/ray.h \
     src/renderer/render.h \
     src/renderer/visualobject.h \
-    src/renderer/camera.h
+    src/renderer/camera.h \
+    src/gui/frameviewer.h
 
 FORMS += \
         src/gui/mainwindow.ui
