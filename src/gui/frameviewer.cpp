@@ -59,7 +59,7 @@ void FrameViewer::on_render_end(const QImage& image)
 
 void FrameViewer::mouseMoveEvent(QMouseEvent* event)
 {
-    if (m_left_pressed)
+    if (event->modifiers() & Qt::ShiftModifier && m_left_pressed)
     {
         const QPoint& pos = event->pos();
 
@@ -74,34 +74,37 @@ void FrameViewer::mouseMoveEvent(QMouseEvent* event)
 
 void FrameViewer::mousePressEvent(QMouseEvent* event)
 {
-    const qint64 msec = QDateTime::currentMSecsSinceEpoch();
-
-    if (event->button() == Qt::LeftButton)
+    if (event->modifiers() & Qt::ShiftModifier)
     {
-        m_left_pressed = true;
-        m_last_mouse_pos = event->pos();
-    }
-    else if (event->button() == Qt::RightButton)
-    {
-        // Reset transform.
-        m_scale_factor = 1.0f;
-        m_translate_x = 0;
-        m_translate_y = 0;
+        const qint64 msec = QDateTime::currentMSecsSinceEpoch();
 
-        // Fit image to viewport if button is pressed 2 times.
-        if (msec - m_time_last_mouse_press <= 500)
+        if (event->button() == Qt::LeftButton)
         {
-            const float x_scale =
-                width() / static_cast<float>(m_image.width());
-            const float y_scale =
-                height() / static_cast<float>(m_image.height());
-            m_scale_factor = min(x_scale, y_scale);
+            m_left_pressed = true;
+            m_last_mouse_pos = event->pos();
+        }
+        else if (event->button() == Qt::RightButton)
+        {
+            // Reset transform.
+            m_scale_factor = 1.0f;
+            m_translate_x = 0;
+            m_translate_y = 0;
+
+            // Fit image to viewport if button is pressed 2 times.
+            if (msec - m_time_last_mouse_press <= 500)
+            {
+                const float x_scale =
+                    width() / static_cast<float>(m_image.width());
+                const float y_scale =
+                    height() / static_cast<float>(m_image.height());
+                m_scale_factor = min(x_scale, y_scale);
+            }
+
+            repaint();
         }
 
-        repaint();
+        m_time_last_mouse_press = msec;
     }
-
-    m_time_last_mouse_press = msec;
 }
 
 void FrameViewer::mouseReleaseEvent(QMouseEvent* event)
@@ -137,12 +140,15 @@ void FrameViewer::paintEvent(QPaintEvent* event)
 
 void FrameViewer::wheelEvent(QWheelEvent* event)
 {
-    if (event->orientation() == Qt::Vertical)
+    if (event->modifiers() & Qt::ShiftModifier)
     {
-        m_scale_factor +=
-            static_cast<float>(event->delta()) / 12000.0f;
+        if (event->orientation() == Qt::Vertical)
+        {
+            m_scale_factor +=
+                static_cast<float>(event->delta()) / 12000.0f;
 
-        repaint();
+            repaint();
+        }
     }
 }
 
