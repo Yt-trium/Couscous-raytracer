@@ -133,7 +133,7 @@ bool Triangle::hit(
 
     // Compute the parameter t that satisfies
     // origin + t * dir = P
-    rec.t = (dot(rec.normal, r.A) + d) / n_dot_ray_dir;
+    rec.t = - (dot(rec.normal, r.A) - d) / n_dot_ray_dir;
 
     // Is the triangle behind the ray ?
     if (rec.t < 0.0f)

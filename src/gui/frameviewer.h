@@ -33,6 +33,12 @@ class FrameViewer : public QWidget
     // Display the given image.
     void on_render_end(const QImage& image);
 
+  public slots:
+    void fit_to_viewport();
+    void reset_transform();
+    void translate_viewport(const int dx, const int dy);
+    void zoom_viewport(const float delta);
+
   private:
     void mouseMoveEvent(QMouseEvent* event) override;
     void mousePressEvent(QMouseEvent* event) override;
