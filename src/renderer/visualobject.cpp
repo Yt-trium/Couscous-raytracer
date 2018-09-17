@@ -1,5 +1,6 @@
 // Interface.
 #include "renderer/visualobject.h"
+#include "renderer/material.h"
 
 using namespace glm;
 using namespace std;
