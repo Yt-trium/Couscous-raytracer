@@ -2,6 +2,7 @@
 #define RENDERER_VISUALOBJECT_H
 
 // couscous includes.
+#include "material.h"
 #include "ray.h"
 
 // glm includes.
@@ -9,6 +10,8 @@
 
 // Standard includes.
 #include <vector>
+
+class Material;
 
 //
 // Ray intersections data structures.
@@ -20,6 +23,7 @@ typedef struct HitRecord
     float       t;
     glm::vec3   p;
     glm::vec3   normal;
+    Material    *mat_ptr;
 } HitRecord;
 
 

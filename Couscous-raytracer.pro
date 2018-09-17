@@ -29,7 +29,8 @@ SOURCES += \
     src/renderer/render.cpp \
     src/renderer/visualobject.cpp \
     src/renderer/camera.cpp \
-    src/gui/frameviewer.cpp
+    src/gui/frameviewer.cpp \
+    src/renderer/material.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -37,7 +38,8 @@ HEADERS += \
     src/renderer/render.h \
     src/renderer/visualobject.h \
     src/renderer/camera.h \
-    src/gui/frameviewer.h
+    src/gui/frameviewer.h \
+    src/renderer/material.h
 
 FORMS += \
         src/gui/mainwindow.ui
