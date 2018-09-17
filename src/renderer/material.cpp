@@ -1,17 +1,23 @@
-#include "material.h"
+#include "renderer/material.h"
 
 using namespace glm;
 
-Material::Material(vec3 ambient, vec3 diffuse, vec3 specular, float shininess)
-    : ambient(ambient)
-    , diffuse(diffuse)
-    , specular(specular)
-    , shininess(shininess)
+Material::Material(
+    vec3                ambient,
+    vec3                diffuse,
+    vec3                specular,
+    float               shininess)
+  : ambient(ambient)
+  , diffuse(diffuse)
+  , specular(specular)
+  , shininess(shininess)
 {
-
 }
 
-bool Material::scatter(const Ray &r_in, const HitRecord &rec, Ray &scattered)
+bool Material::scatter(
+    const Ray&          r_in,
+    const HitRecord&    rec,
+    Ray&                scattered)
 {
     vec3 target = rec.p + rec.normal +random_in_unit_sphere();
     scattered = Ray(rec.p, target-rec.p);
@@ -19,7 +25,9 @@ bool Material::scatter(const Ray &r_in, const HitRecord &rec, Ray &scattered)
     return true;
 }
 
-vec3 Material::reflect(const vec3 &v, const vec3 &n)
+vec3 Material::reflect(
+    const vec3&         v,
+    const vec3&         n)
 {
     return v - 2 * dot(v, n) * n;
 }

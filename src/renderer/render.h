@@ -21,21 +21,21 @@ class Render
     Render();
 
     glm::vec3 get_ray_color(
-        const Ray&          r,
-        VisualObjectList    world) const;
+        const Ray&              r,
+        VisualObjectList        world) const;
 
     float ray_hit_sphere(
-        const glm::vec3&    center,
-        float               radius,
-        const Ray&          r);
+        const glm::vec3&        center,
+        float                   radius,
+        const Ray&              r);
 
-    QImage get_render_image(
-        size_t &width,
-        size_t &height,
-        size_t &samples,
-        Camera &camera,
-        VisualObjectList &world,
-        QImage &image) const;
+    void get_render_image(
+        const size_t            width,
+        const size_t            height,
+        const size_t            spp,
+        const Camera&           camera,
+        const VisualObjectList& world,
+        QImage&                 image) const;
 
 private:
     glm::vec3 random_in_unit_sphere() const;

@@ -1,10 +1,14 @@
 // Interface.
 #include "render.h"
 
+// couscous includes.
+#include "renderer/samplegenerator.h"
+
 // Math includes.
 #include <glm/glm.hpp>
 
 // Standard includes.
+#include <algorithm>
 #include <limits>
 
 using namespace glm;
@@ -59,53 +63,69 @@ float Render::ray_hit_sphere(
         return (-b-sqrt(d))/(2.0f*a);
 }
 
-QImage Render::get_render_image(
-    size_t &width,
-    size_t &height,
-    size_t &samples,
-    Camera &camera,
-    VisualObjectList &world,
-    QImage &image) const
-{
-    size_t x, y, s;
 
+#include <QDebug>
+void Render::get_render_image(
+    const size_t            width,
+    const size_t            height,
+    const size_t            spp,
+    const Camera&           camera,
+    const VisualObjectList& world,
+    QImage&                 image) const
+{
     QProgressDialog progress("Rendering...", "Abort", 0, int(width*height), 0);
     progress.setWindowModality(Qt::WindowModal);
 
     progress.show();
 
-    for(x=0;x<width;x++)
+    // Precompute subpixel samples position
+    const size_t dimension_size =
+        std::max(
+            size_t(1),
+            static_cast<size_t>(sqrt(spp)));
+    const size_t samples = dimension_size * dimension_size;
+
+    SampleGenerator generator(dimension_size);
+
+    for (size_t y = 0; y < height; ++y)
     {
-        for(y=0;y<height;y++)
+        for (size_t x = 0; x < width; ++x)
         {
             if (progress.wasCanceled())
             {
                 QMessageBox::critical(nullptr, "Rendering aborted", "Rendering aborted");
-                return image;
+                return;
             }
 
-            progress.setValue(int(x*height+y+1));
+            const vec2 pt(x, y);
+            const vec2 frame(width, height);
+
+            progress.setValue(y * width + x);
 
             vec3 color(0.0f, 0.0f, 0.0f);
-            for(s=0;s<samples;s++)
+            for (size_t i = 0; i < samples; ++i)
             {
-                float u = float(x+drand48()) / float(width);
-                float v = float(y+drand48()) / float(height);
-                color += get_ray_color(camera.get_ray(u, v), world);
-            }
-            color /= float(samples);
+                const vec2 subpixel_pos = generator.next();
+                const vec2 uv(
+                    (pt.x + subpixel_pos.x) / frame.x,
+                    (pt.y + subpixel_pos.y) / frame.y);
 
+                color += get_ray_color(
+                    camera.get_ray(uv.x, uv.y), world);
+            }
+
+            color /= static_cast<float>(samples);
             color = vec3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));
 
             int ir = int(255.0f * color[0]);
             int ig = int(255.0f * color[1]);
             int ib = int(255.0f * color[2]);
+
             image.setPixel(width-1-x, height-1-y, QColor(ir, ig, ib).rgb());
         }
     }
-    progress.setValue(int(width*height));
 
-    return image;
+    progress.setValue(100);
 }
 
 vec3 Render::random_in_unit_sphere() const

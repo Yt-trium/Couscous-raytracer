@@ -10,10 +10,14 @@ list (APPEND couscous_sources
 set (renderer_sources
     src/renderer/camera.cpp
     src/renderer/camera.h
+    src/renderer/material.cpp
+    src/renderer/material.h
     src/renderer/ray.cpp
     src/renderer/ray.h
     src/renderer/render.h
     src/renderer/render.cpp
+    src/renderer/samplegenerator.cpp
+    src/renderer/samplegenerator.h
     src/renderer/visualobject.cpp
     src/renderer/visualobject.h
 )
