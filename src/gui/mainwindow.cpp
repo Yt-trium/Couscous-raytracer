@@ -53,6 +53,7 @@ void MainWindow::slot_do_render()
     world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
     world.object_list.push_back(new Sphere(vec3(0,-100.5,-1), 100));
 
+    /*
     world.object_list.push_back(new Triangle(
         vec3(-0.7f, 0.0f, -1.0f),
         vec3(-0.7f, 0.4f, -1.0f),
@@ -60,6 +61,7 @@ void MainWindow::slot_do_render()
     world.object_list.push_back(new Sphere(vec3(-0.7f, 0.0f, -1.0f), 0.05f));
     world.object_list.push_back(new Sphere(vec3(-0.7f, 0.4f, -1.0f), 0.05f));
     world.object_list.push_back(new Sphere(vec3(-1.3f, 0.2f, -1.0f), 0.05f));
+    */
 
     render.get_render_image(width, height, samples, camera, world, image);
 

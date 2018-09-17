@@ -37,6 +37,8 @@ class Render
         VisualObjectList &world,
         QImage &image) const;
 
+private:
+    glm::vec3 random_in_unit_sphere() const;
 };
 
 #endif // RENDER_H

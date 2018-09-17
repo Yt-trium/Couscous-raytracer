@@ -23,7 +23,9 @@ vec3 Render::get_ray_color(
 
     if(world.hit(r, 0.0f, numeric_limits<float>::max(), rec))
     {
-        return 0.5f * vec3(rec.normal.x+1, rec.normal.y+1, rec.normal.z+1);
+        vec3 target = rec.p + rec.normal + random_in_unit_sphere();
+        return 0.5f * get_ray_color(Ray(rec.p, target-rec.p), world);
+        // return 0.5f * vec3(rec.normal.x+1, rec.normal.y+1, rec.normal.z+1);
     }
     /*
     float t;
@@ -104,4 +106,14 @@ QImage Render::get_render_image(
     progress.setValue(int(width*height));
 
     return image;
+}
+
+vec3 Render::random_in_unit_sphere() const
+{
+    vec3 p;
+    do
+    {
+        p = 2.0f * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+    } while(dot(p, p) >= 1);
+    return p;
 }
