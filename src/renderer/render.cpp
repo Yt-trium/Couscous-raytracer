@@ -21,7 +21,7 @@ vec3 Render::get_ray_color(
     HitRecord rec;
     float t;
 
-    if(world.hit(r, 0.0f, numeric_limits<float>::max(), rec))
+    if(world.hit(r, 0.001f, numeric_limits<float>::max(), rec))
     {
         vec3 target = rec.p + rec.normal + random_in_unit_sphere();
         return 0.5f * get_ray_color(Ray(rec.p, target-rec.p), world);
@@ -95,7 +95,7 @@ QImage Render::get_render_image(
             }
             color /= float(samples);
 
-            // color += render.getRayColor(camera.get_ray(u, v), world);
+            color = vec3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));
 
             int ir = int(255.0f * color[0]);
             int ig = int(255.0f * color[1]);
