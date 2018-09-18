@@ -13,9 +13,20 @@ VisualObjectList::VisualObjectList()
 {
 }
 
-VisualObjectList::VisualObjectList(vector<VisualObject*> l)
-  : object_list(l)
+VisualObjectList::~VisualObjectList()
 {
+    // Delte objetcs.
+    for (auto it = m_object_list.begin() ; it != m_object_list.end(); ++it)
+    {
+        delete (*it);
+    }
+
+    m_object_list.clear();
+}
+
+void VisualObjectList::add(const VisualObject* object)
+{
+    m_object_list.push_back(object);
 }
 
 bool VisualObjectList::hit(
@@ -29,9 +40,11 @@ bool VisualObjectList::hit(
     float closest_so_far = tmax;
     size_t i;
 
-    for (i = 0; i < object_list.size(); i++)
+    for (i = 0; i < m_object_list.size(); i++)
     {
-        if (object_list[i]->hit(r, tmin, closest_so_far, tmp_rec))
+        const VisualObject* object = m_object_list[i];
+
+        if (object->hit(r, tmin, closest_so_far, tmp_rec))
         {
             hit_something = true;
             closest_so_far = tmp_rec.t;
@@ -64,9 +77,9 @@ bool Sphere::hit(
     vec3 oc = r.origin() - center;
 
     float a = dot(r.direction(), r.direction());
-    float b = 2.0 * dot(oc, r.direction());
-    float c = dot(oc, oc) - radius*radius;
-    float d = b*b - 4*a*c;
+    float b = 2.0f * dot(oc, r.direction());
+    float c = dot(oc, oc) - radius * radius;
+    float d = b * b - 4.0f * a * c;
 
     if(d > 0)
     {
@@ -102,6 +115,11 @@ Triangle::Triangle(
 {
 }
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/string_cast.hpp"
+#include <QDebug>
+#include <iostream>
+
 bool Triangle::hit(
     const Ray&          r,
     float               tmin,
@@ -114,9 +132,6 @@ bool Triangle::hit(
     const vec3 v0v1 = v1 - v0;
     const vec3 v0v2 = v2 - v0;
     rec.normal = cross(v0v1, v0v2);
-
-    // Calculate triangle's area.
-    const float area2 = rec.normal.length();
 
     // 1.
     // Find the intersection point with the ray and the plane lying on
@@ -137,7 +152,7 @@ bool Triangle::hit(
     rec.t = - (dot(rec.normal, r.A) - d) / n_dot_ray_dir;
 
     // Is the triangle behind the ray ?
-    if (rec.t < 0.0f)
+    if (rec.t < 0.0f || rec.t > tmax || rec.t < tmin)
         return false;
 
     // Calculate Ray/Plane intersection point.

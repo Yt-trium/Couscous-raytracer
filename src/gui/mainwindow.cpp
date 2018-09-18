@@ -50,18 +50,16 @@ void MainWindow::slot_do_render()
                   -90.0f, 0.0f, 85.0f, width, height);
 
     VisualObjectList world;
-    world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
-    world.object_list.push_back(new Sphere(vec3(0,-100.5,-1), 100));
+    world.add(new Sphere(vec3(0,0,-1), 0.5));
+    world.add(new Sphere(vec3(0,-100.5,-1), 100));
 
-    /*
-    world.object_list.push_back(new Triangle(
+    world.add(new Triangle(
         vec3(-0.7f, 0.0f, -1.0f),
         vec3(-0.7f, 0.4f, -1.0f),
         vec3(-1.3f, 0.2f, -1.0f)));
-    world.object_list.push_back(new Sphere(vec3(-0.7f, 0.0f, -1.0f), 0.05f));
-    world.object_list.push_back(new Sphere(vec3(-0.7f, 0.4f, -1.0f), 0.05f));
-    world.object_list.push_back(new Sphere(vec3(-1.3f, 0.2f, -1.0f), 0.05f));
-    */
+    world.add(new Sphere(vec3(-0.7f, 0.0f, -1.0f), 0.05f));
+    world.add(new Sphere(vec3(-0.7f, 0.4f, -1.0f), 0.05f));
+    world.add(new Sphere(vec3(-1.3f, 0.2f, -1.0f), 0.05f));
 
     render.get_render_image(width, height, samples, camera, world, image);
 
@@ -79,8 +77,8 @@ void MainWindow::slot_save_as_image()
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 85.0f, width, height);
     VisualObjectList world;
-    world.object_list.push_back(new Sphere(vec3(0,0,-1), 0.5));
-    world.object_list.push_back(new Sphere(vec3(0,-100.5,-1), 100));
+    world.add(new Sphere(vec3(0,0,-1), 0.5));
+    world.add(new Sphere(vec3(0,-100.5,-1), 100));
 
     render.get_render_image(width, height, samples, camera, world, image);
 
