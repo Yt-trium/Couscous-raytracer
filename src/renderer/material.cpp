@@ -41,8 +41,10 @@ bool Lambertian::scatter(
 }
 
 Metal::Metal(
-    const vec3&         albedo)
+    const vec3&         albedo,
+    const float         fuzz)
   : m_albedo(albedo)
+  , m_fuzz(fuzz)
 {
 }
 
@@ -53,7 +55,7 @@ bool Metal::scatter(
     Ray&                scattered) const
 {
     vec3 reflected = reflect(normalize(r_in.B), rec.normal);
-    scattered = Ray(rec.p, reflected);
+    scattered = Ray(rec.p, reflected + m_fuzz * random_in_unit_sphere());
     attenuation = m_albedo;
     return (dot(scattered.B, rec.normal) > 0.0f);
 }

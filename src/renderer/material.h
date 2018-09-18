@@ -36,7 +36,7 @@ class Lambertian : public Material
 class Metal : public Material
 {
   public:
-    Metal(const glm::vec3& albedo);
+    Metal(const glm::vec3& albedo, const float fuzz);
 
     bool scatter(
         const Ray&          r_in,
@@ -45,7 +45,8 @@ class Metal : public Material
         Ray&                scattered) const override;
 
   private:
-    glm::vec3 m_albedo;
+    glm::vec3   m_albedo;
+    float       m_fuzz;
 };
 
 #endif // RENDERER_MATERIAL_H

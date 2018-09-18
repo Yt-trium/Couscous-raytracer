@@ -52,7 +52,8 @@ void MainWindow::slot_do_render()
 
     VisualObjectList world;
     world.add(new Sphere(vec3(0.0f,0.0f,-1.0f), 0.5f, new Lambertian(vec3(0.8f, 0.3f, 0.3f))));
-    world.add(new Sphere(vec3(1.0f,0.0f,-1.0f), 0.5f, new Metal(vec3(1.0f, 0.0f, 0.0f))));
+    world.add(new Sphere(vec3(1.0f,0.0f,-1.0f), 0.5f, new Metal(vec3(1.0f, 0.0f, 0.0f), 0.5f)));
+    world.add(new Sphere(vec3(0.5f,1.0f,-1.0f), 0.5f, new Metal(vec3(0.5f, 0.9f, 0.4f), 0.0f)));
     world.add(new Sphere(vec3(0.0f,-100.5f,-1), 100, new Lambertian(vec3(0.2f, 0.9f, 0.4f))));
 
     world.add(new Triangle(
