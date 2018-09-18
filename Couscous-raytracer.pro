@@ -30,7 +30,8 @@ SOURCES += \
     src/renderer/visualobject.cpp \
     src/renderer/camera.cpp \
     src/gui/frameviewer.cpp \
-    src/renderer/material.cpp
+    src/renderer/material.cpp \
+    src/renderer/samplegenerator.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -39,7 +40,8 @@ HEADERS += \
     src/renderer/visualobject.h \
     src/renderer/camera.h \
     src/gui/frameviewer.h \
-    src/renderer/material.h
+    src/renderer/material.h \
+    src/renderer/samplegenerator.h
 
 FORMS += \
         src/gui/mainwindow.ui
