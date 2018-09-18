@@ -13,20 +13,9 @@ VisualObjectList::VisualObjectList()
 {
 }
 
-VisualObjectList::~VisualObjectList()
+void VisualObjectList::add(VisualObject* object)
 {
-    // Delte objetcs.
-    for (auto it = m_object_list.begin() ; it != m_object_list.end(); ++it)
-    {
-        // delete (*it);
-    }
-
-    m_object_list.clear();
-}
-
-void VisualObjectList::add(const VisualObject* object)
-{
-    m_object_list.push_back(object);
+    m_object_list.emplace_back(object);
 }
 
 bool VisualObjectList::hit(
@@ -42,7 +31,7 @@ bool VisualObjectList::hit(
 
     for (i = 0; i < m_object_list.size(); i++)
     {
-        const VisualObject* object = m_object_list[i];
+        const VisualObject* object = m_object_list[i].get();
 
         if (object->hit(r, tmin, closest_so_far, tmp_rec))
         {
