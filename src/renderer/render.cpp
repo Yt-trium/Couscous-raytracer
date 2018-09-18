@@ -111,7 +111,7 @@ void Render::get_render_image(
 
 void Render::get_render_image_thread(const size_t width, const size_t height, const size_t spp, const Camera &camera, const VisualObjectList &world, QImage &image)
 {
-    QProgressDialog progress("Rendering...", "Abort", 0, int(width*height), 0);
+    QProgressDialog progress("Rendering...", "", 0, int((width/64)*(height/64)), 0);
     progress.setWindowModality(Qt::WindowModal);
 
     progress.show();
@@ -129,7 +129,7 @@ void Render::get_render_image_thread(const size_t width, const size_t height, co
     std::vector<QFuture<void>> threads;
 
     auto compute =
-    [&]()
+    [&](std::size_t x1, std::size_t x2, std::size_t y1, std::size_t y2)
     {
         for (size_t y = y1; y < y2; ++y)
         {
@@ -170,23 +170,18 @@ void Render::get_render_image_thread(const size_t width, const size_t height, co
             x2 = std::min(x0+64, width);
             y2 = std::min(y0+64, height);
 
-            /* [world, x1, x2, y1, y2, &image, samples,
-                     width, height, camera, this]*/
-
-
-            QFuture<void> future = QtConcurrent::run(compute);
+            QFuture<void> future = QtConcurrent::run(compute, x1, x2, y1, y2);
             threads.push_back(future);
-            threads.back().waitForFinished();
         }
     }
 
     for(std::size_t i = 0; i < threads.size(); ++i)
     {
         threads.at(i).waitForFinished();
-        qDebug() << i;
+        progress.setValue(int(i));
     }
 
-    progress.setValue(width*height);
+    progress.setValue((width/64)*(height/64));
 }
 
 vec3 Render::random_in_unit_sphere() const

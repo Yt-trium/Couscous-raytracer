@@ -5,7 +5,6 @@
 #include <QtConcurrentRun>
 #include <QImage>
 #include <QColor>
-#include <QDebug>
 #include <QMessageBox>
 #include <QProgressDialog>
 
