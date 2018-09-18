@@ -22,7 +22,7 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
   , ui(new Ui::MainWindow)
-  , m_frame_viewer(200, 100)
+  , m_frame_viewer(512, 512)
 {
     ui->setupUi(this);
 
