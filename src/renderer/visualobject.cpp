@@ -18,7 +18,7 @@ VisualObjectList::~VisualObjectList()
     // Delte objetcs.
     for (auto it = m_object_list.begin() ; it != m_object_list.end(); ++it)
     {
-        delete (*it);
+        // delete (*it);
     }
 
     m_object_list.clear();
