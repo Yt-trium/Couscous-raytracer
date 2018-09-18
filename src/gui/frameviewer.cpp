@@ -47,8 +47,9 @@ void FrameViewer::clear()
     m_image.fill(QColor(0, 0, 0));
 }
 
-void FrameViewer::on_render_begin()
+void FrameViewer::on_render_begin(const size_t width, const size_t height)
 {
+    resize(width, height);
 }
 
 void FrameViewer::on_render_end(const QImage& image)
@@ -85,6 +86,8 @@ void FrameViewer::translate_viewport(const int dx, const int dy)
 void FrameViewer::zoom_viewport(const float delta)
 {
     m_scale_factor += delta;
+    m_scale_factor = max(m_scale_factor, 0.1f);
+    m_scale_factor = min(m_scale_factor, 5.0f);
     repaint();
 }
 

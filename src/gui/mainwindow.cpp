@@ -48,7 +48,7 @@ void MainWindow::slot_do_render()
     size_t samples = size_t(ui->spinBox_spp->value());
     QImage image(int(width), int(height), QImage::Format_RGB888);
 
-    m_frame_viewer.on_render_begin();
+    m_frame_viewer.on_render_begin(width, height);
 
     Render render;
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
@@ -135,11 +135,11 @@ void MainWindow::slot_save_as_image()
 
 void MainWindow::slot_zoom_in()
 {
-    m_frame_viewer.zoom_viewport(2.0f);
+    m_frame_viewer.zoom_viewport(0.1f);
 }
 
 void MainWindow::slot_zoom_out()
 {
-    m_frame_viewer.zoom_viewport(-2.0f);
+    m_frame_viewer.zoom_viewport(-0.1f);
 }
 
