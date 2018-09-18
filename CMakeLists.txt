@@ -1,5 +1,23 @@
 cmake_minimum_required(VERSION 2.8)
 
+# ---------------------------------------------
+# Project settings and dependencies.
+# ---------------------------------------------
+
+project(Couscous-raytracer)
+
+find_package (Qt4 REQUIRED)
+find_package (OpenGL REQUIRED)
+set (QT_USE_QTOPENGL TRUE)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+
+# ---------------------------------------------
+# Project files.
+# ---------------------------------------------
+
 set (sources
     src/main.cpp
 )
@@ -36,20 +54,34 @@ set (gui_sources
 list (APPEND couscous_sources
     ${gui_sources})
 
-project(Couscous-raytracer)
+set (resources
+    icons/icons.qrc
+)
 
-find_package (Qt4 REQUIRED)
-find_package (OpenGL REQUIRED)
-set (QT_USE_QTOPENGL TRUE)
+# ---------------------------------------------
+# Compiler options.
+# ---------------------------------------------
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
+if (CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
+endif()
+
+# ---------------------------------------------
+# Compie Qt files.
+# ---------------------------------------------
+
+QT4_ADD_RESOURCES (couscous_resource_files
+    ${resources}
+)
+
+# ---------------------------------------------
+# Create executable.
+# ---------------------------------------------
 
 include (${QT_USE_FILE})
 include_directories(src)
 
-add_executable(${PROJECT_NAME} ${couscous_sources})
+add_executable(${PROJECT_NAME} ${couscous_sources} ${couscous_resource_files})
 
 target_link_libraries (${PROJECT_NAME}
     Qt4::QtGui
@@ -59,7 +91,3 @@ target_link_libraries (${PROJECT_NAME}
     ${OPENGL_LIBRARIES}
 )
 
-# Compiler options
-if (CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
-endif()
