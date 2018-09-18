@@ -61,18 +61,20 @@ bool VisualObjectList::hit(
 //
 
 Sphere::Sphere(
-    const glm::vec3&    center,
-    float               radius)
+    const glm::vec3&                center,
+    float                           radius,
+    const shared_ptr<Material>&     mat)
   : center(center)
   , radius(radius)
+  , m_mat(mat)
 {
 }
 
 bool Sphere::hit(
-    const Ray&          r,
-    float               tmin,
-    float               tmax,
-    HitRecord&          rec) const
+    const Ray&                      r,
+    float                           tmin,
+    float                           tmax,
+    HitRecord&                      rec) const
 {
     vec3 oc = r.origin() - center;
 
@@ -89,6 +91,7 @@ bool Sphere::hit(
             rec.t = tmp;
             rec.p = r.pointAtParameter(rec.t);
             rec.normal = (rec.p - center) / radius;
+            rec.mat = m_mat.get();
             return true;
         }
         tmp = (-b+sqrt(d))/(2*a);
@@ -97,6 +100,7 @@ bool Sphere::hit(
             rec.t = tmp;
             rec.p = r.pointAtParameter(rec.t);
             rec.normal = (rec.p - center) / radius;
+            rec.mat = m_mat.get();
             return true;
         }
     }
@@ -106,25 +110,22 @@ bool Sphere::hit(
 
 
 Triangle::Triangle(
-    const glm::vec3&    v0,
-    const glm::vec3&    v1,
-    const glm::vec3&    v2)
+    const glm::vec3&                v0,
+    const glm::vec3&                v1,
+    const glm::vec3&                v2,
+    const shared_ptr<Material>&     mat)
   : v0(v0)
   , v1(v1)
   , v2(v2)
+  , m_mat(mat)
 {
 }
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtx/string_cast.hpp"
-#include <QDebug>
-#include <iostream>
-
 bool Triangle::hit(
-    const Ray&          r,
-    float               tmin,
-    float               tmax,
-    HitRecord&          rec) const
+    const Ray&                      r,
+    float                           tmin,
+    float                           tmax,
+    HitRecord&                      rec) const
 {
     static const float epsilon = 0.001f;
 
@@ -184,6 +185,7 @@ bool Triangle::hit(
         return false;
 
     rec.normal = normalize(rec.normal);
+    rec.mat = m_mat.get();
 
     return true;
 }

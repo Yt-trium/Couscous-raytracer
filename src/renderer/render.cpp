@@ -1,6 +1,10 @@
 // Interface.
 #include "render.h"
 
+// couscous includes.
+#include "renderer/material.h"
+#include "renderer/samplegenerator.h"
+
 // Math includes.
 #include <glm/glm.hpp>
 
@@ -17,30 +21,30 @@ Render::Render()
 
 vec3 Render::get_ray_color(
     const Ray&              r,
-    const VisualObjectList& world) const
+    const VisualObjectList& world,
+    const int               depth) const
 {
     HitRecord rec;
     float t;
 
     if(world.hit(r, 0.001f, numeric_limits<float>::max(), rec))
     {
-        vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-        return 0.5f * get_ray_color(Ray(rec.p, target-rec.p), world);
-        // return 0.5f * vec3(rec.normal.x+1, rec.normal.y+1, rec.normal.z+1);
+        Ray scattered;
+        vec3 attenuation;
+        vec3 emitted = rec.mat->emission();
+        if (depth < 10 && rec.mat->scatter(r, rec, attenuation, scattered))
+        {
+            return emitted + attenuation * get_ray_color(scattered, world, depth + 1);
+        }
+        else
+        {
+            return emitted;
+        }
     }
-    /*
-    float t;
-    t = rayHitSphere(vec3(0,0,-1), 0.5, r);
-    if(t > 0.0)
+    else
     {
-        vec3 N = glm::normalize(r.pointAtParameter(t) - vec3(0, 0, -1));
-        return float(0.5) * vec3(N.x+1, N.y+1, N.z+1);
+        return vec3(0.0f);
     }
-    */
-
-    vec3 unit_direction = normalize(r.direction());
-    t = 0.5f * (unit_direction.y + 1.0f);
-    return  float(1.0f-t) * vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
 }
 
 float Render::ray_hit_sphere(

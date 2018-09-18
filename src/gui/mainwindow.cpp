@@ -5,6 +5,7 @@
 
 // couscous includes.
 #include "renderer/camera.h"
+#include "renderer/material.h"
 #include "renderer/render.h"
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
@@ -12,7 +13,11 @@
 // glm includes.
 #include <glm/glm.hpp>
 
+// Standard includes.
+#include <memory>
+
 using namespace glm;
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -49,17 +54,26 @@ void MainWindow::slot_do_render()
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 85.0f, width, height);
 
+    // Create materials.
+    shared_ptr<Material> mat_light(new Light(vec3(1.0f)));
+    shared_ptr<Material> mat_red_metal(new Metal(vec3(0.9f, 0.05f, 0.08f), 0.3f));
+    shared_ptr<Material> mat_chrome(new Metal(vec3(0.8f, 0.8f, 0.8f), 0.02f));
+    shared_ptr<Material> mat_soft_green(new Lambertian(vec3(0.2f, 0.8f, 0.1f)));
+
+    // Create objects.
     VisualObjectList world;
-    world.add(new Sphere(vec3(0,0,-1), 0.5));
-    world.add(new Sphere(vec3(0,-100.5,-1), 100));
+    world.add(new Sphere(vec3(-1.0f,3.0f,-1.0f), 2.5f, mat_light));
+    world.add(new Sphere(vec3(-0.1f,-0.4f,-0.5f), 0.1f, mat_light));
+    world.add(new Sphere(vec3(0.0f,0.0f,-1.0f), 0.5f, mat_soft_green));
+    world.add(new Sphere(vec3(1.0f,0.0f,-1.0f), 0.5f, mat_red_metal));
+    world.add(new Sphere(vec3(0.5f,1.0f,-1.0f), 0.3f, mat_chrome));
+    world.add(new Sphere(vec3(0.0f,-100.5f,-1), 100, mat_soft_green));
 
     world.add(new Triangle(
         vec3(-0.7f, 0.0f, -1.0f),
         vec3(-0.7f, 0.4f, -1.0f),
-        vec3(-1.3f, 0.2f, -1.0f)));
-    world.add(new Sphere(vec3(-0.7f, 0.0f, -1.0f), 0.05f));
-    world.add(new Sphere(vec3(-0.7f, 0.4f, -1.0f), 0.05f));
-    world.add(new Sphere(vec3(-1.3f, 0.2f, -1.0f), 0.05f));
+        vec3(-1.3f, 0.2f, -1.0f),
+        mat_soft_green));
 
     if(ui->checkBox_parallel_rendering->isChecked())
         render.get_render_image_thread(width, height, samples, camera, world, image);
@@ -80,8 +94,6 @@ void MainWindow::slot_save_as_image()
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 85.0f, width, height);
     VisualObjectList world;
-    world.add(new Sphere(vec3(0,0,-1), 0.5));
-    world.add(new Sphere(vec3(0,-100.5,-1), 100));
 
     render.get_render_image(width, height, samples, camera, world, image);
 

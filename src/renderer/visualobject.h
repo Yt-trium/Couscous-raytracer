@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 
 // Standard includes.
+#include <memory>
 #include <vector>
 
 // Forward declarations.
@@ -23,7 +24,7 @@ typedef struct HitRecord
     float       t;
     glm::vec3   p;
     glm::vec3   normal;
-    Material*   mat_ptr;
+    Material*   mat;
 } HitRecord;
 
 
@@ -70,37 +71,45 @@ class Sphere : public VisualObject
 {
   public:
     Sphere(
-        const glm::vec3&    center = glm::vec3(0.0f),
-        float               radius = 1.0f);
+        const glm::vec3&                    center,
+        float                               radius,
+        const std::shared_ptr<Material>&    mat);
 
     bool hit(
-        const Ray&          r,
-        float               tmin,
-        float               tmax,
-        HitRecord&          rec) const override;
+        const Ray&                          r,
+        float                               tmin,
+        float                               tmax,
+        HitRecord&                          rec) const override;
 
     glm::vec3   center;
     float       radius;
+
+  private:
+    std::shared_ptr<Material> m_mat;
 };
 
 class Triangle : public VisualObject
 {
   public:
     Triangle(
-        const glm::vec3&    v0,
-        const glm::vec3&    v1,
-        const glm::vec3&    v2);
+        const glm::vec3&                    v0,
+        const glm::vec3&                    v1,
+        const glm::vec3&                    v2,
+        const std::shared_ptr<Material>&    mat);
 
     // Möller-Trumbore algorithm.
     bool hit(
-        const Ray&          r,
-        float               tmin,
-        float               tmax,
-        HitRecord&          rec) const override;
+        const Ray&                          r,
+        float                               tmin,
+        float                               tmax,
+        HitRecord&                          rec) const override;
 
     glm::vec3 v0;
     glm::vec3 v1;
     glm::vec3 v2;
+
+  private:
+    std::shared_ptr<Material> m_mat;
 };
 
 #endif // VISUALOBJECT_H
