@@ -22,7 +22,8 @@ class Render
 
     glm::vec3 get_ray_color(
         const Ray&              r,
-        const VisualObjectList& world) const;
+        const VisualObjectList& world,
+        const int               depth = 0) const;
 
     float ray_hit_sphere(
         const glm::vec3&        center,

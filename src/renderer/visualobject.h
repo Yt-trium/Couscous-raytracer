@@ -23,7 +23,7 @@ typedef struct HitRecord
     float       t;
     glm::vec3   p;
     glm::vec3   normal;
-    Material*   mat_ptr;
+    Material*   mat;
 } HitRecord;
 
 
@@ -70,8 +70,10 @@ class Sphere : public VisualObject
 {
   public:
     Sphere(
-        const glm::vec3&    center = glm::vec3(0.0f),
-        float               radius = 1.0f);
+        const glm::vec3&    center,
+        float               radius,
+        Material*           mat);
+    ~Sphere();
 
     bool hit(
         const Ray&          r,
@@ -81,6 +83,9 @@ class Sphere : public VisualObject
 
     glm::vec3   center;
     float       radius;
+
+  private:
+    Material* m_mat;
 };
 
 class Triangle : public VisualObject
@@ -89,7 +94,9 @@ class Triangle : public VisualObject
     Triangle(
         const glm::vec3&    v0,
         const glm::vec3&    v1,
-        const glm::vec3&    v2);
+        const glm::vec3&    v2,
+        Material*           mat);
+    ~Triangle();
 
     // Möller-Trumbore algorithm.
     bool hit(
@@ -101,6 +108,9 @@ class Triangle : public VisualObject
     glm::vec3 v0;
     glm::vec3 v1;
     glm::vec3 v2;
+
+  private:
+    Material* m_mat;
 };
 
 #endif // VISUALOBJECT_H

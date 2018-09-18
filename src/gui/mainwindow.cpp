@@ -5,6 +5,7 @@
 
 // couscous includes.
 #include "renderer/camera.h"
+#include "renderer/material.h"
 #include "renderer/render.h"
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
@@ -50,16 +51,15 @@ void MainWindow::slot_do_render()
                   -90.0f, 0.0f, 85.0f, width, height);
 
     VisualObjectList world;
-    world.add(new Sphere(vec3(0,0,-1), 0.5));
-    world.add(new Sphere(vec3(0,-100.5,-1), 100));
+    world.add(new Sphere(vec3(0.0f,0.0f,-1.0f), 0.5f, new Lambertian(vec3(0.8f, 0.3f, 0.3f))));
+    world.add(new Sphere(vec3(1.0f,0.0f,-1.0f), 0.5f, new Metal(vec3(1.0f, 0.0f, 0.0f))));
+    world.add(new Sphere(vec3(0.0f,-100.5f,-1), 100, new Lambertian(vec3(0.2f, 0.9f, 0.4f))));
 
     world.add(new Triangle(
         vec3(-0.7f, 0.0f, -1.0f),
         vec3(-0.7f, 0.4f, -1.0f),
-        vec3(-1.3f, 0.2f, -1.0f)));
-    world.add(new Sphere(vec3(-0.7f, 0.0f, -1.0f), 0.05f));
-    world.add(new Sphere(vec3(-0.7f, 0.4f, -1.0f), 0.05f));
-    world.add(new Sphere(vec3(-1.3f, 0.2f, -1.0f), 0.05f));
+        vec3(-1.3f, 0.2f, -1.0f),
+        new Lambertian(vec3(0.1f, 0.5f, 0.9f))));
 
     render.get_render_image(width, height, samples, camera, world, image);
 
@@ -77,8 +77,6 @@ void MainWindow::slot_save_as_image()
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 85.0f, width, height);
     VisualObjectList world;
-    world.add(new Sphere(vec3(0,0,-1), 0.5));
-    world.add(new Sphere(vec3(0,-100.5,-1), 100));
 
     render.get_render_image(width, height, samples, camera, world, image);
 

@@ -62,10 +62,17 @@ bool VisualObjectList::hit(
 
 Sphere::Sphere(
     const glm::vec3&    center,
-    float               radius)
+    float               radius,
+    Material*           mat)
   : center(center)
   , radius(radius)
+  , m_mat(mat)
 {
+}
+
+Sphere::~Sphere()
+{
+    delete m_mat;
 }
 
 bool Sphere::hit(
@@ -89,6 +96,7 @@ bool Sphere::hit(
             rec.t = tmp;
             rec.p = r.pointAtParameter(rec.t);
             rec.normal = (rec.p - center) / radius;
+            rec.mat = m_mat;
             return true;
         }
         tmp = (-b+sqrt(d))/(2*a);
@@ -97,6 +105,7 @@ bool Sphere::hit(
             rec.t = tmp;
             rec.p = r.pointAtParameter(rec.t);
             rec.normal = (rec.p - center) / radius;
+            rec.mat = m_mat;
             return true;
         }
     }
@@ -108,17 +117,19 @@ bool Sphere::hit(
 Triangle::Triangle(
     const glm::vec3&    v0,
     const glm::vec3&    v1,
-    const glm::vec3&    v2)
+    const glm::vec3&    v2,
+    Material*           mat)
   : v0(v0)
   , v1(v1)
   , v2(v2)
+  , m_mat(mat)
 {
 }
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtx/string_cast.hpp"
-#include <QDebug>
-#include <iostream>
+Triangle::~Triangle()
+{
+    delete m_mat;
+}
 
 bool Triangle::hit(
     const Ray&          r,
@@ -184,6 +195,7 @@ bool Triangle::hit(
         return false;
 
     rec.normal = normalize(rec.normal);
+    rec.mat = m_mat;
 
     return true;
 }
