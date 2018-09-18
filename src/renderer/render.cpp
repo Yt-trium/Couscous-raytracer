@@ -126,10 +126,10 @@ void Render::get_render_image_thread(const size_t width, const size_t height, co
     size_t x0, x1, x2, y0, y1, y2;
 
     // Thread handles
-    std::vector<QFuture<void>> threads;
+    vector<QFuture<void>> threads;
 
     auto compute =
-    [&](std::size_t x1, std::size_t x2, std::size_t y1, std::size_t y2)
+    [&](size_t x1, size_t x2, size_t y1, size_t y2)
     {
         for (size_t y = y1; y < y2; ++y)
         {
@@ -175,7 +175,7 @@ void Render::get_render_image_thread(const size_t width, const size_t height, co
         }
     }
 
-    for(std::size_t i = 0; i < threads.size(); ++i)
+    for(size_t i = 0; i < threads.size(); ++i)
     {
         threads.at(i).waitForFinished();
         progress.setValue(int(i));
