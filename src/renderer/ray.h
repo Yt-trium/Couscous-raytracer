@@ -8,15 +8,14 @@
 class Ray
 {
   public:
-    Ray();
-    Ray(const glm::vec3& a, const glm::vec3& b);
+    Ray(
+        const glm::vec3& origin = glm::vec3(),
+        const glm::vec3& direction = glm::vec3());
 
-    glm::vec3 origin() const;
-    glm::vec3 direction() const;
-    glm::vec3 pointAtParameter(float t) const;
+    glm::vec3 point(const float t) const;
 
-    glm::vec3 A; // origin of the line
-    glm::vec3 B; // direction of the line
+    glm::vec3 origin;
+    glm::vec3 dir;
 };
 
 #endif // RAY_H

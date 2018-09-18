@@ -46,24 +46,6 @@ vec3 Render::get_ray_color(
     }
 }
 
-float Render::ray_hit_sphere(
-    const vec3&             center,
-    float                   radius,
-    const Ray&              r)
-{
-    vec3 oc = r.origin() - center;
-    float a = dot(r.direction(), r.direction());
-    float b = 2.0f * dot(oc, r.direction());
-    float c = dot(oc, oc) - radius*radius;
-    float d = b*b - 4*a*c;
-
-    if(d < 0)
-        return -1.0;
-    else
-        return (-b-sqrt(d))/(2.0f*a);
-}
-
-
 void Render::get_render_image(
     const size_t            width,
     const size_t            height,
