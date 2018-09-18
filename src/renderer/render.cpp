@@ -31,7 +31,7 @@ vec3 Render::get_ray_color(
         Ray scattered;
         vec3 attenuation;
         vec3 emitted = rec.mat->emission();
-        if (depth < 10 && rec.mat->scatter(r, rec, attenuation, scattered))
+        if (depth < 6 && rec.mat->scatter(r, rec, attenuation, scattered))
         {
             return emitted + attenuation * get_ray_color(scattered, world, depth + 1);
         }
