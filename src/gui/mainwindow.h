@@ -6,6 +6,7 @@
 
 // Qt headers.
 #include <QFileDialog>
+#include <QTime>
 #include <QImage>
 #include <QMainWindow>
 

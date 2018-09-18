@@ -75,12 +75,23 @@ void MainWindow::slot_do_render()
         vec3(-1.3f, 0.2f, -1.0f),
         mat_soft_green));
 
+    QTime render_timer;
+    render_timer.start();
+
     if(ui->checkBox_parallel_rendering->isChecked())
+    {
         render.get_render_image_thread(width, height, samples, camera, world, image);
+    }
     else
+    {
         render.get_render_image(width, height, samples, camera, world, image);
+    }
+
+    QString message = "Rendering time : " + QString::number(render_timer.elapsed()) + " ms";
 
     m_frame_viewer.on_render_end(image);
+
+    ui->statusBar->showMessage(message);
 }
 
 void MainWindow::slot_save_as_image()

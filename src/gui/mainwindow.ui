@@ -201,6 +201,7 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSave_As_Image">
    <property name="text">
     <string>&amp;Save As Image</string>
