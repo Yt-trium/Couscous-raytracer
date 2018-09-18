@@ -1,30 +1,16 @@
+// Interface.
 #include "ray.h"
 
 using namespace glm;
 
-Ray::Ray()
+Ray::Ray(const vec3& origin, const vec3& direction)
+  : origin(origin)
+  , dir(direction)
 {
-    A = vec3();
-    B = vec3();
 }
 
-Ray::Ray(const vec3& a, const vec3& b)
+vec3 Ray::point(const float t) const
 {
-    A = a;
-    B = b;
+    return origin + t * dir;
 }
 
-vec3 Ray::origin() const
-{
-    return A;
-}
-
-vec3 Ray::direction() const
-{
-    return B;
-}
-
-vec3 Ray::pointAtParameter(float t) const
-{
-    return A + t*B;
-}

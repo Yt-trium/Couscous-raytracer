@@ -65,10 +65,10 @@ bool Sphere::hit(
     float                           tmax,
     HitRecord&                      rec) const
 {
-    vec3 oc = r.origin() - center;
+    vec3 oc = r.origin - center;
 
-    float a = dot(r.direction(), r.direction());
-    float b = 2.0f * dot(oc, r.direction());
+    float a = dot(r.dir, r.dir);
+    float b = 2.0f * dot(oc, r.dir);
     float c = dot(oc, oc) - radius * radius;
     float d = b * b - 4.0f * a * c;
 
@@ -78,7 +78,7 @@ bool Sphere::hit(
         if(tmp < tmax && tmp > tmin)
         {
             rec.t = tmp;
-            rec.p = r.pointAtParameter(rec.t);
+            rec.p = r.point(rec.t);
             rec.normal = (rec.p - center) / radius;
             rec.mat = m_mat.get();
             return true;
@@ -87,7 +87,7 @@ bool Sphere::hit(
         if(tmp < tmax && tmp > tmin)
         {
             rec.t = tmp;
-            rec.p = r.pointAtParameter(rec.t);
+            rec.p = r.point(rec.t);
             rec.normal = (rec.p - center) / radius;
             rec.mat = m_mat.get();
             return true;
@@ -128,7 +128,7 @@ bool Triangle::hit(
     // the triangle.
 
     // Parallel test between the plane and the ray.
-    const float n_dot_ray_dir = dot(rec.normal, r.B);
+    const float n_dot_ray_dir = dot(rec.normal, r.dir);
 
     // Near 0.
     if (fabs(n_dot_ray_dir) < epsilon)
@@ -139,14 +139,14 @@ bool Triangle::hit(
 
     // Compute the parameter t that satisfies
     // origin + t * dir = P
-    rec.t = - (dot(rec.normal, r.A) - d) / n_dot_ray_dir;
+    rec.t = - (dot(rec.normal, r.origin) - d) / n_dot_ray_dir;
 
     // Is the triangle behind the ray ?
     if (rec.t < 0.0f || rec.t > tmax || rec.t < tmin)
         return false;
 
     // Calculate Ray/Plane intersection point.
-    rec.p = r.A + rec.t * r.B;
+    rec.p = r.origin + rec.t * r.dir;
 
     // 2.
     // Check if the point P is inside the triangle.

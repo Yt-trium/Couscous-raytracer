@@ -13,13 +13,6 @@ namespace
         } while(dot(p, p) >= 1);
         return p;
     }
-
-    vec3 reflect(
-        const vec3& v,
-        const vec3& n)
-    {
-        return v - 2 * dot(v, n) * n;
-    }
 }
 
 vec3 Material::emission() const
@@ -59,10 +52,10 @@ bool Metal::scatter(
     vec3&               attenuation,
     Ray&                scattered) const
 {
-    vec3 reflected = reflect(normalize(r_in.B), rec.normal);
+    vec3 reflected = reflect(normalize(r_in.dir), rec.normal);
     scattered = Ray(rec.p, reflected + m_fuzz * random_in_unit_sphere());
     attenuation = m_albedo;
-    return (dot(scattered.B, rec.normal) > 0.0f);
+    return (dot(scattered.dir, rec.normal) > 0.0f);
 }
 
 Light::Light(
