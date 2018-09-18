@@ -23,11 +23,13 @@ MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
   , ui(new Ui::MainWindow)
   , m_frame_viewer(512, 512)
+  , m_image(512, 512, QImage::Format_RGB888)
 {
     ui->setupUi(this);
 
     // Add the image viewer.
     ui->viewer_container_layout->addWidget(&m_frame_viewer);
+    m_frame_viewer.on_render_end(m_image);
 
     // Connect widgets events.
     connect(ui->pushButton_render, SIGNAL(released()), SLOT(slot_do_render()));
@@ -46,7 +48,7 @@ void MainWindow::slot_do_render()
     size_t width = size_t(ui->spinBox_width->value());
     size_t height = size_t(ui->spinBox_height->value());
     size_t samples = size_t(ui->spinBox_spp->value());
-    QImage image(int(width), int(height), QImage::Format_RGB888);
+    m_image = QImage(int(width), int(height), QImage::Format_RGB888);
 
     m_frame_viewer.on_render_begin();
 
@@ -80,34 +82,22 @@ void MainWindow::slot_do_render()
 
     if(ui->checkBox_parallel_rendering->isChecked())
     {
-        render.get_render_image_thread(width, height, samples, camera, world, image);
+        render.get_render_image_thread(width, height, samples, camera, world, m_image);
     }
     else
     {
-        render.get_render_image(width, height, samples, camera, world, image);
+        render.get_render_image(width, height, samples, camera, world, m_image);
     }
 
     QString message = "Rendering time : " + QString::number(render_timer.elapsed()) + " ms";
 
-    m_frame_viewer.on_render_end(image);
+    m_frame_viewer.on_render_end(m_image);
 
     ui->statusBar->showMessage(message);
 }
 
 void MainWindow::slot_save_as_image()
 {
-    size_t width = size_t(ui->spinBox_width->value());
-    size_t height = size_t(ui->spinBox_height->value());
-    size_t samples = size_t(ui->spinBox_spp->value());
-    QImage image(int(width), int(height), QImage::Format_RGB32);
-
-    Render render;
-    Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
-                  -90.0f, 0.0f, 85.0f, width, height);
-    VisualObjectList world;
-
-    render.get_render_image(width, height, samples, camera, world, image);
-
     // Create file filters.
     QString selected_filter =  "PNG (*.png)";
 
@@ -141,7 +131,7 @@ void MainWindow::slot_save_as_image()
         path += selected_filter.mid(begin, end - begin);
     }
 
-    image.save(path);
+    m_image.save(path);
 }
 
 void MainWindow::slot_zoom_in()
