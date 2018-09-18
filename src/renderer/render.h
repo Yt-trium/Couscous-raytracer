@@ -2,8 +2,10 @@
 #define RENDER_H
 
 // QT includes.
+#include <QtConcurrentRun>
 #include <QImage>
 #include <QColor>
+#include <QDebug>
 #include <QMessageBox>
 #include <QProgressDialog>
 
@@ -11,6 +13,7 @@
 #include "renderer/camera.h"
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
+#include "renderer/samplegenerator.h"
 
 // Math includes.
 #include <glm/vec3.hpp>
@@ -43,7 +46,7 @@ class Render
         const size_t            spp,
         const Camera&           camera,
         const VisualObjectList& world,
-        QImage&                 image) const;
+        QImage&                 image);
 
 private:
     glm::vec3 random_in_unit_sphere() const;

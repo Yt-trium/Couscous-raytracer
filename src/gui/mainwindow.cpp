@@ -62,6 +62,8 @@ void MainWindow::slot_do_render()
     world.add(new Sphere(vec3(-1.3f, 0.2f, -1.0f), 0.05f));
 
     render.get_render_image(width, height, samples, camera, world, image);
+    // render using thread
+    // render.get_render_image_thread(width, height, samples, camera, world, image);
 
     m_frame_viewer.on_render_end(image);
 }
