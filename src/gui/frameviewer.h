@@ -28,7 +28,7 @@ class FrameViewer : public QWidget
     void clear();
 
     // Clear the frame.
-    void on_render_begin();
+    void on_render_begin(const size_t width, const size_t height);
 
     // Display the given image.
     void on_render_end(const QImage& image);

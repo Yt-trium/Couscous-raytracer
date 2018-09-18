@@ -11,7 +11,7 @@ class SampleGenerator
     SampleGenerator(const size_t dimension_size);
 
     // Returns the next sample position.
-    glm::vec3 next();
+    glm::vec2 next();
 
   private:
     const size_t    m_dim_size; // number of subpixels in both dimensions

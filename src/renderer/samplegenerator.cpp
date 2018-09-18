@@ -13,8 +13,13 @@ SampleGenerator::SampleGenerator(const size_t dimension_size)
 {
 }
 
-vec3 SampleGenerator::next()
+vec2 SampleGenerator::next()
 {
+    if (m_dim_size == 1)
+    {
+        return vec2(0.5f);
+    }
+
     static const float inv_rand_max = 1.0f / static_cast<float>(RAND_MAX);
     const size_t pos_x = m_count % m_dim_size;
     const size_t pos_y = ((m_count - pos_x) / m_dim_size) % m_dim_size;
@@ -26,9 +31,8 @@ vec3 SampleGenerator::next()
     const float random_y =
         static_cast<float>(rand()) * inv_rand_max * m_stride;
 
-    return vec3(
+    return vec2(
         pos_x * m_stride + random_x,
-        pos_y * m_stride + random_y,
-        0.0);
+        pos_y * m_stride + random_y);
 }
 
