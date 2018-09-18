@@ -19,8 +19,8 @@ Render::Render()
 }
 
 vec3 Render::get_ray_color(
-    const Ray&          r,
-    VisualObjectList    world) const
+    const Ray&              r,
+    const VisualObjectList& world) const
 {
     HitRecord rec;
     float t;
@@ -47,9 +47,9 @@ vec3 Render::get_ray_color(
 }
 
 float Render::ray_hit_sphere(
-    const vec3& center,
-    float       radius,
-    const Ray&  r)
+    const vec3&             center,
+    float                   radius,
+    const Ray&              r)
 {
     vec3 oc = r.origin() - center;
     float a = dot(r.direction(), r.direction());
@@ -64,7 +64,6 @@ float Render::ray_hit_sphere(
 }
 
 
-#include <QDebug>
 void Render::get_render_image(
     const size_t            width,
     const size_t            height,

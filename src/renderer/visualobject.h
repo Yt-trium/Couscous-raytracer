@@ -47,7 +47,9 @@ class VisualObjectList : public VisualObject
 {
   public:
     VisualObjectList();
-    VisualObjectList(std::vector<VisualObject*> l);
+    ~VisualObjectList();
+
+    void add(const VisualObject* object);
 
     bool hit(
         const Ray&  r,
@@ -55,7 +57,8 @@ class VisualObjectList : public VisualObject
         float       tmax,
         HitRecord&  rec) const override;
 
-    std::vector<VisualObject*> object_list;
+  private:
+    std::vector<const VisualObject*> m_object_list;
 };
 
 
