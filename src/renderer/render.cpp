@@ -25,7 +25,6 @@ vec3 Render::get_ray_color(
     const int               depth) const
 {
     HitRecord rec;
-    float t;
 
     if(world.hit(r, 0.001f, numeric_limits<float>::max(), rec))
     {

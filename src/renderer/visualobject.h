@@ -48,9 +48,8 @@ class VisualObjectList : public VisualObject
 {
   public:
     VisualObjectList();
-    ~VisualObjectList();
 
-    void add(const VisualObject* object);
+    void add(VisualObject* object);
 
     bool hit(
         const Ray&  r,
@@ -59,7 +58,7 @@ class VisualObjectList : public VisualObject
         HitRecord&  rec) const override;
 
   private:
-    std::vector<const VisualObject*> m_object_list;
+    std::vector<std::shared_ptr<VisualObject>> m_object_list;
 };
 
 
