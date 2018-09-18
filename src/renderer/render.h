@@ -37,6 +37,14 @@ class Render
         const VisualObjectList& world,
         QImage&                 image) const;
 
+    void get_render_image_thread(
+        const size_t            width,
+        const size_t            height,
+        const size_t            spp,
+        const Camera&           camera,
+        const VisualObjectList& world,
+        QImage&                 image) const;
+
 private:
     glm::vec3 random_in_unit_sphere() const;
 };

@@ -125,7 +125,52 @@ void Render::get_render_image(
         }
     }
 
-    progress.setValue(100);
+    progress.setValue(width*height);
+}
+
+void Render::get_render_image_thread(const size_t width, const size_t height, const size_t spp, const Camera &camera, const VisualObjectList &world, QImage &image) const
+{
+    // Precompute subpixel samples position
+    const size_t dimension_size =
+        std::max(
+            size_t(1),
+            static_cast<size_t>(sqrt(spp)));
+    const size_t samples = dimension_size * dimension_size;
+
+    SampleGenerator generator(dimension_size);
+
+    for (size_t y = 0; y < height; y+=64)
+    {
+        for (size_t x = 0; x < width; x+=64)
+        {
+            /*
+
+            const vec2 pt(x, y);
+            const vec2 frame(width, height);
+
+            vec3 color(0.0f, 0.0f, 0.0f);
+            for (size_t i = 0; i < samples; ++i)
+            {
+                const vec2 subpixel_pos = generator.next();
+                const vec2 uv(
+                    (pt.x + subpixel_pos.x) / frame.x,
+                    (pt.y + subpixel_pos.y) / frame.y);
+
+                color += get_ray_color(
+                    camera.get_ray(uv.x, uv.y), world);
+            }
+
+            color /= static_cast<float>(samples);
+            color = vec3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));
+
+            int ir = int(255.0f * color[0]);
+            int ig = int(255.0f * color[1]);
+            int ib = int(255.0f * color[2]);
+
+            image.setPixel(width-1-x, height-1-y, QColor(ir, ig, ib).rgb());
+            */
+        }
+    }
 }
 
 vec3 Render::random_in_unit_sphere() const
