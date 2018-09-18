@@ -13,7 +13,11 @@
 // glm includes.
 #include <glm/glm.hpp>
 
+// Standard includes.
+#include <memory>
+
 using namespace glm;
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -50,17 +54,26 @@ void MainWindow::slot_do_render()
     Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
                   -90.0f, 0.0f, 85.0f, width, height);
 
+    // Create materials.
+    shared_ptr<Material> mat_light(new Light(vec3(1.0f)));
+    shared_ptr<Material> mat_red_metal(new Metal(vec3(0.9f, 0.05f, 0.08f), 0.3f));
+    shared_ptr<Material> mat_chrome(new Metal(vec3(0.8f, 0.8f, 0.8f), 0.02f));
+    shared_ptr<Material> mat_soft_green(new Lambertian(vec3(0.2f, 0.8f, 0.1f)));
+
+    // Create objects.
     VisualObjectList world;
-    world.add(new Sphere(vec3(0.0f,0.0f,-1.0f), 0.5f, new Lambertian(vec3(0.8f, 0.3f, 0.3f))));
-    world.add(new Sphere(vec3(1.0f,0.0f,-1.0f), 0.5f, new Metal(vec3(1.0f, 0.0f, 0.0f), 0.5f)));
-    world.add(new Sphere(vec3(0.5f,1.0f,-1.0f), 0.5f, new Metal(vec3(0.5f, 0.9f, 0.4f), 0.0f)));
-    world.add(new Sphere(vec3(0.0f,-100.5f,-1), 100, new Lambertian(vec3(0.2f, 0.9f, 0.4f))));
+    world.add(new Sphere(vec3(-1.0f,3.0f,-1.0f), 2.5f, mat_light));
+    world.add(new Sphere(vec3(-0.1f,-0.4f,-0.5f), 0.1f, mat_light));
+    world.add(new Sphere(vec3(0.0f,0.0f,-1.0f), 0.5f, mat_soft_green));
+    world.add(new Sphere(vec3(1.0f,0.0f,-1.0f), 0.5f, mat_red_metal));
+    world.add(new Sphere(vec3(0.5f,1.0f,-1.0f), 0.3f, mat_chrome));
+    world.add(new Sphere(vec3(0.0f,-100.5f,-1), 100, mat_soft_green));
 
     world.add(new Triangle(
         vec3(-0.7f, 0.0f, -1.0f),
         vec3(-0.7f, 0.4f, -1.0f),
         vec3(-1.3f, 0.2f, -1.0f),
-        new Lambertian(vec3(0.1f, 0.5f, 0.9f))));
+        mat_soft_green));
 
     render.get_render_image(width, height, samples, camera, world, image);
 

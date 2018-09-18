@@ -61,25 +61,20 @@ bool VisualObjectList::hit(
 //
 
 Sphere::Sphere(
-    const glm::vec3&    center,
-    float               radius,
-    Material*           mat)
+    const glm::vec3&                center,
+    float                           radius,
+    const shared_ptr<Material>&     mat)
   : center(center)
   , radius(radius)
   , m_mat(mat)
 {
 }
 
-Sphere::~Sphere()
-{
-    delete m_mat;
-}
-
 bool Sphere::hit(
-    const Ray&          r,
-    float               tmin,
-    float               tmax,
-    HitRecord&          rec) const
+    const Ray&                      r,
+    float                           tmin,
+    float                           tmax,
+    HitRecord&                      rec) const
 {
     vec3 oc = r.origin() - center;
 
@@ -96,7 +91,7 @@ bool Sphere::hit(
             rec.t = tmp;
             rec.p = r.pointAtParameter(rec.t);
             rec.normal = (rec.p - center) / radius;
-            rec.mat = m_mat;
+            rec.mat = m_mat.get();
             return true;
         }
         tmp = (-b+sqrt(d))/(2*a);
@@ -105,7 +100,7 @@ bool Sphere::hit(
             rec.t = tmp;
             rec.p = r.pointAtParameter(rec.t);
             rec.normal = (rec.p - center) / radius;
-            rec.mat = m_mat;
+            rec.mat = m_mat.get();
             return true;
         }
     }
@@ -115,10 +110,10 @@ bool Sphere::hit(
 
 
 Triangle::Triangle(
-    const glm::vec3&    v0,
-    const glm::vec3&    v1,
-    const glm::vec3&    v2,
-    Material*           mat)
+    const glm::vec3&                v0,
+    const glm::vec3&                v1,
+    const glm::vec3&                v2,
+    const shared_ptr<Material>&     mat)
   : v0(v0)
   , v1(v1)
   , v2(v2)
@@ -126,16 +121,11 @@ Triangle::Triangle(
 {
 }
 
-Triangle::~Triangle()
-{
-    delete m_mat;
-}
-
 bool Triangle::hit(
-    const Ray&          r,
-    float               tmin,
-    float               tmax,
-    HitRecord&          rec) const
+    const Ray&                      r,
+    float                           tmin,
+    float                           tmax,
+    HitRecord&                      rec) const
 {
     static const float epsilon = 0.001f;
 
@@ -195,7 +185,7 @@ bool Triangle::hit(
         return false;
 
     rec.normal = normalize(rec.normal);
-    rec.mat = m_mat;
+    rec.mat = m_mat.get();
 
     return true;
 }

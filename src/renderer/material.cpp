@@ -22,6 +22,11 @@ namespace
     }
 }
 
+vec3 Material::emission() const
+{
+    return vec3(0.0f);
+}
+
 Lambertian::Lambertian(
     const vec3&         albedo)
   : m_albedo(albedo)
@@ -58,5 +63,25 @@ bool Metal::scatter(
     scattered = Ray(rec.p, reflected + m_fuzz * random_in_unit_sphere());
     attenuation = m_albedo;
     return (dot(scattered.B, rec.normal) > 0.0f);
+}
+
+Light::Light(
+    const vec3&         emission)
+  : m_emission(emission)
+{
+}
+
+bool Light::scatter(
+    const Ray&          r_in,
+    const HitRecord&    rec,
+    vec3&               attenuation,
+    Ray&                scattered) const
+{
+    return false;
+}
+
+vec3 Light::emission() const
+{
+    return m_emission;
 }
 

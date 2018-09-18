@@ -31,19 +31,20 @@ vec3 Render::get_ray_color(
     {
         Ray scattered;
         vec3 attenuation;
+        vec3 emitted = rec.mat->emission();
         if (depth < 10 && rec.mat->scatter(r, rec, attenuation, scattered))
         {
-            return attenuation * get_ray_color(scattered, world, depth + 1);
+            return emitted + attenuation * get_ray_color(scattered, world, depth + 1);
         }
         else
         {
-            return vec3(0.0f);
+            return emitted;
         }
     }
-
-    vec3 unit_direction = normalize(r.direction());
-    t = 0.5f * (unit_direction.y + 1.0f);
-    return  float(1.0f-t) * vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+    else
+    {
+        return vec3(0.0f);
+    }
 }
 
 float Render::ray_hit_sphere(

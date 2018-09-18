@@ -16,6 +16,8 @@ class Material
         const HitRecord&    rec,
         glm::vec3&          attenuation,
         Ray&                scattered) const = 0;
+
+    virtual glm::vec3 emission() const;
 };
 
 class Lambertian : public Material
@@ -47,6 +49,23 @@ class Metal : public Material
   private:
     glm::vec3   m_albedo;
     float       m_fuzz;
+};
+
+class Light : public Material
+{
+  public:
+    Light(const glm::vec3& emission);
+
+    bool scatter(
+        const Ray&          r_in,
+        const HitRecord&    rec,
+        glm::vec3&          attenuation,
+        Ray&                scattered) const override;
+
+    glm::vec3 emission() const;
+
+  private:
+    glm::vec3 m_emission;
 };
 
 #endif // RENDERER_MATERIAL_H
