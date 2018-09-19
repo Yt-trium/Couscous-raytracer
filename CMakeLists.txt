@@ -38,6 +38,7 @@ set (renderer_sources
     src/renderer/samplegenerator.h
     src/renderer/visualobject.cpp
     src/renderer/visualobject.h
+    src/renderer/utility.h
 )
 
 list (APPEND couscous_sources

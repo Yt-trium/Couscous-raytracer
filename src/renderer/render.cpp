@@ -4,6 +4,7 @@
 // couscous includes.
 #include "renderer/material.h"
 #include "renderer/samplegenerator.h"
+#include "renderer/utility.h"
 
 // Math includes.
 #include <glm/glm.hpp>
@@ -204,7 +205,10 @@ vec3 Render::random_in_unit_sphere() const
     vec3 p;
     do
     {
-        p = 2.0f * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+        p = 2.0f * vec3(
+            random<float>(),
+            random<float>(),
+            random<float>()) - vec3(1, 1, 1);
     } while(dot(p, p) >= 1);
     return p;
 }
