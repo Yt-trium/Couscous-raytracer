@@ -24,6 +24,7 @@ class Render
 
     glm::vec3 get_ray_color(
         const Ray&              r,
+        const size_t            ray_max_depth,
         const VisualObjectList& world,
         const int               depth = 0) const;
 
@@ -36,6 +37,7 @@ class Render
         const size_t            width,
         const size_t            height,
         const size_t            spp,
+        const size_t            ray_max_depth,
         const Camera&           camera,
         const VisualObjectList& world,
         QImage&                 image) const;
@@ -44,6 +46,7 @@ class Render
         const size_t            width,
         const size_t            height,
         const size_t            spp,
+        const size_t            ray_max_depth,
         const Camera&           camera,
         const VisualObjectList& world,
         QImage&                 image);

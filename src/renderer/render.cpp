@@ -21,6 +21,7 @@ Render::Render()
 
 vec3 Render::get_ray_color(
     const Ray&              r,
+    const size_t            ray_max_depth,
     const VisualObjectList& world,
     const int               depth) const
 {
@@ -31,9 +32,9 @@ vec3 Render::get_ray_color(
         Ray scattered;
         vec3 attenuation;
         vec3 emitted = rec.mat->emission();
-        if (depth < 6 && rec.mat->scatter(r, rec, attenuation, scattered))
+        if (depth < ray_max_depth && rec.mat->scatter(r, rec, attenuation, scattered))
         {
-            return emitted + attenuation * get_ray_color(scattered, world, depth + 1);
+            return emitted + attenuation * get_ray_color(scattered, ray_max_depth, world, depth + 1);
         }
         else
         {
@@ -50,6 +51,7 @@ void Render::get_render_image(
     const size_t            width,
     const size_t            height,
     const size_t            spp,
+    const size_t            ray_max_depth,
     const Camera&           camera,
     const VisualObjectList& world,
     QImage&                 image) const
@@ -92,7 +94,7 @@ void Render::get_render_image(
                     (pt.y + subpixel_pos.y) / frame.y);
 
                 color += get_ray_color(
-                    camera.get_ray(uv.x, uv.y), world);
+                    camera.get_ray(uv.x, uv.y), ray_max_depth, world);
             }
 
             color /= static_cast<float>(samples);
@@ -109,7 +111,14 @@ void Render::get_render_image(
     progress.setValue(width*height);
 }
 
-void Render::get_render_image_thread(const size_t width, const size_t height, const size_t spp, const Camera &camera, const VisualObjectList &world, QImage &image)
+void Render::get_render_image_thread(
+        const size_t width,
+        const size_t height,
+        const size_t spp,
+        const size_t ray_max_depth,
+        const Camera &camera,
+        const VisualObjectList &world,
+        QImage &image)
 {
     QProgressDialog progress("Rendering...", "", 0, int((width/64)*(height/64)), 0);
     progress.setWindowModality(Qt::WindowModal);
@@ -147,7 +156,7 @@ void Render::get_render_image_thread(const size_t width, const size_t height, co
                         (pt.y + subpixel_pos.y) / frame.y);
 
                     color += get_ray_color(
-                        camera.get_ray(uv.x, uv.y), world);
+                        camera.get_ray(uv.x, uv.y), ray_max_depth, world);
                 }
 
                 color /= static_cast<float>(samples);
