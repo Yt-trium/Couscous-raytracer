@@ -51,11 +51,18 @@ void MainWindow::slot_do_render()
     size_t ray_max_depth = size_t(ui->spinBox_ray_max_depth->value());
     m_image = QImage(int(width), int(height), QImage::Format_RGB888);
 
+    float pos_x = float(ui->doubleSpinBox_position_x->value());
+    float pos_y = float(ui->doubleSpinBox_position_y->value());
+    float pos_z = float(ui->doubleSpinBox_position_z->value());
+    float yaw   = float(ui->doubleSpinBox_yaw->value());
+    float pitch = float(ui->doubleSpinBox_pitch->value());
+    float fov   = float(ui->doubleSpinBox_fov->value());
+
     m_frame_viewer.on_render_begin(width, height);
 
     Render render;
-    Camera camera(vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
-                  -90.0f, 0.0f, 85.0f, width, height);
+    Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
+                  yaw, pitch, fov, width, height);
 
     // Create materials.
     shared_ptr<Material> mat_light(new Light(vec3(1.0f)));
