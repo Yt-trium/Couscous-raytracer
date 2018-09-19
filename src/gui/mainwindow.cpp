@@ -16,6 +16,10 @@
 // Standard includes.
 #include <memory>
 
+// catch2 includes.
+#define CATCH_CONFIG_RUNNER
+#include "test/catch.hpp"
+
 using namespace glm;
 using namespace std;
 
@@ -36,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSave_As_Image, SIGNAL(triggered()), SLOT(slot_save_as_image()));
     connect(ui->pushButton_zoom_in, SIGNAL(released()), SLOT(slot_zoom_in()));
     connect(ui->pushButton_zoom_out, SIGNAL(released()), SLOT(slot_zoom_out()));
+    connect(ui->actionRun_Unit_Test, SIGNAL(triggered()), SLOT(slot_run_unit_test()));
 }
 
 MainWindow::~MainWindow()
@@ -150,5 +155,13 @@ void MainWindow::slot_zoom_in()
 void MainWindow::slot_zoom_out()
 {
     m_frame_viewer.zoom_viewport(-0.1f);
+}
+
+void MainWindow::slot_run_unit_test()
+{
+    int result = Catch::Session().run();
+
+    QMessageBox::information(this, "Unit Test", "Unit Test return code : " + QString::number(result));
+    QCoreApplication::quit();
 }
 
