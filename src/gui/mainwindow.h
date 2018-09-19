@@ -9,6 +9,7 @@
 #include <QTime>
 #include <QImage>
 #include <QMainWindow>
+#include <QMessageBox>
 
 // Forward declarations.
 namespace Ui { class MainWindow; }
@@ -35,6 +36,7 @@ class MainWindow : public QMainWindow
     void slot_save_as_image();
     void slot_zoom_in();
     void slot_zoom_out();
+    void slot_run_unit_test();
 };
 
 #endif // MAINWINDOW_H
