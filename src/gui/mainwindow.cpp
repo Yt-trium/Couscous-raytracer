@@ -23,8 +23,8 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
   , ui(new Ui::MainWindow)
-  , m_frame_viewer(512, 512)
   , m_image(512, 512, QImage::Format_RGB888)
+  , m_frame_viewer(512, 512)
 {
     ui->setupUi(this);
 
@@ -47,45 +47,84 @@ MainWindow::~MainWindow()
 
 void MainWindow::slot_do_render()
 {
-    size_t width = size_t(ui->spinBox_width->value());
-    size_t height = size_t(ui->spinBox_height->value());
-    size_t samples = size_t(ui->spinBox_spp->value());
-    size_t ray_max_depth = size_t(ui->spinBox_ray_max_depth->value());
+    const size_t width = size_t(ui->spinBox_width->value());
+    const size_t height = size_t(ui->spinBox_height->value());
+    const size_t samples = size_t(ui->spinBox_spp->value());
+    const size_t ray_max_depth = size_t(ui->spinBox_ray_max_depth->value());
     m_image = QImage(int(width), int(height), QImage::Format_RGB888);
 
-    float pos_x = float(ui->doubleSpinBox_position_x->value());
-    float pos_y = float(ui->doubleSpinBox_position_y->value());
-    float pos_z = float(ui->doubleSpinBox_position_z->value());
-    float yaw   = float(ui->doubleSpinBox_yaw->value());
-    float pitch = float(ui->doubleSpinBox_pitch->value());
-    float fov   = float(ui->doubleSpinBox_fov->value());
+    const float pos_x = float(ui->doubleSpinBox_position_x->value());
+    const float pos_y = float(ui->doubleSpinBox_position_y->value());
+    const float pos_z = float(ui->doubleSpinBox_position_z->value());
+    const float yaw   = float(ui->doubleSpinBox_yaw->value());
+    const float pitch = float(ui->doubleSpinBox_pitch->value());
+    const float fov   = float(ui->doubleSpinBox_fov->value());
 
     m_frame_viewer.on_render_begin(width, height);
 
     Render render;
     Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
-                  yaw, pitch, fov, width, height);
+        yaw, pitch, fov, width, height);
 
     // Create materials.
-    shared_ptr<Material> mat_light(new Light(vec3(1.0f)));
-    shared_ptr<Material> mat_red_metal(new Metal(vec3(0.9f, 0.05f, 0.08f), 0.3f));
-    shared_ptr<Material> mat_chrome(new Metal(vec3(0.8f, 0.8f, 0.8f), 0.02f));
-    shared_ptr<Material> mat_soft_green(new Lambertian(vec3(0.2f, 0.8f, 0.1f)));
+    shared_ptr<Material> mat_light(new Light(vec3(15.0f)));
+    shared_ptr<Material> mat_dull_light(new Light(vec3(1.0f)));
+    shared_ptr<Material> mat_red(new Lambertian(vec3(0.65f, 0.05f, 0.05f)));
+    shared_ptr<Material> mat_green(new Lambertian(vec3(0.12f, 0.45f, 0.15f)));
+    shared_ptr<Material> mat_white(new Lambertian(vec3(0.73f, 0.73f, 0.73f)));
 
     // Create objects.
     VisualObjectList world;
-    world.add(new Sphere(vec3(-1.0f,3.0f,-1.0f), 2.5f, mat_light));
-    world.add(new Sphere(vec3(-0.1f,-0.4f,-0.5f), 0.1f, mat_light));
-    world.add(new Sphere(vec3(0.0f,0.0f,-1.0f), 0.5f, mat_soft_green));
-    world.add(new Sphere(vec3(1.0f,0.0f,-1.0f), 0.5f, mat_red_metal));
-    world.add(new Sphere(vec3(0.5f,1.0f,-1.0f), 0.3f, mat_chrome));
-    world.add(new Sphere(vec3(0.0f,-100.5f,-1), 100, mat_soft_green));
+    world.add(new Quad(
+        vec3(213.0f, 554.0f, 227.0f),
+        vec3(343.0f, 554.0f, 227.0f),
+        vec3(343.0f, 554.0f, 332.0f),
+        vec3(213.0f, 554.0f, 332.0f),
+        mat_light));
+    world.add(new Quad(
+        vec3(555.0f, 0.0f, 0.0f),
+        vec3(555.0f, 0.0f, 555.0f),
+        vec3(555.0f, 555.0f, 555.0f),
+        vec3(555.0f, 555.0f, 0.0f),
+        mat_green));
+    world.add(new Quad(
+        vec3(0.0f, 0.0f, 0.0f),
+        vec3(0.0f, 555.0f, 0.0f),
+        vec3(0.0f, 555.0f, 555.0f),
+        vec3(0.0f, 0.0f, 555.0f),
+        mat_red));
+    world.add(new Quad(
+        vec3(555.0f, 0.0f, 0.0f),
+        vec3(0.0f, 0.0f, 0.0f),
+        vec3(0.0f, 555.0f, 0.0f),
+        vec3(555.0f, 555.0f, 0.0f),
+        mat_white));
+    world.add(new Quad(
+        vec3(555.0f, 0.0f, 555.0f),
+        vec3(0.0f, 0.0f, 555.0f),
+        vec3(0.0f, 0.0f, 0.0f),
+        vec3(555.0f, 0.0f, 0.0f),
+        mat_dull_light));
+    world.add(new Quad(
+        vec3(555.0f, 555.0f, 555.0f),
+        vec3(0.0f, 555.0f, 555.0f),
+        vec3(0.0f, 555.0f, 0.0f),
+        vec3(555.0f, 555.0f, 0.0f),
+        mat_white));
 
-    world.add(new Triangle(
-        vec3(-0.7f, 0.0f, -1.0f),
-        vec3(-0.7f, 0.4f, -1.0f),
-        vec3(-1.3f, 0.2f, -1.0f),
-        mat_soft_green));
+    world.add(new Box(
+        vec3(400.0f, 0.0f, 100.0f),
+        70.0f,
+        150.0f,
+        70.0f,
+        mat_white));
+
+    world.add(new Box(
+        vec3(100.0f, 0.0f, 400.0f),
+        70.0f,
+        70.0f,
+        70.0f,
+        mat_white));
 
     QTime render_timer;
     render_timer.start();
