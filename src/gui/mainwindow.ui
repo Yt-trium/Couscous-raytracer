@@ -157,14 +157,17 @@
      </item>
      <item row="6" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_position_x">
+       <property name="decimals">
+        <number>2</number>
+       </property>
        <property name="minimum">
-        <double>-999.000000000000000</double>
+        <double>-9999.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1000.000000000000000</double>
+        <double>10000.000000000000000</double>
        </property>
        <property name="value">
-        <double>0.000000000000000</double>
+        <double>279.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -210,7 +213,7 @@
         <double>160.000000000000000</double>
        </property>
        <property name="value">
-        <double>85.000000000000000</double>
+        <double>65.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -278,9 +281,12 @@
      <item row="8" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_position_z">
        <property name="minimum">
-        <double>-999.000000000000000</double>
+        <double>-9999.000000000000000</double>
        </property>
        <property name="maximum">
+        <double>10000.000000000000000</double>
+       </property>
+       <property name="value">
         <double>1000.000000000000000</double>
        </property>
       </widget>
@@ -340,10 +346,13 @@
      <item row="7" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_position_y">
        <property name="minimum">
-        <double>-999.000000000000000</double>
+        <double>-9999.000000000000000</double>
        </property>
        <property name="maximum">
-        <double>1000.000000000000000</double>
+        <double>10000.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>279.000000000000000</double>
        </property>
       </widget>
      </item>
