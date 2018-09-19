@@ -72,8 +72,21 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="4" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout">
+     <item row="14" column="0" colspan="2">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="13" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_zoom">
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
@@ -108,7 +121,7 @@
        </item>
       </layout>
      </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <widget class="QSpinBox" name="spinBox_height">
        <property name="minimum">
         <number>1</number>
@@ -121,54 +134,100 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0" colspan="2">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_width">
        <property name="text">
         <string>Width</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="16" column="0" colspan="2">
+      <widget class="QPushButton" name="pushButton_render">
+       <property name="text">
+        <string>Render</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_x">
+       <property name="minimum">
+        <double>-999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_ray_max_depth">
+       <property name="text">
+        <string>Ray max depth</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QLabel" name="label_height">
        <property name="text">
         <string>Height</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QSpinBox" name="spinBox_width">
+     <item row="9" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw">
+       <property name="decimals">
+        <number>4</number>
+       </property>
        <property name="minimum">
-        <number>1</number>
+        <double>-360.000000000000000</double>
        </property>
        <property name="maximum">
-        <number>10000</number>
+        <double>360.000000000000000</double>
        </property>
        <property name="value">
-        <number>512</number>
+        <double>-90.000000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="11" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_fov">
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>25.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>160.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>85.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch">
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>-360.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>360.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
       <widget class="QLabel" name="label_spp">
        <property name="text">
         <string>Samples/Pixel</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QSpinBox" name="spinBox_spp">
        <property name="minimum">
         <number>1</number>
@@ -181,31 +240,84 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0" colspan="2">
-      <widget class="QPushButton" name="pushButton_render">
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_position_z">
        <property name="text">
-        <string>Render</string>
+        <string>Position z</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0" colspan="2">
-      <widget class="QCheckBox" name="checkBox_parallel_rendering">
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_position_y">
        <property name="text">
-        <string>Parallel rendering</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
+        <string>Position y</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_ray_max_depth">
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_pitch">
        <property name="text">
-        <string>Ray max depth</string>
+        <string>Pitch</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_fov">
+       <property name="text">
+        <string>Fov</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_z">
+       <property name="minimum">
+        <double>-999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="spinBox_width">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>512</number>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_yaw">
+       <property name="text">
+        <string>Yaw</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QLabel" name="label_camera">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Camera</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="openExternalLinks">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
       <widget class="QSpinBox" name="spinBox_ray_max_depth">
        <property name="minimum">
         <number>1</number>
@@ -215,6 +327,65 @@
        </property>
        <property name="value">
         <number>6</number>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_y">
+       <property name="minimum">
+        <double>-999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="0" colspan="2">
+      <widget class="QCheckBox" name="checkBox_parallel_rendering">
+       <property name="text">
+        <string>Parallel rendering</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_position_x">
+       <property name="text">
+        <string>Position x</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="label_render">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Render</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0" colspan="2">
+      <widget class="QLabel" name="label_viewer">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Viewer</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -237,6 +408,16 @@
   <tabstop>spinBox_width</tabstop>
   <tabstop>spinBox_height</tabstop>
   <tabstop>spinBox_spp</tabstop>
+  <tabstop>spinBox_ray_max_depth</tabstop>
+  <tabstop>doubleSpinBox_position_x</tabstop>
+  <tabstop>doubleSpinBox_position_y</tabstop>
+  <tabstop>doubleSpinBox_position_z</tabstop>
+  <tabstop>doubleSpinBox_yaw</tabstop>
+  <tabstop>doubleSpinBox_pitch</tabstop>
+  <tabstop>doubleSpinBox_fov</tabstop>
+  <tabstop>checkBox_parallel_rendering</tabstop>
+  <tabstop>pushButton_zoom_in</tabstop>
+  <tabstop>pushButton_zoom_out</tabstop>
  </tabstops>
  <resources>
   <include location="../../icons/icons.qrc"/>
