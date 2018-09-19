@@ -41,7 +41,8 @@ HEADERS += \
     src/renderer/camera.h \
     src/gui/frameviewer.h \
     src/renderer/material.h \
-    src/renderer/samplegenerator.h
+    src/renderer/samplegenerator.h \
+    src/test/catch.hpp
 
 FORMS += \
         src/gui/mainwindow.ui
