@@ -31,7 +31,8 @@ SOURCES += \
     src/renderer/camera.cpp \
     src/gui/frameviewer.cpp \
     src/renderer/material.cpp \
-    src/renderer/samplegenerator.cpp
+    src/renderer/samplegenerator.cpp \
+    src/test/alltest.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
