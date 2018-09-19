@@ -8,6 +8,8 @@ project(Couscous-raytracer)
 
 find_package (Qt4 REQUIRED)
 find_package (OpenGL REQUIRED)
+find_package(assimp REQUIRED)
+
 set (QT_USE_QTOPENGL TRUE)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -55,6 +57,15 @@ set (gui_sources
 list (APPEND couscous_sources
     ${gui_sources})
 
+set (test_sources
+    src/test/catch.hpp
+    src/test/test.cpp
+    src/test/test.h
+)
+
+list (APPEND couscous_sources
+    ${test_sources})
+
 set (resources
     icons/icons.qrc
 )
@@ -80,7 +91,10 @@ QT4_ADD_RESOURCES (couscous_resource_files
 # ---------------------------------------------
 
 include (${QT_USE_FILE})
-include_directories(src)
+include_directories(
+    src
+    ${ASSIMP_INCLUDE_DIR})
+
 
 add_executable(${PROJECT_NAME} ${couscous_sources} ${couscous_resource_files})
 
@@ -90,5 +104,6 @@ target_link_libraries (${PROJECT_NAME}
     Qt4::QtOpenGL
     Qt4::QtMultimedia
     ${OPENGL_LIBRARIES}
+    ${ASSIMP_LIBRARIES}
 )
 
