@@ -111,4 +111,58 @@ class Triangle : public VisualObject
     std::shared_ptr<Material> m_mat;
 };
 
+class Quad : public VisualObject
+{
+  public:
+    Quad(
+        const glm::vec3&                    v0,
+        const glm::vec3&                    v1,
+        const glm::vec3&                    v2,
+        const glm::vec3&                    v3,
+        const std::shared_ptr<Material>&    mat);
+
+    bool hit(
+        const Ray&                          r,
+        float                               tmin,
+        float                               tmax,
+        HitRecord&                          rec) const override;
+
+    glm::vec3 v0;
+    glm::vec3 v1;
+    glm::vec3 v2;
+    glm::vec3 v3;
+
+  private:
+    std::shared_ptr<Material> m_mat;
+};
+
+class Box : public VisualObject
+{
+  public:
+    Box(
+        const glm::vec3&                    bottom_center,
+        const float                         half_width,
+        const float                         half_height,
+        const float                         half_depth,
+        const std::shared_ptr<Material>&    mat);
+
+    bool hit(
+        const Ray&                          r,
+        float                               tmin,
+        float                               tmax,
+        HitRecord&                          rec) const override;
+
+    glm::vec3 v0;
+    glm::vec3 v1;
+    glm::vec3 v2;
+    glm::vec3 v3;
+    glm::vec3 v4;
+    glm::vec3 v5;
+    glm::vec3 v6;
+    glm::vec3 v7;
+
+  private:
+    std::shared_ptr<Material> m_mat;
+};
+
 #endif // VISUALOBJECT_H
