@@ -1,7 +1,22 @@
-#include "catch.hpp"
+#include "test.h"
 
-unsigned int Factorial( unsigned int number ) {
+// catch2 includes.
+#define CATCH_CONFIG_RUNNER
+#include "test/catch.hpp"
+
+unsigned int Factorial( unsigned int number )
+{
     return number <= 1 ? number : Factorial(number-1)*number;
+}
+
+test::test()
+{
+
+}
+
+int test::run()
+{
+    return Catch::Session().run();
 }
 
 TEST_CASE( "Factorials are computed", "[factorial]" ) {

@@ -9,16 +9,13 @@
 #include "renderer/render.h"
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
+#include "test/test.h"
 
 // glm includes.
 #include <glm/glm.hpp>
 
 // Standard includes.
 #include <memory>
-
-// catch2 includes.
-#define CATCH_CONFIG_RUNNER
-#include "test/catch.hpp"
 
 using namespace glm;
 using namespace std;
@@ -198,7 +195,7 @@ void MainWindow::slot_zoom_out()
 
 void MainWindow::slot_run_unit_test()
 {
-    int result = Catch::Session().run();
+    int result = test::run();
 
     QMessageBox::information(this, "Unit Test", "Unit Test return code : " + QString::number(result));
     QCoreApplication::quit();

@@ -32,7 +32,7 @@ SOURCES += \
     src/gui/frameviewer.cpp \
     src/renderer/material.cpp \
     src/renderer/samplegenerator.cpp \
-    src/test/alltest.cpp
+    src/test/test.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -43,7 +43,8 @@ HEADERS += \
     src/gui/frameviewer.h \
     src/renderer/material.h \
     src/renderer/samplegenerator.h \
-    src/test/catch.hpp
+    src/test/catch.hpp \
+    src/test/test.h
 
 FORMS += \
         src/gui/mainwindow.ui
