@@ -32,7 +32,7 @@ vec3 Render::get_ray_color(
         Ray scattered;
         vec3 attenuation;
         vec3 emitted = rec.mat->emission();
-        if (depth < ray_max_depth && rec.mat->scatter(r, rec, attenuation, scattered))
+        if (depth < int(ray_max_depth) && rec.mat->scatter(r, rec, attenuation, scattered))
         {
             return emitted + attenuation * get_ray_color(scattered, ray_max_depth, world, depth + 1);
         }
@@ -56,7 +56,7 @@ void Render::get_render_image(
     const VisualObjectList& world,
     QImage&                 image) const
 {
-    QProgressDialog progress("Rendering...", "Abort", 0, int(width*height), 0);
+    QProgressDialog progress("Rendering...", "Abort", 0, int(width*height), nullptr);
     progress.setWindowModality(Qt::WindowModal);
 
     progress.show();
@@ -83,7 +83,7 @@ void Render::get_render_image(
             const vec2 pt(x, y);
             const vec2 frame(width, height);
 
-            progress.setValue(y * width + x);
+            progress.setValue(int(y * width + x));
 
             vec3 color(0.0f, 0.0f, 0.0f);
             for (size_t i = 0; i < samples; ++i)
@@ -104,11 +104,11 @@ void Render::get_render_image(
             int ig = int(255.0f * color[1]);
             int ib = int(255.0f * color[2]);
 
-            image.setPixel(width-1-x, height-1-y, QColor(ir, ig, ib).rgb());
+            image.setPixel(int(width-1-x), int(height-1-y), QColor(ir, ig, ib).rgb());
         }
     }
 
-    progress.setValue(width*height);
+    progress.setValue(int(width*height));
 }
 
 void Render::get_render_image_thread(
@@ -120,7 +120,7 @@ void Render::get_render_image_thread(
         const VisualObjectList &world,
         QImage &image)
 {
-    QProgressDialog progress("Rendering...", "", 0, int((width/64)*(height/64)), 0);
+    QProgressDialog progress("Rendering...", "", 0, int((width/64)*(height/64)), nullptr);
     progress.setWindowModality(Qt::WindowModal);
 
     progress.show();
@@ -165,7 +165,7 @@ void Render::get_render_image_thread(
                 int ir = int(255.0f * color[0]);
                 int ig = int(255.0f * color[1]);
                 int ib = int(255.0f * color[2]);
-                image.setPixel(width-1-x, height-1-y, QColor(ir, ig, ib).rgb());
+                image.setPixel(int(width-1-x), int(height-1-y), QColor(ir, ig, ib).rgb());
             }
         }
     };
@@ -190,7 +190,7 @@ void Render::get_render_image_thread(
         progress.setValue(int(i));
     }
 
-    progress.setValue((width/64)*(height/64));
+    progress.setValue(int((width/64)*(height/64)));
 }
 
 vec3 Render::random_in_unit_sphere() const
