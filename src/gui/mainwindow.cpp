@@ -22,8 +22,8 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
   , ui(new Ui::MainWindow)
-  , m_frame_viewer(512, 512)
   , m_image(512, 512, QImage::Format_RGB888)
+  , m_frame_viewer(512, 512)
 {
     ui->setupUi(this);
 
@@ -45,24 +45,24 @@ MainWindow::~MainWindow()
 
 void MainWindow::slot_do_render()
 {
-    size_t width = size_t(ui->spinBox_width->value());
-    size_t height = size_t(ui->spinBox_height->value());
-    size_t samples = size_t(ui->spinBox_spp->value());
-    size_t ray_max_depth = size_t(ui->spinBox_ray_max_depth->value());
+    const size_t width = size_t(ui->spinBox_width->value());
+    const size_t height = size_t(ui->spinBox_height->value());
+    const size_t samples = size_t(ui->spinBox_spp->value());
+    const size_t ray_max_depth = size_t(ui->spinBox_ray_max_depth->value());
     m_image = QImage(int(width), int(height), QImage::Format_RGB888);
 
-    float pos_x = float(ui->doubleSpinBox_position_x->value());
-    float pos_y = float(ui->doubleSpinBox_position_y->value());
-    float pos_z = float(ui->doubleSpinBox_position_z->value());
-    float yaw   = float(ui->doubleSpinBox_yaw->value());
-    float pitch = float(ui->doubleSpinBox_pitch->value());
-    float fov   = float(ui->doubleSpinBox_fov->value());
+    const float pos_x = float(ui->doubleSpinBox_position_x->value());
+    const float pos_y = float(ui->doubleSpinBox_position_y->value());
+    const float pos_z = float(ui->doubleSpinBox_position_z->value());
+    const float yaw   = float(ui->doubleSpinBox_yaw->value());
+    const float pitch = float(ui->doubleSpinBox_pitch->value());
+    const float fov   = float(ui->doubleSpinBox_fov->value());
 
     m_frame_viewer.on_render_begin(width, height);
 
     Render render;
     Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
-                  yaw, pitch, fov, width, height);
+        yaw, pitch, fov, width, height);
 
     // Create materials.
     shared_ptr<Material> mat_light(new Light(vec3(1.0f)));
