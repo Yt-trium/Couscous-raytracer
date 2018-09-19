@@ -3,6 +3,7 @@
 
 // couscous headers.
 #include "gui/frameviewer.h"
+#include "renderer/render.h"
 
 // Qt headers.
 #include <QFileDialog>
@@ -30,6 +31,7 @@ class MainWindow : public QMainWindow
     Ui::MainWindow* ui;
     QImage          m_image;
     FrameViewer     m_frame_viewer;
+    Render          *m_render;
 
   private slots:
     void slot_do_render();
@@ -37,6 +39,7 @@ class MainWindow : public QMainWindow
     void slot_zoom_in();
     void slot_zoom_out();
     void slot_run_unit_test();
+    void slot_render_new_tile();
 };
 
 #endif // MAINWINDOW_H

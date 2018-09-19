@@ -44,7 +44,8 @@ HEADERS += \
     src/renderer/material.h \
     src/renderer/samplegenerator.h \
     src/test/catch.hpp \
-    src/test/test.h
+    src/test/test.h \
+    src/renderer/utility.h
 
 FORMS += \
         src/gui/mainwindow.ui

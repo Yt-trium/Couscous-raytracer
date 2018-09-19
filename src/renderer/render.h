@@ -2,6 +2,7 @@
 #define RENDER_H
 
 // QT includes.
+#include <QObject>
 #include <QtConcurrentRun>
 #include <QImage>
 #include <QColor>
@@ -17,11 +18,11 @@
 // Math includes.
 #include <glm/vec3.hpp>
 
-class Render
+class Render : public QObject
 {
-  public:
-    Render();
+    Q_OBJECT
 
+  public:
     glm::vec3 get_ray_color(
         const Ray&              r,
         const size_t            ray_max_depth,
@@ -40,19 +41,15 @@ class Render
         const size_t            ray_max_depth,
         const Camera&           camera,
         const VisualObjectList& world,
-        QImage&                 image) const;
-
-    void get_render_image_thread(
-        const size_t            width,
-        const size_t            height,
-        const size_t            spp,
-        const size_t            ray_max_depth,
-        const Camera&           camera,
-        const VisualObjectList& world,
+        const bool              parallel,
+        const bool              preview,
         QImage&                 image);
 
-private:
+  private:
     glm::vec3 random_in_unit_sphere() const;
+
+  signals:
+    void render_new_tile();
 };
 
 #endif // RENDER_H

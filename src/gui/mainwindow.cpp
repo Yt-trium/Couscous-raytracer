@@ -6,7 +6,6 @@
 // couscous includes.
 #include "renderer/camera.h"
 #include "renderer/material.h"
-#include "renderer/render.h"
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
 #include "test/test.h"
@@ -31,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Add the image viewer.
     ui->viewer_container_layout->addWidget(&m_frame_viewer);
     m_frame_viewer.on_render_end(m_image);
+    m_render = new Render();
 
     // Connect widgets events.
     connect(ui->pushButton_render, SIGNAL(released()), SLOT(slot_do_render()));
@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_zoom_in, SIGNAL(released()), SLOT(slot_zoom_in()));
     connect(ui->pushButton_zoom_out, SIGNAL(released()), SLOT(slot_zoom_out()));
     connect(ui->actionRun_Unit_Test, SIGNAL(triggered()), SLOT(slot_run_unit_test()));
+    connect(m_render, SIGNAL(render_new_tile()), SLOT(slot_render_new_tile()));
 }
 
 MainWindow::~MainWindow()
@@ -60,9 +61,11 @@ void MainWindow::slot_do_render()
     const float pitch = float(ui->doubleSpinBox_pitch->value());
     const float fov   = float(ui->doubleSpinBox_fov->value());
 
+    const bool parallel = ui->checkBox_parallel_rendering->isChecked();
+    const bool preview = ui->checkBox_real_time_preview->isChecked();
+
     m_frame_viewer.on_render_begin(width, height);
 
-    Render render;
     Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
         yaw, pitch, fov, width, height);
 
@@ -129,14 +132,7 @@ void MainWindow::slot_do_render()
     QTime render_timer;
     render_timer.start();
 
-    if(ui->checkBox_parallel_rendering->isChecked())
-    {
-        render.get_render_image_thread(width, height, samples, ray_max_depth, camera, world, m_image);
-    }
-    else
-    {
-        render.get_render_image(width, height, samples, ray_max_depth, camera, world, m_image);
-    }
+    m_render->get_render_image(width, height, samples, ray_max_depth, camera, world, parallel, preview, m_image);
 
     QString message = "Rendering time : " + QString::number(render_timer.elapsed()) + " ms";
 
@@ -156,14 +152,14 @@ void MainWindow::slot_save_as_image()
     filter_list << "JPEG (*.jpeg)";
     filter_list << "PBM (*.pbm)";
     filter_list << "All Files (*.*)";
-
+    /*
     QString path = QFileDialog::getSaveFileName(
         this,
         tr("Save Image"),
         QDir::currentPath(),
         filter_list.join(";;"),
-        &selected_filter);
-
+        &selected_filter);*/
+    QString path = "toto";
     if (path.isEmpty())
         return;
 
@@ -199,5 +195,10 @@ void MainWindow::slot_run_unit_test()
 
     QMessageBox::information(this, "Unit Test", "Unit Test return code : " + QString::number(result));
     QCoreApplication::quit();
+}
+
+void MainWindow::slot_render_new_tile()
+{
+    m_frame_viewer.on_render_end(m_image);
 }
 

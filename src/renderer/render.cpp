@@ -16,10 +16,6 @@
 using namespace glm;
 using namespace std;
 
-Render::Render()
-{
-}
-
 vec3 Render::get_ray_color(
     const Ray&              r,
     const size_t            ray_max_depth,
@@ -49,79 +45,14 @@ vec3 Render::get_ray_color(
 }
 
 void Render::get_render_image(
-    const size_t            width,
-    const size_t            height,
-    const size_t            spp,
-    const size_t            ray_max_depth,
-    const Camera&           camera,
-    const VisualObjectList& world,
-    QImage&                 image) const
-{
-    QProgressDialog progress("Rendering...", "Abort", 0, int(width*height), nullptr);
-    progress.setWindowModality(Qt::WindowModal);
-
-    progress.show();
-
-    // Precompute subpixel samples position
-    const size_t dimension_size =
-        std::max(
-            size_t(1),
-            static_cast<size_t>(sqrt(spp)));
-    const size_t samples = dimension_size * dimension_size;
-
-    SampleGenerator generator(dimension_size);
-
-    for (size_t y = 0; y < height; ++y)
-    {
-        for (size_t x = 0; x < width; ++x)
-        {
-            if (progress.wasCanceled())
-            {
-                QMessageBox::critical(nullptr, "Rendering aborted", "Rendering aborted");
-                return;
-            }
-
-            const vec2 pt(x, y);
-            const vec2 frame(width, height);
-
-            progress.setValue(int(y * width + x));
-
-            vec3 color(0.0f, 0.0f, 0.0f);
-            for (size_t i = 0; i < samples; ++i)
-            {
-                const vec2 subpixel_pos = generator.next();
-                const vec2 uv(
-                    (pt.x + subpixel_pos.x) / frame.x,
-                    (pt.y + subpixel_pos.y) / frame.y);
-
-                color += get_ray_color(
-                    camera.get_ray(uv.x, uv.y), ray_max_depth, world);
-            }
-
-            color /= static_cast<float>(samples);
-            color = vec3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));
-            color.x = std::max(1.0f, color.x);
-            color.y = std::max(1.0f, color.y);
-            color.z = std::max(1.0f, color.z);
-
-            int ir = int(255.0f * color[0]);
-            int ig = int(255.0f * color[1]);
-            int ib = int(255.0f * color[2]);
-
-            image.setPixel(int(width-1-x), int(height-1-y), QColor(ir, ig, ib).rgb());
-        }
-    }
-
-    progress.setValue(int(width*height));
-}
-
-void Render::get_render_image_thread(
         const size_t width,
         const size_t height,
         const size_t spp,
         const size_t ray_max_depth,
         const Camera &camera,
         const VisualObjectList &world,
+        const bool parallel,
+        const bool preview,
         QImage &image)
 {
     QProgressDialog progress("Rendering...", "", 0, int((width/64)*(height/64)), nullptr);
@@ -175,6 +106,8 @@ void Render::get_render_image_thread(
                 image.setPixel(int(width-1-x), int(height-1-y), QColor(ir, ig, ib).rgb());
             }
         }
+        if(preview)
+            emit render_new_tile();
     };
 
     for (y0 = 0; y0 < height; y0+=64)
@@ -186,8 +119,16 @@ void Render::get_render_image_thread(
             x2 = std::min(x0+64, width);
             y2 = std::min(y0+64, height);
 
-            QFuture<void> future = QtConcurrent::run(compute, x1, x2, y1, y2);
-            threads.push_back(future);
+            if(parallel)
+            {
+                QFuture<void> future = QtConcurrent::run(compute, x1, x2, y1, y2);
+                threads.push_back(future);
+            }
+            else
+            {
+                compute(x1, x2, y1, y2);
+                progress.setValue(progress.maximum()/2);
+            }
         }
     }
 
