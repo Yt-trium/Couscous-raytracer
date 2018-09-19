@@ -48,7 +48,7 @@ mat4 Camera::get_projection_matrix(
 
 Ray Camera::get_ray(float u, float v) const
 {
-    return Ray(m_position, m_lower_left + u*m_horizontal + v*m_vertical);
+    return Ray(m_position, m_lower_left + u * m_horizontal + v * m_vertical - m_position);
 }
 
 void Camera::update_vectors()
