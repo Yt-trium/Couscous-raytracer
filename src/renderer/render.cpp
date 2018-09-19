@@ -99,6 +99,9 @@ void Render::get_render_image(
 
             color /= static_cast<float>(samples);
             color = vec3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));
+            color.x = std::max(1.0f, color.x);
+            color.y = std::max(1.0f, color.y);
+            color.z = std::max(1.0f, color.z);
 
             int ir = int(255.0f * color[0]);
             int ig = int(255.0f * color[1]);
@@ -161,6 +164,9 @@ void Render::get_render_image_thread(
 
                 color /= static_cast<float>(samples);
                 color = vec3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));
+                color.x = std::min(color.x, 1.0f);
+                color.y = std::min(color.y, 1.0f);
+                color.z = std::min(color.z, 1.0f);
 
                 int ir = int(255.0f * color[0]);
                 int ig = int(255.0f * color[1]);
