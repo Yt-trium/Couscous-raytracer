@@ -57,9 +57,10 @@ set (gui_sources
 list (APPEND couscous_sources
     ${gui_sources})
 
-set (tests_sources
-    src/tests/alltest.cpp
-    src/tests/catch.hpp
+set (test_sources
+    src/test/catch.hpp
+    src/test/test.cpp
+    src/test/test.h
 )
 
 list (APPEND couscous_sources

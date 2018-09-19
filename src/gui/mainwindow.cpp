@@ -195,7 +195,7 @@ void MainWindow::slot_zoom_out()
 
 void MainWindow::slot_run_unit_test()
 {
-    int result = test::run();
+    int result = run_tests();
 
     QMessageBox::information(this, "Unit Test", "Unit Test return code : " + QString::number(result));
     QCoreApplication::quit();

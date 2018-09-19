@@ -1,13 +1,6 @@
-#ifndef TEST_H
-#define TEST_H
+#ifndef TESTS_TEST_H
+#define TESTS_TEST_H
 
-
-class test
-{
-public:
-    test();
-
-    static int run();
-};
+int run_tests();
 
 #endif // TEST_H
