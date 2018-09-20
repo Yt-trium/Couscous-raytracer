@@ -52,6 +52,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::slot_do_render()
 {
+    ui->pushButton_render->setEnabled(false);
+
     const size_t width = size_t(ui->spinBox_width->value());
     const size_t height = size_t(ui->spinBox_height->value());
     const size_t samples = size_t(ui->spinBox_spp->value());
@@ -146,6 +148,7 @@ void MainWindow::slot_do_render()
     m_frame_viewer.on_render_end(m_image);
 
     ui->statusBar->showMessage(message);
+    ui->pushButton_render->setEnabled(true);
 }
 
 void MainWindow::slot_save_as_image()
