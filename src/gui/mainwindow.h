@@ -11,6 +11,7 @@
 #include <QImage>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QProgressBar>
 
 // Forward declarations.
 namespace Ui { class MainWindow; }
@@ -32,7 +33,7 @@ class MainWindow : public QMainWindow
     QImage          m_image;
     FrameViewer     m_frame_viewer;
     Render          *m_render;
-
+    QProgressBar    *m_statusBarProgress;
   private slots:
     void slot_do_render();
     void slot_save_as_image();

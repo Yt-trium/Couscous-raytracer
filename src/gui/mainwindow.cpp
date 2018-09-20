@@ -27,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    m_statusBarProgress = new QProgressBar(this);
+    ui->statusBar->addPermanentWidget(m_statusBarProgress);
+    m_statusBarProgress->setVisible(false);
+
     // Add the image viewer.
     ui->viewer_container_layout->addWidget(&m_frame_viewer);
     m_frame_viewer.on_render_end(m_image);
@@ -131,9 +135,12 @@ void MainWindow::slot_do_render()
 
     QTime render_timer;
     render_timer.start();
+    ui->statusBar->showMessage("Rendering progress : ");
+    m_statusBarProgress->setVisible(true);
 
-    m_render->get_render_image(width, height, samples, ray_max_depth, camera, world, parallel, preview, m_image);
+    m_render->get_render_image(width, height, samples, ray_max_depth, camera, world, parallel, preview, m_image, *m_statusBarProgress);
 
+    m_statusBarProgress->setVisible(false);
     QString message = "Rendering time : " + QString::number(render_timer.elapsed()) + " ms";
 
     m_frame_viewer.on_render_end(m_image);

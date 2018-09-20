@@ -53,12 +53,12 @@ void Render::get_render_image(
         const VisualObjectList &world,
         const bool parallel,
         const bool preview,
-        QImage &image)
+        QImage &image,
+        QProgressBar& progressBar)
 {
-    QProgressDialog progress("Rendering...", "", 0, int((width/64)*(height/64)), nullptr);
-    progress.setWindowModality(Qt::WindowModal);
+    progressBar.setValue(53);
+    progressBar.setRange(0, int((width/64)*(height/64)));
 
-    progress.show();
     // Precompute subpixel samples position
     const size_t dimension_size =
         std::max(
@@ -127,7 +127,8 @@ void Render::get_render_image(
             else
             {
                 compute(x1, x2, y1, y2);
-                progress.setValue(progress.maximum()/2);
+                progressBar.setValue(int((y0/64)*(width/64)+(x0/64)));
+                qDebug() << int((y0/64)*(width/64)+(x0/64));
             }
         }
     }
@@ -135,10 +136,10 @@ void Render::get_render_image(
     for(size_t i = 0; i < threads.size(); ++i)
     {
         threads.at(i).waitForFinished();
-        progress.setValue(int(i));
+        progressBar.setValue(int(i));
     }
 
-    progress.setValue(int((width/64)*(height/64)));
+    progressBar.setValue(progressBar.maximum());
 }
 
 vec3 Render::random_in_unit_sphere() const

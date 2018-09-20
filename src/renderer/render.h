@@ -7,7 +7,7 @@
 #include <QImage>
 #include <QColor>
 #include <QMessageBox>
-#include <QProgressDialog>
+#include <QProgressBar>
 
 // couscous includes.
 #include "renderer/camera.h"
@@ -43,7 +43,8 @@ class Render : public QObject
         const VisualObjectList& world,
         const bool              parallel,
         const bool              preview,
-        QImage&                 image);
+        QImage&                 image,
+        QProgressBar&           progressBar);
 
   private:
     glm::vec3 random_in_unit_sphere() const;
