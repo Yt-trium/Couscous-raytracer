@@ -5,6 +5,7 @@
 #include "renderer/material.h"
 #include "renderer/samplegenerator.h"
 #include "renderer/utility.h"
+#include "renderer/visualobject.h"
 
 // Math includes.
 #include <glm/glm.hpp>
@@ -13,19 +14,23 @@
 #include <algorithm>
 #include <limits>
 
+// Uncomment this to shade pixels with surface normal.
+// #define DEBUG_DISPLAY_NORMALS
+
 using namespace glm;
 using namespace std;
 
 vec3 Render::get_ray_color(
     const Ray&              r,
     const size_t            ray_max_depth,
-    const VisualObjectList& world,
+    const MeshGroup&        world,
     const int               depth) const
 {
     HitRecord rec;
 
-    if(world.hit(r, 0.001f, numeric_limits<float>::max(), rec))
+    if(hit_world(world, r, 0.001f, numeric_limits<float>::max(), rec))
     {
+#ifndef DEBUG_DISPLAY_NORMALS
         Ray scattered;
         vec3 attenuation;
         vec3 emitted = rec.mat->emission();
@@ -37,6 +42,9 @@ vec3 Render::get_ray_color(
         {
             return emitted;
         }
+#else
+        return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
+#endif
     }
     else
     {
@@ -45,16 +53,16 @@ vec3 Render::get_ray_color(
 }
 
 void Render::get_render_image(
-        const size_t width,
-        const size_t height,
-        const size_t spp,
-        const size_t ray_max_depth,
-        const Camera &camera,
-        const VisualObjectList &world,
-        const bool parallel,
-        const bool preview,
-        QImage &image,
-        QProgressBar& progressBar)
+        const size_t        width,
+        const size_t        height,
+        const size_t        spp,
+        const size_t        ray_max_depth,
+        const Camera&       camera,
+        const MeshGroup&    world,
+        const bool          parallel,
+        const bool          preview,
+        QImage&             image,
+        QProgressBar&       progressBar)
 {
     progressBar.setValue(53);
     progressBar.setRange(0, int((width/64)*(height/64)));

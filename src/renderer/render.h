@@ -26,7 +26,7 @@ class Render : public QObject
     glm::vec3 get_ray_color(
         const Ray&              r,
         const size_t            ray_max_depth,
-        const VisualObjectList& world,
+        const MeshGroup&        world,
         const int               depth = 0) const;
 
     float ray_hit_sphere(
@@ -40,7 +40,7 @@ class Render : public QObject
         const size_t            spp,
         const size_t            ray_max_depth,
         const Camera&           camera,
-        const VisualObjectList& world,
+        const MeshGroup&        world,
         const bool              parallel,
         const bool              preview,
         QImage&                 image,

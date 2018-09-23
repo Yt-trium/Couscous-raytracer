@@ -44,22 +44,15 @@ class VisualObject
 };
 
 // A list of 3D intersectable objects.
-class VisualObjectList : public VisualObject
-{
-  public:
-    VisualObjectList();
+typedef std::vector<std::shared_ptr<VisualObject>> MeshGroup;
 
-    void add(VisualObject* object);
-
-    bool hit(
-        const Ray&  r,
-        float       tmin,
-        float       tmax,
-        HitRecord&  rec) const override;
-
-  private:
-    std::vector<std::shared_ptr<VisualObject>> m_object_list;
-};
+// Test the intersection in the whole world.
+bool hit_world(
+    const MeshGroup&    world,
+    const Ray&          r,
+    float               tmin,
+    float               tmax,
+    HitRecord&          rec);
 
 
 //
@@ -87,14 +80,40 @@ class Sphere : public VisualObject
     std::shared_ptr<Material> m_mat;
 };
 
+class Triangle;
+
+// 3D mesh.
+// It stores only 1 normal per triangle.
+class TriangleMesh
+{
+    friend class Triangle;
+
+  public:
+    TriangleMesh(
+        const size_t                        triangle_count,
+        const size_t                        vertices_count,
+        const size_t*                       indices,
+        const glm::vec3*                    vertices,
+        const glm::vec3*                    normals,
+        const std::shared_ptr<Material>&    material,
+        const glm::mat4&                    transform = glm::mat4(1.0f));
+
+  private:
+    size_t                          m_triangle_count; // number of triangles
+    size_t                          m_vertices_count; // number of vertices
+    std::vector<size_t>             m_indices; // each triangle vertex indices
+    std::unique_ptr<glm::vec3[]>    m_vertices;
+    std::unique_ptr<glm::vec3[]>    m_normals;
+    std::shared_ptr<Material>       m_mat;
+};
+
+// A triangle linked directly to 1 triangle mesh.
 class Triangle : public VisualObject
 {
   public:
     Triangle(
-        const glm::vec3&                    v0,
-        const glm::vec3&                    v1,
-        const glm::vec3&                    v2,
-        const std::shared_ptr<Material>&    mat);
+        const std::shared_ptr<TriangleMesh>&    mesh,
+        const size_t                            indice); // indice of the triangle first vertex in the mesh
 
     // Möller-Trumbore algorithm.
     bool hit(
@@ -103,66 +122,36 @@ class Triangle : public VisualObject
         float                               tmax,
         HitRecord&                          rec) const override;
 
-    glm::vec3 v0;
-    glm::vec3 v1;
-    glm::vec3 v2;
-
   private:
-    std::shared_ptr<Material> m_mat;
+    std::shared_ptr<TriangleMesh>       m_mesh;
+    size_t*                             m_indices;
+    const glm::vec3&                    m_normal;
 };
 
-class Quad : public VisualObject
-{
-  public:
-    Quad(
-        const glm::vec3&                    v0,
-        const glm::vec3&                    v1,
-        const glm::vec3&                    v2,
-        const glm::vec3&                    v3,
-        const std::shared_ptr<Material>&    mat);
 
-    bool hit(
-        const Ray&                          r,
-        float                               tmin,
-        float                               tmax,
-        HitRecord&                          rec) const override;
+//
+// Mesh generation.
+//
 
-    glm::vec3 v0;
-    glm::vec3 v1;
-    glm::vec3 v2;
-    glm::vec3 v3;
+void create_triangle_mesh(
+    MeshGroup&                          world,
+    const size_t                        triangle_count,
+    const size_t                        vertices_count,
+    const size_t*                       indices,
+    const glm::vec3*                    vertices,
+    const glm::vec3*                    normals,
+    const std::shared_ptr<Material>&    material,
+    const glm::mat4&                    transform);
 
-  private:
-    std::shared_ptr<Material> m_mat;
-};
+void create_cube(
+    MeshGroup&                          world,
+    const std::shared_ptr<Material>&    material,
+    const glm::mat4&                    transform = glm::mat4(1.0f));
 
-class Box : public VisualObject
-{
-  public:
-    Box(
-        const glm::vec3&                    bottom_center,
-        const float                         half_width,
-        const float                         half_height,
-        const float                         half_depth,
-        const std::shared_ptr<Material>&    mat);
+void create_plane(
+    MeshGroup&                          world,
+    const std::shared_ptr<Material>&    material,
+    const glm::mat4&                    transform = glm::mat4(1.0f));
 
-    bool hit(
-        const Ray&                          r,
-        float                               tmin,
-        float                               tmax,
-        HitRecord&                          rec) const override;
-
-    glm::vec3 v0;
-    glm::vec3 v1;
-    glm::vec3 v2;
-    glm::vec3 v3;
-    glm::vec3 v4;
-    glm::vec3 v5;
-    glm::vec3 v6;
-    glm::vec3 v7;
-
-  private:
-    std::shared_ptr<Material> m_mat;
-};
 
 #endif // VISUALOBJECT_H

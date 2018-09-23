@@ -12,6 +12,7 @@
 
 // glm includes.
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 // Standard includes.
 #include <memory>
@@ -77,63 +78,50 @@ void MainWindow::slot_do_render()
 
     // Create materials.
     shared_ptr<Material> mat_light(new Light(vec3(15.0f)));
-    shared_ptr<Material> mat_dull_light(new Light(vec3(1.0f)));
     shared_ptr<Material> mat_red(new Lambertian(vec3(0.65f, 0.05f, 0.05f)));
     shared_ptr<Material> mat_green(new Lambertian(vec3(0.12f, 0.45f, 0.15f)));
     shared_ptr<Material> mat_white(new Lambertian(vec3(0.73f, 0.73f, 0.73f)));
 
-    // Create objects.
-    VisualObjectList world;
-    world.add(new Quad(
-        vec3(213.0f, 554.0f, 227.0f),
-        vec3(343.0f, 554.0f, 227.0f),
-        vec3(343.0f, 554.0f, 332.0f),
-        vec3(213.0f, 554.0f, 332.0f),
-        mat_light));
-    world.add(new Quad(
-        vec3(555.0f, 0.0f, 0.0f),
-        vec3(555.0f, 0.0f, 555.0f),
-        vec3(555.0f, 555.0f, 555.0f),
-        vec3(555.0f, 555.0f, 0.0f),
-        mat_green));
-    world.add(new Quad(
-        vec3(0.0f, 0.0f, 0.0f),
-        vec3(0.0f, 555.0f, 0.0f),
-        vec3(0.0f, 555.0f, 555.0f),
-        vec3(0.0f, 0.0f, 555.0f),
-        mat_red));
-    world.add(new Quad(
-        vec3(555.0f, 0.0f, 0.0f),
-        vec3(0.0f, 0.0f, 0.0f),
-        vec3(0.0f, 555.0f, 0.0f),
-        vec3(555.0f, 555.0f, 0.0f),
-        mat_white));
-    world.add(new Quad(
-        vec3(555.0f, 0.0f, 555.0f),
-        vec3(0.0f, 0.0f, 555.0f),
-        vec3(0.0f, 0.0f, 0.0f),
-        vec3(555.0f, 0.0f, 0.0f),
-        mat_dull_light));
-    world.add(new Quad(
-        vec3(555.0f, 555.0f, 555.0f),
-        vec3(0.0f, 555.0f, 555.0f),
-        vec3(0.0f, 555.0f, 0.0f),
-        vec3(555.0f, 555.0f, 0.0f),
-        mat_white));
-
-    world.add(new Box(
-        vec3(400.0f, 0.0f, 100.0f),
-        70.0f,
-        150.0f,
-        70.0f,
-        mat_white));
-
-    world.add(new Box(
-        vec3(100.0f, 0.0f, 400.0f),
-        70.0f,
-        70.0f,
-        70.0f,
-        mat_white));
+    // Create cornell box.
+    MeshGroup world;
+    // Floor.
+    mat4 transform = scale(mat4(1.0f), vec3(200.0f));
+    create_plane(world, mat_white, transform);
+    // Backgorund.
+    transform = translate(mat4(1.0f), vec3(0.0f, 100.0f, -100.0f));
+    transform = rotate(transform, radians(90.0f), vec3(1.0f, 0.0f, 0.0f));
+    transform = scale(transform, vec3(200.0f));
+    create_plane(world, mat_white, transform);
+    // Ceilling.
+    transform = translate(mat4(1.0f), vec3(0.0f, 200.0f, 0.0f));
+    transform = scale(transform, vec3(200.0f));
+    transform = rotate(transform, radians(180.0f), vec3(1.0f, 0.0f, 0.0f));
+    create_plane(world, mat_white, transform);
+    // Light.
+    transform = translate(mat4(1.0f), vec3(0.0f, 199.0f, 0.0f));
+    transform = scale(transform, vec3(30.0f));
+    transform = rotate(transform, radians(180.0f), vec3(1.0f, 0.0f, 0.0f));
+    create_plane(world, mat_light, transform);
+    // Left.
+    transform = translate(mat4(1.0f), vec3(100.0f, 100.0f, 0.0f));
+    transform = scale(transform, vec3(200.0f));
+    transform = rotate(transform, radians(90.0f), vec3(0.0f, 0.0f, 1.0f));
+    create_plane(world, mat_green, transform);
+    // Right.
+    transform = translate(mat4(1.0f), vec3(-100.0f, 100.0f, 0.0f));
+    transform = scale(transform, vec3(200.0f));
+    transform = rotate(transform, radians(-90.0f), vec3(0.0f, 0.0f, 1.0f));
+    create_plane(world, mat_red, transform);
+    // Right Box.
+    transform = translate(mat4(1.0f), vec3(-50.0f, 30.0f, 30.0f));
+    transform = scale(transform, vec3(60.0f));
+    transform = rotate(transform, radians(20.0f), vec3(0.0f, 1.0f, 0.0f));
+    create_cube(world, mat_white, transform);
+    // Left Box.
+    transform = translate(mat4(1.0f), vec3(50.0f, 50.0f, -30.0f));
+    transform = scale(transform, vec3(60.0f, 100.0f, 60.0f));
+    transform = rotate(transform, radians(-20.0f), vec3(0.0f, 1.0f, 0.0f));
+    create_cube(world, mat_white, transform);
 
     QTime render_timer;
     render_timer.start();
