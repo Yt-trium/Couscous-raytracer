@@ -2,6 +2,7 @@
 #define RENDERER_VISUALOBJECT_H
 
 // couscous includes.
+#include "renderer/aabb.h"
 #include "renderer/ray.h"
 
 // glm includes.

@@ -5,19 +5,32 @@
 #define CATCH_CONFIG_RUNNER
 #include "test/catch.hpp"
 
+// couscous includes.
+#include "renderer/aabb.h"
+#include "renderer/ray.h"
+
+// glm includes.
+#include <glm/glm.hpp>
+
+using namespace glm;
+using namespace std;
+
 int run_tests()
 {
     return Catch::Session().run();
 }
 
-unsigned int Factorial( unsigned int number )
-{
-    return number <= 1 ? number : Factorial(number-1)*number;
-}
+TEST_CASE( "AABB Ray intersection", "[aabb]" ) {
 
-TEST_CASE( "Factorials are computed", "[factorial]" ) {
-    REQUIRE( Factorial(1) == 1 );
-    REQUIRE( Factorial(2) == 2 );
-    REQUIRE( Factorial(3) == 6 );
-    REQUIRE( Factorial(10) == 3628800 );
+    AABB bbox(vec3(-1.0f), vec3(1.0f));
+    Ray ray(vec3(0.0f, 0.0f, 200.0f), vec3(0.0f, 0.0f, -1.0f));
+
+    // Ray intersecting the bbox.
+    bool result = bbox.intersect(ray);
+    REQUIRE(result);
+
+    // Ray not intersecting, too far on the right.
+    ray.origin.x = 300.0f;
+    result = bbox.intersect(ray);
+    REQUIRE(!result);
 }

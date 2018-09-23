@@ -28,6 +28,8 @@ list (APPEND couscous_sources
     ${sources})
 
 set (renderer_sources
+    src/renderer/aabb.cpp
+    src/renderer/aabb.h
     src/renderer/camera.cpp
     src/renderer/camera.h
     src/renderer/material.cpp
