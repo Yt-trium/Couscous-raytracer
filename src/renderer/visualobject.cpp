@@ -53,8 +53,9 @@ Sphere::Sphere(
     const glm::vec3&                center,
     float                           radius,
     const shared_ptr<Material>&     mat)
-  : center(center)
-  , radius(radius)
+  : m_center(center)
+  , m_radius(radius)
+  , m_bbox(center - radius, center + radius)
   , m_mat(mat)
 {
 }
@@ -65,11 +66,11 @@ bool Sphere::hit(
     float                           tmax,
     HitRecord&                      rec) const
 {
-    vec3 oc = r.origin - center;
+    vec3 oc = r.origin - m_center;
 
     float a = dot(r.dir, r.dir);
     float b = 2.0f * dot(oc, r.dir);
-    float c = dot(oc, oc) - radius * radius;
+    float c = dot(oc, oc) - m_radius * m_radius;
     float d = b * b - 4.0f * a * c;
 
     if(d > 0)
@@ -79,22 +80,28 @@ bool Sphere::hit(
         {
             rec.t = tmp;
             rec.p = r.point(rec.t);
-            rec.normal = (rec.p - center) / radius;
+            rec.normal = (rec.p - m_center) / m_radius;
             rec.mat = m_mat.get();
             return true;
         }
+
         tmp = (-b+sqrt(d))/(2*a);
         if(tmp < tmax && tmp > tmin)
         {
             rec.t = tmp;
             rec.p = r.point(rec.t);
-            rec.normal = (rec.p - center) / radius;
+            rec.normal = (rec.p - m_center) / m_radius;
             rec.mat = m_mat.get();
             return true;
         }
     }
 
     return false;
+}
+
+const AABB& Sphere::bbox() const
+{
+    return m_bbox;
 }
 
 TriangleMesh::TriangleMesh(
@@ -144,6 +151,14 @@ Triangle::Triangle(
     assert(*m_indices == m_mesh->m_indices[3 * indice]);
     assert(*(m_indices + 1) == m_mesh->m_indices[3 * indice + 1]);
     assert(*(m_indices + 2) == m_mesh->m_indices[3 * indice + 2]);
+
+    const vec3& v0 = m_mesh->m_vertices[*m_indices];
+    const vec3& v1 = m_mesh->m_vertices[*(m_indices + 1)];
+    const vec3& v2 = m_mesh->m_vertices[*(m_indices + 2)];
+
+    m_bbox = AABB(v0);
+    m_bbox.add_point(v1);
+    m_bbox.add_point(v2);
 }
 
 bool Triangle::hit(
@@ -223,6 +238,11 @@ bool Triangle::hit(
     rec.mat = m_mesh->m_mat.get();
 
     return true;
+}
+
+const AABB& Triangle::bbox() const
+{
+    return m_bbox;
 }
 
 
