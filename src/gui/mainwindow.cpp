@@ -6,6 +6,7 @@
 // couscous includes.
 #include "renderer/camera.h"
 #include "renderer/material.h"
+#include "renderer/gridaccelerator.h"
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
 #include "test/test.h"
@@ -84,6 +85,7 @@ void MainWindow::slot_do_render()
 
     // Create cornell box.
     MeshGroup world;
+
     // Floor.
     mat4 transform = scale(mat4(1.0f), vec3(200.0f));
     create_plane(world, mat_white, transform);
@@ -123,12 +125,24 @@ void MainWindow::slot_do_render()
     transform = rotate(transform, radians(-20.0f), vec3(0.0f, 1.0f, 0.0f));
     create_cube(world, mat_white, transform);
 
+    VoxelGridAccelerator accelerator(world);
+
     QTime render_timer;
     render_timer.start();
     ui->statusBar->showMessage("Rendering progress : ");
     m_statusBarProgress->setVisible(true);
 
-    m_render->get_render_image(width, height, samples, ray_max_depth, camera, world, parallel, preview, m_image, *m_statusBarProgress);
+    m_render->get_render_image(
+        width,
+        height,
+        samples,
+        ray_max_depth,
+        camera,
+        accelerator,
+        parallel,
+        preview,
+        m_image,
+        *m_statusBarProgress);
 
     m_statusBarProgress->setVisible(false);
     QString message = "Rendering time : " + QString::number(render_timer.elapsed()) + " ms";

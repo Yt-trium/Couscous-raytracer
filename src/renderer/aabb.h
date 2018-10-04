@@ -36,6 +36,9 @@ class AABB
         float*      t_in = nullptr,
         float*      t_out = nullptr) const;
 
+    // Test if a point is inside the bbox.
+    bool contains(const glm::vec3& point) const;
+
     // Enlarge the bbox so that it contains the given point.
     void add_point(const glm::vec3& point);
 

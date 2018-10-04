@@ -39,8 +39,8 @@ class VisualObject
   public:
     virtual bool hit(
         const Ray&  r,
-        float       tmin,
-        float       tmax,
+        const float tmin,
+        const float tmax,
         HitRecord&  rec) const = 0;
 
     virtual const AABB& bbox() const = 0;
@@ -53,8 +53,8 @@ typedef std::vector<std::shared_ptr<VisualObject>> MeshGroup;
 bool hit_world(
     const MeshGroup&    world,
     const Ray&          r,
-    float               tmin,
-    float               tmax,
+    const float         tmin,
+    const float         tmax,
     HitRecord&          rec);
 
 
@@ -72,8 +72,8 @@ class Sphere : public VisualObject
 
     bool hit(
         const Ray&                          r,
-        float                               tmin,
-        float                               tmax,
+        const float                         tmin,
+        const float                         tmax,
         HitRecord&                          rec) const override;
 
     const AABB& bbox() const override;
@@ -124,8 +124,8 @@ class Triangle : public VisualObject
     // Möller-Trumbore algorithm.
     bool hit(
         const Ray&                          r,
-        float                               tmin,
-        float                               tmax,
+        const float                         tmin,
+        const float                         tmax,
         HitRecord&                          rec) const override;
 
     const AABB& bbox() const override;

@@ -1,6 +1,9 @@
 // Interface.
 #include "renderer/gridaccelerator.h"
 
+// couscous includes.
+#include "renderer/ray.h"
+
 // glm includes.
 #include <glm/glm.hpp>
 
@@ -9,6 +12,27 @@
 
 using namespace glm;
 using namespace std;
+
+bool Voxel::hit(
+    const Ray&                          r,
+    const float                         tmin,
+    const float                         tmax,
+    HitRecord&                          rec) const
+{
+    if (objects.empty())
+        return false;
+
+    bool hit_something = false;
+
+    // Test intersection will all the shapes in the voxel.
+    for (size_t i = 0, e = objects.size(); i < e; ++i)
+    {
+        const shared_ptr<VisualObject>& shape = objects[i];
+        hit_something |= shape->hit(r, tmin, rec.t, rec);
+    }
+
+    return hit_something;
+}
 
 VoxelGridAccelerator::VoxelGridAccelerator(
     const MeshGroup& world)
@@ -91,6 +115,104 @@ VoxelGridAccelerator::VoxelGridAccelerator(
             }
         }
     }
+}
+
+bool VoxelGridAccelerator::hit(
+    const Ray&                          r,
+    const float                         tmin,
+    float                               tmax,
+    HitRecord&                          rec) const
+{
+    // Parameter for the point where the ray enters the grid.
+    float t = 0.0f;
+
+    // Check if the ray starts in the grid.
+    // This will happen a lot with rebounds.
+    if (m_bounds.contains(r.point(tmin)))
+    {
+        t = tmin;
+    }
+    // Otherwise check if the ray intersects the grid.
+    else if (!m_bounds.intersect(r, tmin, tmax, &t))
+    {
+        return false;
+    }
+
+    rec.t = tmax;
+
+    // Digital Differental Analyser.
+    // Compute next voxel entry points.
+
+    // What we need to store:
+    // - Position of the current voxel in the grid space (pos).
+    // - Ray parameter t that intersects the next voxel (next_t).
+    // - Direction to the next voxel in the grid space (step).
+    // - Distance to the next voxel in each direction (delta_t).
+    // - Coordinates of the voxel where the ray leaves the grid (out).
+
+    // Setup variables.
+    const vec3 entry = r.point(t);
+    vec3 next_t(0.0f), delta_t(0.0f);
+    ivec3 step(0), out(0), pos(0);
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        pos[i] = voxel(entry, i);
+
+        if (r.dir[i] >= 0.0f)
+        {
+            // Ray with positive direction.
+            // Next parameter t is simply
+            // the entry parameter t plus the axis distance to the next voxel
+            // and divided by the axis direction.
+
+            // If the ray direction is 0, then next_t will be INF.
+            // We use this to never go in this direction later.
+            next_t[i] = t + (position(pos[i] + 1, i) - entry[i]) / r.dir[i];
+            delta_t[i] = m_voxel_size[i] / r.dir[i];
+            step[i] = 1;
+            out[i] = m_voxels_per_axis[i];
+        }
+        else
+        {
+            // Ray with negative direction.
+            next_t[i] = t + (position(pos[i], i) - entry[i]) / r.dir[i];
+            delta_t[i] = -m_voxel_size[i] / r.dir[i];
+            step[i] = -1;
+            out[i] = -1;
+        }
+    }
+
+    // Test intersection with shapes.
+    bool hit_something = false;
+
+    while (true)
+    {
+        // Check intersection with the current voxel.
+        const Voxel& voxel = m_voxels[offset(pos[0], pos[1], pos[2])];
+        hit_something |= voxel.hit(r, tmin, rec.t, rec);
+
+        // Move to the next voxel.
+        // We choose the best axis.
+        // It's the one getting us to the closest voxel.
+        size_t axis = (next_t[1] < next_t[0]) ? 1 : 0;
+        axis = (next_t[2] < next_t[axis]) ? 2 : axis;
+
+        // We stop if the current intersection point is
+        // further away than the next voxel.
+        if (rec.t < next_t[axis])
+            break;
+
+        pos[axis] += step[axis];
+
+        // Check if we are getting out of the grid.
+        if (pos[axis] == out[axis])
+            break;
+
+        next_t[axis] += delta_t[axis];
+    }
+
+    return hit_something;
 }
 
 size_t VoxelGridAccelerator::voxel(const vec3& position, const size_t axis) const

@@ -2,6 +2,7 @@
 #include "render.h"
 
 // couscous includes.
+#include "renderer/gridaccelerator.h"
 #include "renderer/material.h"
 #include "renderer/samplegenerator.h"
 #include "renderer/utility.h"
@@ -25,22 +26,23 @@ using namespace glm;
 using namespace std;
 
 vec3 Render::get_ray_color(
-    const Ray&              r,
-    const size_t            ray_max_depth,
-    const MeshGroup&        world,
-    const int               depth) const
+    const Ray&                      r,
+    const size_t                    ray_max_depth,
+    const VoxelGridAccelerator&     grid,
+    const int                       depth) const
 {
     HitRecord rec;
 
-    if(hit_world(world, r, 0.001f, numeric_limits<float>::max(), rec))
+    if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
     {
 #ifndef DEBUG_DISPLAY_NORMALS
         Ray scattered;
         vec3 attenuation;
         vec3 emitted = rec.mat->emission();
+
         if (depth < int(ray_max_depth) && rec.mat->scatter(r, rec, attenuation, scattered))
         {
-            return emitted + attenuation * get_ray_color(scattered, ray_max_depth, world, depth + 1);
+            return emitted + attenuation * get_ray_color(scattered, ray_max_depth, grid, depth + 1);
         }
         else
         {
@@ -57,16 +59,16 @@ vec3 Render::get_ray_color(
 }
 
 void Render::get_render_image(
-        const size_t        width,
-        const size_t        height,
-        const size_t        spp,
-        const size_t        ray_max_depth,
-        const Camera&       camera,
-        const MeshGroup&    world,
-        const bool          parallel,
-        const bool          preview,
-        QImage&             image,
-        QProgressBar&       progressBar)
+        const size_t                    width,
+        const size_t                    height,
+        const size_t                    spp,
+        const size_t                    ray_max_depth,
+        const Camera&                   camera,
+        const VoxelGridAccelerator&     grid,
+        const bool                      parallel,
+        const bool                      preview,
+        QImage&                         image,
+        QProgressBar&                   progressBar)
 {
     progressBar.setValue(53);
     progressBar.setRange(0, int((width/64)*(height/64)));
@@ -103,7 +105,7 @@ void Render::get_render_image(
                         (pt.y + subpixel_pos.y) / frame.y);
 
                     color += get_ray_color(
-                        camera.get_ray(uv.x, uv.y), ray_max_depth, world);
+                        camera.get_ray(uv.x, uv.y), ray_max_depth, grid);
                 }
 
                 color /= static_cast<float>(samples);

@@ -76,6 +76,17 @@ bool AABB::intersect(
     return true;
 }
 
+bool AABB::contains(const vec3& point) const
+{
+    for (size_t i = 0; i < 3; ++i)
+    {
+        if (point[i] < min[i] || point[i] > max[i])
+            return false;
+    }
+
+    return true;
+}
+
 void AABB::add_point(const vec3& point)
 {
     min = glm::min(min, point);
