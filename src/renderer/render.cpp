@@ -10,6 +10,10 @@
 // Math includes.
 #include <glm/glm.hpp>
 
+// Qt includes.
+#include <QFuture>
+#include <QtConcurrent/QtConcurrentRun>
+
 // Standard includes.
 #include <algorithm>
 #include <limits>

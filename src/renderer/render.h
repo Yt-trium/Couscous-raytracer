@@ -3,7 +3,6 @@
 
 // QT includes.
 #include <QObject>
-#include <QtConcurrentRun>
 #include <QImage>
 #include <QColor>
 #include <QMessageBox>
