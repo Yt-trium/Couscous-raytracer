@@ -164,14 +164,14 @@ void MainWindow::slot_save_as_image()
     filter_list << "JPEG (*.jpeg)";
     filter_list << "PBM (*.pbm)";
     filter_list << "All Files (*.*)";
-    /*
+
     QString path = QFileDialog::getSaveFileName(
         this,
         tr("Save Image"),
         QDir::currentPath(),
         filter_list.join(";;"),
-        &selected_filter);*/
-    QString path = "toto";
+        &selected_filter);
+
     if (path.isEmpty())
         return;
 
