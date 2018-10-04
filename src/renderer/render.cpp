@@ -12,7 +12,7 @@
 
 // Qt includes.
 #include <QFuture>
-#include <QtConcurrent/QtConcurrentRun>
+#include <QtConcurrentRun>
 
 // Standard includes.
 #include <algorithm>
