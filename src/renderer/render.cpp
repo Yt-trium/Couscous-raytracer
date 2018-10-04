@@ -118,8 +118,6 @@ void Render::get_render_image(
                 image.setPixel(int(width-1-x), int(height-1-y), QColor(ir, ig, ib).rgb());
             }
         }
-        if(preview)
-            emit render_new_tile();
     };
 
     for (y0 = 0; y0 < height; y0+=64)
@@ -140,7 +138,9 @@ void Render::get_render_image(
             {
                 compute(x1, x2, y1, y2);
                 progressBar.setValue(int((y0/64)*(width/64)+(x0/64)));
-                qDebug() << int((y0/64)*(width/64)+(x0/64));
+
+                if(preview)
+                    emit render_new_tile();
             }
         }
     }
@@ -149,6 +149,9 @@ void Render::get_render_image(
     {
         threads.at(i).waitForFinished();
         progressBar.setValue(int(i));
+
+        if(preview)
+            emit render_new_tile();
     }
 
     progressBar.setValue(progressBar.maximum());
