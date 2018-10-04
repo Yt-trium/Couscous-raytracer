@@ -32,7 +32,9 @@ SOURCES += \
     src/gui/frameviewer.cpp \
     src/renderer/material.cpp \
     src/renderer/samplegenerator.cpp \
-    src/test/test.cpp
+    src/test/test.cpp \
+    src/renderer/gridaccelerator.cpp \
+    src/renderer/aabb.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -45,7 +47,9 @@ HEADERS += \
     src/renderer/samplegenerator.h \
     src/test/catch.hpp \
     src/test/test.h \
-    src/renderer/utility.h
+    src/renderer/utility.h \
+    src/renderer/aabb.h \
+    src/renderer/gridaccelerator.h
 
 FORMS += \
         src/gui/mainwindow.ui
