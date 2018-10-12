@@ -3,6 +3,7 @@
 
 // couscous includes.
 #include "gui/frameviewer.h"
+#include "gui/scene.h"
 #include "renderer/render.h"
 
 // Qt includes.
@@ -35,6 +36,8 @@ class MainWindow : public QMainWindow
     Render                          m_render;
     QProgressBar                    m_statusBarProgress;
 
+    Scene scene;
+
   private slots:
     void slot_do_render();
     void slot_save_as_image();
@@ -44,6 +47,9 @@ class MainWindow : public QMainWindow
 
     void slot_dock_widget_changed();
     void slot_action_dock_changed();
+
+    void slot_update_scene_tree_widget();
+    void slot_treeWidget_customContextMenuRequested(const QPoint &p);
 };
 
 #endif // MAINWINDOW_H

@@ -4,7 +4,6 @@
 #include "ui_mainwindow.h"
 
 // couscous includes.
-#include "gui/scene.h"
 #include "renderer/camera.h"
 #include "renderer/material.h"
 #include "renderer/gridaccelerator.h"
@@ -56,52 +55,14 @@ MainWindow::MainWindow(QWidget *parent)
         SIGNAL(on_tile_end(size_t, size_t, size_t, size_t, QImage)),
         &m_frame_viewer,
         SLOT(update_tile(size_t, size_t, size_t, size_t, QImage)));
-}
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
+    connect(ui->treeWidget_scene, SIGNAL(customContextMenuRequested(const QPoint&)),
+            SLOT(slot_treeWidget_customContextMenuRequested(const QPoint&)));
 
-void MainWindow::slot_do_render()
-{
-    ui->pushButton_render->setEnabled(false);
-
-    const size_t width = size_t(ui->spinBox_width->value());
-    const size_t height = size_t(ui->spinBox_height->value());
-    const size_t samples = size_t(ui->spinBox_spp->value());
-    const size_t ray_max_depth = size_t(ui->spinBox_ray_max_depth->value());
-    m_image = QImage(int(width), int(height), QImage::Format_RGB888);
-
-    const float pos_x = float(ui->doubleSpinBox_position_x->value());
-    const float pos_y = float(ui->doubleSpinBox_position_y->value());
-    const float pos_z = float(ui->doubleSpinBox_position_z->value());
-    const float yaw   = float(ui->doubleSpinBox_yaw->value());
-    const float pitch = float(ui->doubleSpinBox_pitch->value());
-    const float fov   = float(ui->doubleSpinBox_fov->value());
-
-    const bool parallel = ui->checkBox_parallel_rendering->isChecked();
-    // Create the scene.
-    Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
-        yaw, pitch, fov, width, height);
-
-    // Create materials.
-
-    shared_ptr<Material> mat_light(new Light(vec3(15.0f)));
-    shared_ptr<Material> mat_red(new Lambertian(vec3(0.65f, 0.05f, 0.05f)));
-    shared_ptr<Material> mat_green(new Lambertian(vec3(0.12f, 0.45f, 0.15f)));
-    shared_ptr<Material> mat_white(new Lambertian(vec3(0.73f, 0.73f, 0.73f)));
-
-
-    // Create cornell box.
-    MeshGroup world;
-
-    Scene scene;
     scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f)));
     scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f)));
     scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 0.45f, 0.15f), vec3(0.0f)));
     scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f)));
-
 
     scene.objects.push_back(SceneObject("floor",
                                         vec3(0.0f, 0.0f, 0.0f),
@@ -166,47 +127,40 @@ void MainWindow::slot_do_render()
                                         vec3(60.0f),
                                         CUBE,
                                         "white"));
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::slot_do_render()
+{
+    ui->pushButton_render->setEnabled(false);
+
+    const size_t width = size_t(ui->spinBox_width->value());
+    const size_t height = size_t(ui->spinBox_height->value());
+    const size_t samples = size_t(ui->spinBox_spp->value());
+    const size_t ray_max_depth = size_t(ui->spinBox_ray_max_depth->value());
+    m_image = QImage(int(width), int(height), QImage::Format_RGB888);
+
+    const float pos_x = float(ui->doubleSpinBox_position_x->value());
+    const float pos_y = float(ui->doubleSpinBox_position_y->value());
+    const float pos_z = float(ui->doubleSpinBox_position_z->value());
+    const float yaw   = float(ui->doubleSpinBox_yaw->value());
+    const float pitch = float(ui->doubleSpinBox_pitch->value());
+    const float fov   = float(ui->doubleSpinBox_fov->value());
+
+    const bool parallel = ui->checkBox_parallel_rendering->isChecked();
+    // Create the scene.
+    Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
+        yaw, pitch, fov, width, height);
+
+    // Create cornell box.
+    MeshGroup world;
+
+    // Get visual
     scene.create_scene(world);
-    /*
-    // Floor.
-    mat4 transform = scale(mat4(1.0f), vec3(200.0f));
-    create_plane(world, mat_white, transform);
-    // Backgorund.
-    transform = translate(mat4(1.0f), vec3(0.0f, 100.0f, -100.0f));
-    transform = rotate(transform, radians(90.0f), vec3(1.0f, 0.0f, 0.0f));
-    transform = scale(transform, vec3(200.0f));
-    create_plane(world, mat_white, transform);
-    // Ceilling.
-    transform = translate(mat4(1.0f), vec3(0.0f, 200.0f, 0.0f));
-    transform = scale(transform, vec3(200.0f));
-    transform = rotate(transform, radians(180.0f), vec3(1.0f, 0.0f, 0.0f));
-    create_plane(world, mat_white, transform);
-    // Light.
-    transform = translate(mat4(1.0f), vec3(0.0f, 199.0f, 0.0f));
-    transform = scale(transform, vec3(30.0f));
-    transform = rotate(transform, radians(180.0f), vec3(1.0f, 0.0f, 0.0f));
-    create_plane(world, mat_light, transform);
-    // Left.
-    transform = translate(mat4(1.0f), vec3(100.0f, 100.0f, 0.0f));
-    transform = scale(transform, vec3(200.0f));
-    transform = rotate(transform, radians(90.0f), vec3(0.0f, 0.0f, 1.0f));
-    create_plane(world, mat_green, transform);
-    // Right.
-    transform = translate(mat4(1.0f), vec3(-100.0f, 100.0f, 0.0f));
-    transform = scale(transform, vec3(200.0f));
-    transform = rotate(transform, radians(-90.0f), vec3(0.0f, 0.0f, 1.0f));
-    create_plane(world, mat_red, transform);
-    // Right Box.
-    transform = translate(mat4(1.0f), vec3(-50.0f, 30.0f, 30.0f));
-    transform = scale(transform, vec3(60.0f));
-    transform = rotate(transform, radians(20.0f), vec3(0.0f, 1.0f, 0.0f));
-    create_cube(world, mat_white, transform);
-    // Left Box.
-    transform = translate(mat4(1.0f), vec3(50.0f, 50.0f, -30.0f));
-    transform = scale(transform, vec3(60.0f, 100.0f, 60.0f));
-    transform = rotate(transform, radians(-20.0f), vec3(0.0f, 1.0f, 0.0f));
-    create_cube(world, mat_white, transform);
-    */
 
     VoxelGridAccelerator accelerator(world);
 
@@ -301,4 +255,20 @@ void MainWindow::slot_action_dock_changed()
 {
     ui->dockWidget_render->setVisible(ui->actionRender_Options->isChecked());
     ui->dockWidget_scene->setVisible(ui->actionScene_Options->isChecked());
+}
+
+void MainWindow::slot_update_scene_tree_widget()
+{
+    QTreeWidgetItem *itm = new QTreeWidgetItem();
+    ui->treeWidget_scene->insertTopLevelItem(0, itm);
+}
+
+void MainWindow::slot_treeWidget_customContextMenuRequested(const QPoint &p)
+{
+    QMenu menu(this);
+
+    menu.addAction(ui->actionNew_object);
+    menu.addAction(ui->actionNew_material);
+
+    menu.exec(ui->treeWidget_scene->mapToGlobal(p));
 }

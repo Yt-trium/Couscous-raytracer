@@ -455,6 +455,9 @@
      </property>
      <item row="0" column="0">
       <widget class="QTreeWidget" name="treeWidget_scene">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
        <attribute name="headerVisible">
         <bool>false</bool>
        </attribute>
@@ -531,6 +534,16 @@
    </property>
    <property name="text">
     <string>Scene Options</string>
+   </property>
+  </action>
+  <action name="actionNew_object">
+   <property name="text">
+    <string>New object</string>
+   </property>
+  </action>
+  <action name="actionNew_material">
+   <property name="text">
+    <string>New material</string>
    </property>
   </action>
  </widget>
