@@ -49,7 +49,7 @@ HEADERS += \
     src/test/catch.hpp \
     src/test/test.h \
     src/renderer/utility.h \
-    src/renderer/photonMapping.h
+    src/renderer/photonMapping.h \
     src/renderer/aabb.h \
     src/renderer/gridaccelerator.h
 
