@@ -39,9 +39,11 @@ class VisualObject
   public:
     virtual bool hit(
         const Ray&  r,
-        float       tmin,
-        float       tmax,
+        const float tmin,
+        const float tmax,
         HitRecord&  rec) const = 0;
+
+    virtual const AABB& bbox() const = 0;
 };
 
 // A list of 3D intersectable objects.
@@ -51,8 +53,8 @@ typedef std::vector<std::shared_ptr<VisualObject>> MeshGroup;
 bool hit_world(
     const MeshGroup&    world,
     const Ray&          r,
-    float               tmin,
-    float               tmax,
+    const float         tmin,
+    const float         tmax,
     HitRecord&          rec);
 
 
@@ -70,15 +72,18 @@ class Sphere : public VisualObject
 
     bool hit(
         const Ray&                          r,
-        float                               tmin,
-        float                               tmax,
+        const float                         tmin,
+        const float                         tmax,
         HitRecord&                          rec) const override;
 
-    glm::vec3   center;
-    float       radius;
+    const AABB& bbox() const override;
+
 
   private:
-    std::shared_ptr<Material> m_mat;
+    const glm::vec3             m_center;
+    const float                 m_radius;
+    const AABB                  m_bbox;
+    std::shared_ptr<Material>   m_mat;
 };
 
 class Triangle;
@@ -119,14 +124,17 @@ class Triangle : public VisualObject
     // Möller-Trumbore algorithm.
     bool hit(
         const Ray&                          r,
-        float                               tmin,
-        float                               tmax,
+        const float                         tmin,
+        const float                         tmax,
         HitRecord&                          rec) const override;
+
+    const AABB& bbox() const override;
 
   private:
     std::shared_ptr<TriangleMesh>       m_mesh;
     size_t*                             m_indices;
     const glm::vec3&                    m_normal;
+    AABB                                m_bbox;
 };
 
 

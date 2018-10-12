@@ -16,7 +16,11 @@ class AABB
   public:
     glm::vec3 min, max;
 
+    AABB();
+
     AABB(const glm::vec3& min, const glm::vec3& max);
+
+    AABB(const glm::vec3& point);
 
     bool is_valid() const;
 
@@ -31,6 +35,24 @@ class AABB
         const float tmax = std::numeric_limits<float>::max(),
         float*      t_in = nullptr,
         float*      t_out = nullptr) const;
+
+    // Test if a point is inside the bbox.
+    bool contains(const glm::vec3& point) const;
+
+    // Enlarge the bbox so that it contains the given point.
+    void add_point(const glm::vec3& point);
+
+    // Returns the axis index
+    // of the maximum extent.
+    size_t max_extent() const;
 };
+
+
+//
+// Artihmetic.
+//
+
+AABB operator+(const AABB& lhs, const AABB& rhs);
+AABB& operator+=(AABB& lhs, const AABB& rhs);
 
 #endif // RENDER_AABB_H

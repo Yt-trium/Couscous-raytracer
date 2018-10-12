@@ -12,11 +12,22 @@
 using namespace glm;
 using namespace std;
 
+AABB::AABB()
+{
+}
+
 AABB::AABB(
     const vec3& min,
     const vec3& max)
   : min(min)
   , max(max)
+{
+}
+
+AABB::AABB(
+    const vec3& point)
+  : min(point)
+  , max(point)
 {
 }
 
@@ -65,3 +76,57 @@ bool AABB::intersect(
     return true;
 }
 
+bool AABB::contains(const vec3& point) const
+{
+    for (size_t i = 0; i < 3; ++i)
+    {
+        if (point[i] < min[i] || point[i] > max[i])
+            return false;
+    }
+
+    return true;
+}
+
+void AABB::add_point(const vec3& point)
+{
+    min = glm::min(min, point);
+    max = glm::max(max, point);
+}
+
+size_t AABB::max_extent() const
+{
+    float max_extent = max[0] - min[0];
+    size_t max_extent_index = 0;
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        const float extent = max[i] - min[i];
+        if (extent > max_extent)
+        {
+            max_extent = extent;
+            max_extent_index = i;
+        }
+    }
+
+    return max_extent_index;
+}
+
+
+//
+// Artihmetic implementation
+//
+
+AABB operator+(const AABB& lhs, const AABB& rhs)
+{
+    AABB res = lhs;
+    res.add_point(rhs.min);
+    res.add_point(rhs.max);
+    return res;
+}
+
+AABB& operator+=(AABB& lhs, const AABB& rhs)
+{
+    lhs.add_point(rhs.min);
+    lhs.add_point(rhs.max);
+    return lhs;
+}

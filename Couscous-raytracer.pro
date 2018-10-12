@@ -34,6 +34,8 @@ SOURCES += \
     src/renderer/samplegenerator.cpp \
     src/test/test.cpp \
     src/renderer/photonMapping.cpp
+    src/renderer/gridaccelerator.cpp \
+    src/renderer/aabb.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -48,6 +50,8 @@ HEADERS += \
     src/test/test.h \
     src/renderer/utility.h \
     src/renderer/photonMapping.h
+    src/renderer/aabb.h \
+    src/renderer/gridaccelerator.h
 
 FORMS += \
         src/gui/mainwindow.ui

@@ -5,7 +5,6 @@
 #include <QColor>
 #include <QDateTime>
 #include <Qt>
-#include <QDebug>
 
 // Standard headers.
 #include <algorithm>

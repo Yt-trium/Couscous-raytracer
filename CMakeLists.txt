@@ -32,6 +32,8 @@ set (renderer_sources
     src/renderer/aabb.h
     src/renderer/camera.cpp
     src/renderer/camera.h
+    src/renderer/gridaccelerator.cpp
+    src/renderer/gridaccelerator.h
     src/renderer/material.cpp
     src/renderer/material.h
     src/renderer/ray.cpp
