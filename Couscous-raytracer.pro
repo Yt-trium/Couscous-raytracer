@@ -32,7 +32,8 @@ SOURCES += \
     src/gui/frameviewer.cpp \
     src/renderer/material.cpp \
     src/renderer/samplegenerator.cpp \
-    src/test/test.cpp
+    src/test/test.cpp \
+    src/renderer/photonMapping.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -45,7 +46,8 @@ HEADERS += \
     src/renderer/samplegenerator.h \
     src/test/catch.hpp \
     src/test/test.h \
-    src/renderer/utility.h
+    src/renderer/utility.h \
+    src/renderer/photonMapping.h
 
 FORMS += \
         src/gui/mainwindow.ui
