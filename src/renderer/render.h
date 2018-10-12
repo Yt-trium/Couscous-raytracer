@@ -44,15 +44,28 @@ class Render : public QObject
         const Camera&                   camera,
         const VoxelGridAccelerator&     grid,
         const bool                      parallel,
-        const bool                      preview,
         QImage&                         image,
         QProgressBar&                   progressBar);
 
+  signals:
+
+    // Emitted when a tile begins.
+    void on_tile_begin(
+        const size_t                    x0,
+        const size_t                    y0,
+        const size_t                    x1,
+        const size_t                    y1);
+
+    // Emitted when a tile ends.
+    void on_tile_end(
+        const size_t                    x0,
+        const size_t                    y0,
+        const size_t                    x1,
+        const size_t                    y1,
+        const QImage&                   frame);
+
   private:
     glm::vec3 random_in_unit_sphere() const;
-
-  signals:
-    void render_new_tile();
 };
 
 #endif // RENDER_H
