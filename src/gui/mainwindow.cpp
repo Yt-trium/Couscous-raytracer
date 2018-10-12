@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 
 // couscous includes.
+#include "gui/scene.h"
 #include "renderer/camera.h"
 #include "renderer/material.h"
 #include "renderer/gridaccelerator.h"
@@ -85,14 +86,88 @@ void MainWindow::slot_do_render()
         yaw, pitch, fov, width, height);
 
     // Create materials.
+
     shared_ptr<Material> mat_light(new Light(vec3(15.0f)));
     shared_ptr<Material> mat_red(new Lambertian(vec3(0.65f, 0.05f, 0.05f)));
     shared_ptr<Material> mat_green(new Lambertian(vec3(0.12f, 0.45f, 0.15f)));
     shared_ptr<Material> mat_white(new Lambertian(vec3(0.73f, 0.73f, 0.73f)));
 
+
     // Create cornell box.
     MeshGroup world;
 
+    Scene scene;
+    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f)));
+    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f)));
+    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 0.45f, 0.15f), vec3(0.0f)));
+    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f)));
+
+
+    scene.objects.push_back(SceneObject("floor",
+                                        vec3(0.0f, 0.0f, 0.0f),
+                                        vec3(0.0f, 0.0f, 0.0f),
+                                        0.0f,
+                                        vec3(200.0f),
+                                        PLANE,
+                                        "white"));
+
+    scene.objects.push_back(SceneObject("background",
+                                        vec3(0.0f, 100.0f, -100.0f),
+                                        vec3(1.0f, 0.0f, 0.0f),
+                                        90.0f,
+                                        vec3(200.0f),
+                                        PLANE,
+                                        "white"));
+
+    scene.objects.push_back(SceneObject("ceilling",
+                                        vec3(0.0f, 200.0f, 0.0f),
+                                        vec3(1.0f, 0.0f, 0.0f),
+                                        180.0f,
+                                        vec3(200.0f),
+                                        PLANE,
+                                        "white"));
+
+    scene.objects.push_back(SceneObject("light",
+                                        vec3(0.0f, 199.0f, 0.0f),
+                                        vec3(1.0f, 0.0f, 0.0f),
+                                        180.0f,
+                                        vec3(30.0f),
+                                        PLANE,
+                                        "light"));
+
+    scene.objects.push_back(SceneObject("left",
+                                        vec3(100.0f, 100.0f, 0.0f),
+                                        vec3(0.0f, 0.0f, 1.0f),
+                                        90.0f,
+                                        vec3(200.0f),
+                                        PLANE,
+                                        "green"));
+
+    scene.objects.push_back(SceneObject("right",
+                                        vec3(-100.0f, 100.0f, 0.0f),
+                                        vec3(0.0f, 0.0f, 1.0f),
+                                        -90.0f,
+                                        vec3(200.0f),
+                                        PLANE,
+                                        "red"));
+
+    scene.objects.push_back(SceneObject("left_box",
+                                        vec3(50.0f, 50.0f, -30.0f),
+                                        vec3(0.0f, 1.0f, 0.0f),
+                                        -20.0f,
+                                        vec3(60.0f, 100.0f, 60.0f),
+                                        CUBE,
+                                        "white"));
+
+    scene.objects.push_back(SceneObject("right_box",
+                                        vec3(-50.0f, 30.0f, 30.0f),
+                                        vec3(0.0f, 1.0f, 0.0f),
+                                        20.0f,
+                                        vec3(60.0f),
+                                        CUBE,
+                                        "white"));
+    scene.create_scene(world);
+    /*
     // Floor.
     mat4 transform = scale(mat4(1.0f), vec3(200.0f));
     create_plane(world, mat_white, transform);
@@ -131,6 +206,7 @@ void MainWindow::slot_do_render()
     transform = scale(transform, vec3(60.0f, 100.0f, 60.0f));
     transform = rotate(transform, radians(-20.0f), vec3(0.0f, 1.0f, 0.0f));
     create_cube(world, mat_white, transform);
+    */
 
     VoxelGridAccelerator accelerator(world);
 

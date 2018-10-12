@@ -2,14 +2,15 @@
 #define SCENE_H
 
 // couscous includes.
-#include "renderer/visualobject.h"
 #include "renderer/material.h"
+#include "renderer/visualobject.h"
 
 // glm includes.
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
 
 // Standard includes.
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,9 +29,6 @@ public:
         , m_material(m)
     {}
 
-    void add_object(MeshGroup& world);
-
-private:
     std::string m_name;
     glm::vec3 m_translate;
     glm::vec3 m_rotate;
@@ -43,19 +41,23 @@ private:
 class SceneMaterial
 {
 public:
-    SceneMaterial();
+    SceneMaterial(std::string n, glm::vec3 c, glm::vec3 e)
+        : m_name(n)
+        , m_color(c)
+        , m_emission(e)
+    {}
 
-private:
-    std::string name;
-    glm::vec3 color;
-    glm::vec3 emission;
+    std::string m_name;
+    glm::vec3 m_color;
+    glm::vec3 m_emission;
 };
 
 class Scene
 {
 public:
-    Scene();
+    Scene(){}
 
+    void create_scene(MeshGroup& world);
 
     std::vector<SceneMaterial> materials;
     std::vector<SceneObject> objects;
