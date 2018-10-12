@@ -267,8 +267,8 @@ void MainWindow::slot_treeWidget_customContextMenuRequested(const QPoint &p)
 {
     QMenu menu(this);
 
-    menu.addAction(ui->actionNew_object);
     menu.addAction(ui->actionNew_material);
+    menu.addAction(ui->actionNew_object);
 
     menu.exec(ui->treeWidget_scene->mapToGlobal(p));
 }
