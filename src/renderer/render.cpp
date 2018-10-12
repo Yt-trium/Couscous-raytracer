@@ -66,7 +66,6 @@ void Render::get_render_image(
         const Camera&                   camera,
         const VoxelGridAccelerator&     grid,
         const bool                      parallel,
-        const bool                      preview,
         QImage&                         image,
         QProgressBar&                   progressBar)
 {
@@ -86,8 +85,13 @@ void Render::get_render_image(
     // Thread handles
     vector<QFuture<void>> threads;
 
+    // Job for rendering a given tile.
     auto compute =
-    [&](size_t x1, size_t x2, size_t y1, size_t y2)
+    [&](
+        size_t x1,
+        size_t x2,
+        size_t y1,
+        size_t y2)
     {
         for (size_t y = y1; y < y2; ++y)
         {
@@ -114,14 +118,18 @@ void Render::get_render_image(
                 color.y = std::min(color.y, 1.0f);
                 color.z = std::min(color.z, 1.0f);
 
-                int ir = int(255.0f * color[0]);
-                int ig = int(255.0f * color[1]);
-                int ib = int(255.0f * color[2]);
-                image.setPixel(int(width-1-x), int(height-1-y), QColor(ir, ig, ib).rgb());
+                const QRgb rgb_color = qRgb(
+                    static_cast<int>(255.0f * color[0]),
+                    static_cast<int>(255.0f * color[1]),
+                    static_cast<int>(255.0f * color[2]));
+
+                // In Qt, y is going from top to bottom.
+                image.setPixel(x, y, rgb_color);
             }
         }
     };
 
+    // Create tile jobs or render tiles.
     for (y0 = 0; y0 < height; y0+=64)
     {
         for (x0 = 0; x0 < width; x0+=64)
@@ -131,29 +139,42 @@ void Render::get_render_image(
             x2 = std::min(x0+64, width);
             y2 = std::min(y0+64, height);
 
-            if(parallel)
+            if (parallel)
             {
                 QFuture<void> future = QtConcurrent::run(compute, x1, x2, y1, y2);
                 threads.push_back(future);
             }
             else
             {
+                emit on_tile_begin(x1, y1, x2, y2);
                 compute(x1, x2, y1, y2);
                 progressBar.setValue(int((y0/64)*(width/64)+(x0/64)));
-
-                if(preview)
-                    emit render_new_tile();
+                emit on_tile_end(x1, y1, x2, y2, image);
             }
         }
     }
 
+    y0 = 0;
+    x0 = 0;
+
     for(size_t i = 0; i < threads.size(); ++i)
     {
+        // Compute thread's tile position.
+        x2 = std::min(x0 + 64, width);
+        y2 = std::min(y0 + 64, height);
+
+        emit on_tile_begin(x0, y0, x2, y2);
         threads.at(i).waitForFinished();
+        emit on_tile_end(x0, y0, x2, y2, image);
         progressBar.setValue(int(i));
 
-        if(preview)
-            emit render_new_tile();
+        x0 += 64;
+
+        if (x0 >= width)
+        {
+            x0 = 0;
+            y0 += 64;
+        }
     }
 
     progressBar.setValue(progressBar.maximum());

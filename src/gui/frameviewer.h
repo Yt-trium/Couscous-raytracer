@@ -27,13 +27,24 @@ class FrameViewer : public QWidget
 
     void clear();
 
+  public slots:
+
     // Clear the frame.
     void on_render_begin(const size_t width, const size_t height);
 
-    // Display the given image.
-    void on_render_end(const QImage& image);
+    void highlight_tile(
+        const size_t    xmin,
+        const size_t    ymin,
+        const size_t    xmax,
+        const size_t    ymax);
 
-  public slots:
+    void update_tile(
+        const size_t    xmin,
+        const size_t    ymin,
+        const size_t    xmax,
+        const size_t    ymax,
+        const QImage&   source);
+
     void fit_to_viewport();
     void reset_transform();
     void translate_viewport(const int dx, const int dy);
