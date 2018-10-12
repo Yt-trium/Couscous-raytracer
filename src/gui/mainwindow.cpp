@@ -33,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusBar->addPermanentWidget(&m_statusBarProgress);
     m_statusBarProgress.setVisible(false);
 
+    ui->treeWidget_scene->expandAll();
+
     // Add the image viewer.
     ui->viewer_container_layout->addWidget(&m_frame_viewer);
 
