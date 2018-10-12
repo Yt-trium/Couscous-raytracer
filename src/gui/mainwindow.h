@@ -41,6 +41,9 @@ class MainWindow : public QMainWindow
     void slot_zoom_out();
     void slot_run_unit_test();
     void slot_render_new_tile();
+
+    void slot_dock_widget_changed();
+    void slot_action_dock_changed();
 };
 
 #endif // MAINWINDOW_H

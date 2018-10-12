@@ -45,6 +45,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_zoom_out, SIGNAL(released()), SLOT(slot_zoom_out()));
     connect(ui->actionRun_Unit_Test, SIGNAL(triggered()), SLOT(slot_run_unit_test()));
     connect(m_render, SIGNAL(render_new_tile()), SLOT(slot_render_new_tile()));
+    connect(ui->dockWidget_render, SIGNAL(visibilityChanged(bool)), SLOT(slot_dock_widget_changed()));
+    connect(ui->dockWidget_scene, SIGNAL(visibilityChanged(bool)), SLOT(slot_dock_widget_changed()));
+    connect(ui->actionRender_Options, SIGNAL(triggered(bool)), SLOT(slot_action_dock_changed()));
+    connect(ui->actionScene_Options, SIGNAL(triggered(bool)), SLOT(slot_action_dock_changed()));
 }
 
 MainWindow::~MainWindow()
@@ -212,5 +216,17 @@ void MainWindow::slot_run_unit_test()
 void MainWindow::slot_render_new_tile()
 {
     m_frame_viewer.on_render_end(m_image);
+}
+
+void MainWindow::slot_dock_widget_changed()
+{
+    ui->actionRender_Options->setChecked(ui->dockWidget_render->isVisible());
+    ui->actionScene_Options->setChecked(ui->dockWidget_scene->isVisible());
+}
+
+void MainWindow::slot_action_dock_changed()
+{
+    ui->dockWidget_render->setVisible(ui->actionRender_Options->isChecked());
+    ui->dockWidget_scene->setVisible(ui->actionScene_Options->isChecked());
 }
 
