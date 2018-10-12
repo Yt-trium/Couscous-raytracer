@@ -33,7 +33,7 @@ SOURCES += \
     src/renderer/material.cpp \
     src/renderer/samplegenerator.cpp \
     src/test/test.cpp \
-    src/renderer/photonMapping.cpp
+    src/renderer/photonMapping.cpp \
     src/renderer/gridaccelerator.cpp \
     src/renderer/aabb.cpp
 
