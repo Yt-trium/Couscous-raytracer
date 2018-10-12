@@ -1,11 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-// couscous headers.
+// couscous includes.
 #include "gui/frameviewer.h"
 #include "renderer/render.h"
 
-// Qt headers.
+// Qt includes.
 #include <QFileDialog>
 #include <QTime>
 #include <QImage>
@@ -29,18 +29,18 @@ class MainWindow : public QMainWindow
     void signal_rendering_finished(const QImage&) const;
 
   private:
-    Ui::MainWindow* ui;
-    QImage          m_image;
-    FrameViewer     m_frame_viewer;
-    Render          *m_render;
-    QProgressBar    *m_statusBarProgress;
+    Ui::MainWindow*                 ui;
+    QImage                          m_image;
+    FrameViewer                     m_frame_viewer;
+    Render                          m_render;
+    QProgressBar                    m_statusBarProgress;
+
   private slots:
     void slot_do_render();
     void slot_save_as_image();
     void slot_zoom_in();
     void slot_zoom_out();
     void slot_run_unit_test();
-    void slot_render_new_tile();
 
     void slot_dock_widget_changed();
     void slot_action_dock_changed();

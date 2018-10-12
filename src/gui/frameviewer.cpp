@@ -4,10 +4,10 @@
 // QT headers.
 #include <QColor>
 #include <QDateTime>
-#include <Qt>
 
 // Standard headers.
 #include <algorithm>
+#include <cassert>
 
 using namespace std;
 
@@ -51,9 +51,101 @@ void FrameViewer::on_render_begin(const size_t width, const size_t height)
     resize(width, height);
 }
 
-void FrameViewer::on_render_end(const QImage& image)
+namespace
 {
-    m_image = image.copy();
+    void draw_block(
+        const size_t    size,
+        const size_t    x,
+        const size_t    y,
+        const QRgb&     color,
+        QImage&         image)
+    {
+        for (size_t i = x; i <= x + size; ++i)
+        {
+            for (size_t j = y; j <= y + size; ++j)
+            {
+                image.setPixel(i, j, color);
+            }
+        }
+    }
+
+    void copy_area(
+        const size_t    xmin,
+        const size_t    ymin,
+        const size_t    xmax,
+        const size_t    ymax,
+        const QImage&   source,
+        QImage&         dest)
+    {
+        assert(source.width() == dest.width());
+        assert(source.height() == dest.height());
+
+        for (size_t j = ymin; j < ymax; ++j)
+        {
+            const uchar* source_ptr = source.scanLine(j) + xmin * 3;
+            uchar* dest_ptr = dest.scanLine(j) + xmin * 3;
+
+            for (size_t i = xmin; i < xmax; ++i)
+            {
+                // 3 channels (RGB).
+                *dest_ptr++ = *source_ptr++;
+                *dest_ptr++ = *source_ptr++;
+                *dest_ptr++ = *source_ptr++;
+            }
+        }
+    }
+}
+
+void FrameViewer::highlight_tile(
+    const size_t    xmin,
+    const size_t    ymin,
+    const size_t    xmax,
+    const size_t    ymax)
+{
+    static QRgb white = qRgb(255, 255, 255);
+
+    assert(xmin < static_cast<size_t>(m_image.width()));
+    assert(xmax <= static_cast<size_t>(m_image.width()));
+    assert(ymin < static_cast<size_t>(m_image.height()));
+    assert(ymax <= static_cast<size_t>(m_image.height()));
+
+    // Draw tile hilights.
+    // Top left corner.
+    draw_block(3, xmin, ymin, white, m_image);
+    draw_block(3, xmin + 3, ymin, white, m_image);
+    draw_block(3, xmin, ymin + 3, white, m_image);
+
+    // Top right corner.
+    draw_block(3, xmax - 4, ymin, white, m_image);
+    draw_block(3, xmax - 7, ymin, white, m_image);
+    draw_block(3, xmax - 4, ymin + 3, white, m_image);
+
+    // Bottom left corner.
+    draw_block(3, xmin, ymax - 4, white, m_image);
+    draw_block(3, xmin + 3, ymax - 4, white, m_image);
+    draw_block(3, xmin, ymax - 7, white, m_image);
+
+    // Bottom right corner.
+    draw_block(3, xmax - 4, ymax - 4, white, m_image);
+    draw_block(3, xmax - 7, ymax - 4, white, m_image);
+    draw_block(3, xmax - 4, ymax - 7, white, m_image);
+
+    repaint();
+}
+
+void FrameViewer::update_tile(
+    const size_t    xmin,
+    const size_t    ymin,
+    const size_t    xmax,
+    const size_t    ymax,
+    const QImage&   source)
+{
+    assert(xmin < static_cast<size_t>(m_image.width()));
+    assert(xmax <= static_cast<size_t>(m_image.width()));
+    assert(ymin < static_cast<size_t>(m_image.height()));
+    assert(ymax <= static_cast<size_t>(m_image.height()));
+
+    copy_area(xmin, ymin, xmax, ymax, source, m_image);
     repaint();
 }
 
@@ -143,9 +235,14 @@ void FrameViewer::mouseReleaseEvent(QMouseEvent* event)
 void FrameViewer::paintEvent(QPaintEvent* event)
 {
     // Create transform matrix.
+
     // Place image's center at (0, 0)
     QTransform center_image;
     center_image.translate(-m_image.width() / 2, -m_image.height() / 2);
+    // Invert image because the Qt image space is different from the
+    // renderer space.
+    QTransform swap_y;
+    swap_y.scale(1.0f, -1.0f);
 
     // Apply scale.
     QTransform scale_image;
@@ -157,7 +254,7 @@ void FrameViewer::paintEvent(QPaintEvent* event)
     translate_image.translate(width() / 2, height() / 2);
     translate_image.translate(m_translate_x, m_translate_y);
 
-    QTransform transform = center_image * scale_image * translate_image;
+    QTransform transform = center_image * swap_y * scale_image * translate_image;
 
     // Draw the image.
     m_painter.begin(this);

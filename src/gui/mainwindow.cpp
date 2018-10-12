@@ -26,17 +26,15 @@ MainWindow::MainWindow(QWidget *parent)
   , ui(new Ui::MainWindow)
   , m_image(512, 512, QImage::Format_RGB888)
   , m_frame_viewer(512, 512)
+  , m_statusBarProgress(this)
 {
     ui->setupUi(this);
 
-    m_statusBarProgress = new QProgressBar(this);
-    ui->statusBar->addPermanentWidget(m_statusBarProgress);
-    m_statusBarProgress->setVisible(false);
+    ui->statusBar->addPermanentWidget(&m_statusBarProgress);
+    m_statusBarProgress.setVisible(false);
 
     // Add the image viewer.
     ui->viewer_container_layout->addWidget(&m_frame_viewer);
-    m_frame_viewer.on_render_end(m_image);
-    m_render = new Render();
 
     // Connect widgets events.
     connect(ui->pushButton_render, SIGNAL(released()), SLOT(slot_do_render()));
@@ -44,11 +42,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_zoom_in, SIGNAL(released()), SLOT(slot_zoom_in()));
     connect(ui->pushButton_zoom_out, SIGNAL(released()), SLOT(slot_zoom_out()));
     connect(ui->actionRun_Unit_Test, SIGNAL(triggered()), SLOT(slot_run_unit_test()));
-    connect(m_render, SIGNAL(render_new_tile()), SLOT(slot_render_new_tile()));
+
     connect(ui->dockWidget_render, SIGNAL(visibilityChanged(bool)), SLOT(slot_dock_widget_changed()));
     connect(ui->dockWidget_scene, SIGNAL(visibilityChanged(bool)), SLOT(slot_dock_widget_changed()));
     connect(ui->actionRender_Options, SIGNAL(triggered(bool)), SLOT(slot_action_dock_changed()));
     connect(ui->actionScene_Options, SIGNAL(triggered(bool)), SLOT(slot_action_dock_changed()));
+
+    connect(
+        &m_render,
+        SIGNAL(on_tile_end(size_t, size_t, size_t, size_t, QImage)),
+        &m_frame_viewer,
+        SLOT(update_tile(size_t, size_t, size_t, size_t, QImage)));
 }
 
 MainWindow::~MainWindow()
@@ -74,10 +78,7 @@ void MainWindow::slot_do_render()
     const float fov   = float(ui->doubleSpinBox_fov->value());
 
     const bool parallel = ui->checkBox_parallel_rendering->isChecked();
-    const bool preview = ui->checkBox_real_time_preview->isChecked();
-
-    m_frame_viewer.on_render_begin(width, height);
-
+    // Create the scene.
     Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
         yaw, pitch, fov, width, height);
 
@@ -134,9 +135,11 @@ void MainWindow::slot_do_render()
     QTime render_timer;
     render_timer.start();
     ui->statusBar->showMessage("Rendering progress : ");
-    m_statusBarProgress->setVisible(true);
+    m_statusBarProgress.setVisible(true);
 
-    m_render->get_render_image(
+    m_frame_viewer.on_render_begin(width, height);
+
+    m_render.get_render_image(
         width,
         height,
         samples,
@@ -144,14 +147,11 @@ void MainWindow::slot_do_render()
         camera,
         accelerator,
         parallel,
-        preview,
         m_image,
-        *m_statusBarProgress);
+        m_statusBarProgress);
 
-    m_statusBarProgress->setVisible(false);
+    m_statusBarProgress.setVisible(false);
     QString message = "Rendering time : " + QString::number(render_timer.elapsed()) + " ms";
-
-    m_frame_viewer.on_render_end(m_image);
 
     ui->statusBar->showMessage(message);
     ui->pushButton_render->setEnabled(true);
@@ -213,11 +213,6 @@ void MainWindow::slot_run_unit_test()
     QCoreApplication::quit();
 }
 
-void MainWindow::slot_render_new_tile()
-{
-    m_frame_viewer.on_render_end(m_image);
-}
-
 void MainWindow::slot_dock_widget_changed()
 {
     ui->actionRender_Options->setChecked(ui->dockWidget_render->isVisible());
@@ -229,4 +224,3 @@ void MainWindow::slot_action_dock_changed()
     ui->dockWidget_render->setVisible(ui->actionRender_Options->isChecked());
     ui->dockWidget_scene->setVisible(ui->actionScene_Options->isChecked());
 }
-

@@ -33,6 +33,7 @@ SOURCES += \
     src/renderer/material.cpp \
     src/renderer/samplegenerator.cpp \
     src/test/test.cpp \
+    src/renderer/photonMapping.cpp \
     src/renderer/gridaccelerator.cpp \
     src/renderer/aabb.cpp
 
@@ -48,6 +49,7 @@ HEADERS += \
     src/test/catch.hpp \
     src/test/test.h \
     src/renderer/utility.h \
+    src/renderer/photonMapping.h \
     src/renderer/aabb.h \
     src/renderer/gridaccelerator.h
 
