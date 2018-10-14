@@ -56,6 +56,8 @@ set (gui_sources
     src/gui/mainwindow.cpp
     src/gui/mainwindow.h
     src/gui/mainwindow.ui
+    src/gui/scene.cpp
+    src/gui/scene.h
 )
 
 list (APPEND couscous_sources
