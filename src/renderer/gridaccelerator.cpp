@@ -206,7 +206,7 @@ bool VoxelGridAccelerator::hit(
         axis = (next_t[2] < next_t[axis]) ? 2 : axis;
 
         // We stop if the current intersection point is
-        // further away than the next voxel.
+        // closer than the next voxel.
         if (rec.t < next_t[axis])
             break;
 
