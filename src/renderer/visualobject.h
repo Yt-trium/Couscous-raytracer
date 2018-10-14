@@ -162,5 +162,13 @@ void create_plane(
     const std::shared_ptr<Material>&    material,
     const glm::mat4&                    transform = glm::mat4(1.0f));
 
+void create_cylinder(
+    MeshGroup&                          world,
+    const std::shared_ptr<Material>&    material,
+    const size_t                        subidivisions = 6,
+    const float                         height = 1.0f,
+    const float                         width = 1.0f,
+    const bool                          caps = true,
+    const glm::mat4&                    transform = glm::mat4(1.0f));
 
 #endif // VISUALOBJECT_H

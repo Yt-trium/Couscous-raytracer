@@ -10,6 +10,10 @@
 // Standard includes.
 #include <cmath>
 
+// Uncomment this if you don't want to use the grid
+// accelerator while rendering.
+#define DEBUG_DISABLE_ACCELERATOR
+
 using namespace glm;
 using namespace std;
 
@@ -123,6 +127,9 @@ bool VoxelGridAccelerator::hit(
     float                               tmax,
     HitRecord&                          rec) const
 {
+#ifdef DEBUG_DISABLE_ACCELERATOR
+    return hit_world(m_world, r, tmin, tmax, rec);
+#else
     // Parameter for the point where the ray enters the grid.
     float t = 0.0f;
 
@@ -213,6 +220,7 @@ bool VoxelGridAccelerator::hit(
     }
 
     return hit_something;
+#endif
 }
 
 size_t VoxelGridAccelerator::voxel(const vec3& position, const size_t axis) const

@@ -5,6 +5,7 @@
 // Standard includes.
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <iterator>
 
 using namespace glm;
@@ -392,3 +393,131 @@ void create_plane(
         material,
         transform);
 }
+
+#include <iostream>
+// Procedurally generate a sphere.
+// Poles are not considered as subidivisions.
+void create_cylinder(
+    MeshGroup&                      world,
+    const shared_ptr<Material>&     material,
+    const size_t                    subidivisions,
+    const float                     height,
+    const float                     width,
+    const bool                      caps,
+    const mat4&                     transform)
+{
+    assert(subidivisions >= 3);
+    assert(height >= 0.0f && width >= 0.0f);
+
+    const float radius = width * 0.5f;
+    const float hheight = height * 0.5f;
+
+    vector<vec3> vertices, normals;
+    vector<size_t> indices;
+    size_t face_count = 0;
+
+    const float angle_step = (-2.0f * M_PI) / static_cast<float>(subidivisions);
+
+    // Initial points.
+    vertices.emplace_back(radius, -hheight, 0.0f);
+    vertices.emplace_back(radius, hheight, 0.0f);
+
+    // Create vertices and indices.
+    for (size_t i = 1; i < subidivisions; ++i)
+    {
+        const float angle = static_cast<float>(i) * angle_step;
+
+        // X and Z depends on the angle.
+        const float x = radius * cos(angle);
+        const float z = radius * sin(angle);
+
+        // Create points;
+        vertices.emplace_back(x, -hheight, z);
+        vertices.emplace_back(x, hheight, z);
+
+        // Create the face.
+        const size_t index = i * 2;
+        indices.push_back(index - 2);
+        indices.push_back(index);
+        indices.push_back(index + 1);
+        indices.push_back(index - 2);
+        indices.push_back(index + 1);
+        indices.push_back(index - 1);
+        face_count += 2;
+
+        // Create normals.
+        const vec3 ab = vertices[index] - vertices[index - 2];
+        const vec3 ac = vertices[index - 1] - vertices[index - 2];
+        const vec3 normal = normalize(cross(ab, ac));
+        normals.emplace_back(normal);
+        normals.emplace_back(normal);
+    }
+
+    // Create the welding face.
+    const size_t index = subidivisions * 2 - 2;
+    indices.push_back(index);
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(index);
+    indices.push_back(1);
+    indices.push_back(index + 1);
+    const vec3 ab = vertices[0] - vertices[index];
+    const vec3 ac = vertices[index + 1] - vertices[index];
+    const vec3 normal = normalize(cross(ab, ac));
+    normals.emplace_back(normal);
+    normals.emplace_back(normal);
+    face_count += 2;
+
+    if (caps)
+    {
+        // Poke faces with one vertice for each cap.
+        vertices.emplace_back(0.0f, hheight, 0.0f);
+        vertices.emplace_back(0.0f, -hheight, 0.0f);
+
+        const size_t top_index = vertices.size() - 2;
+        const size_t bottom_index = vertices.size() - 1;
+
+        const vec3 top_normal(0.0f, 1.0f, 0.0f);
+        const vec3 bottom_normal(0.0f, -1.0f, 0.0f);
+
+        // Turn around the cylinder.
+        for (size_t i = 0; i < subidivisions; ++i)
+        {
+            // Bottom triangle.
+            indices.emplace_back(bottom_index);
+            indices.emplace_back(i * 2 + 2);
+            indices.emplace_back(i * 2);
+            normals.push_back(bottom_normal);
+
+            // Top triangle.
+            indices.emplace_back(top_index);
+            indices.emplace_back(i * 2 + 1);
+            indices.emplace_back(i * 2 + 3);
+            normals.push_back(top_normal);
+
+            face_count += 2;
+        }
+
+        // Welding triangles.
+        indices.emplace_back(bottom_index);
+        indices.emplace_back(0);
+        indices.emplace_back(index);
+        indices.emplace_back(top_index);
+        indices.emplace_back(index + 1);
+        indices.emplace_back(1);
+        normals.push_back(bottom_normal);
+        normals.push_back(top_normal);
+        face_count += 2;
+    }
+
+    create_triangle_mesh(
+        world,
+        face_count,
+        vertices.size(),
+        indices.data(),
+        vertices.data(),
+        normals.data(),
+        material,
+        transform);
+}
+
