@@ -7,5 +7,10 @@
         <file>baseline_business_black_18dp.png</file>
         <file>baseline_gradient_black_18dp.png</file>
         <file>baseline_landscape_black_18dp.png</file>
+        <file>square-outline.png</file>
+        <file>cylinder-outline.png</file>
+        <file>cube-outline.png</file>
+        <file>checkbox-blank-circle-outline.png</file>
+        <file>baseline_texture_black_18dp.png</file>
     </qresource>
 </RCC>

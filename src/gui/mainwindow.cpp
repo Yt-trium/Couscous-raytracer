@@ -158,6 +158,7 @@ void MainWindow::update_scene_widget()
     {
         QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
         widgetItem->setText(0, QString::fromStdString(scene.materials.at(i).m_name));
+        widgetItem->setIcon(0, QIcon(":/sceneOptions/baseline_texture_black_18dp.png"));
         widgetItemMaterials->addChild(widgetItem);
     }
 
@@ -165,6 +166,20 @@ void MainWindow::update_scene_widget()
     {
         QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
         widgetItem->setText(0, QString::fromStdString(scene.objects.at(i).m_name));
+
+        switch(scene.objects.at(i).m_type)
+        {
+        case PLANE:
+            widgetItem->setIcon(0, QIcon(":/sceneOptions/square-outline.png"));
+            break;
+        case CUBE:
+            widgetItem->setIcon(0, QIcon(":/sceneOptions/cube-outline.png"));
+            break;
+        case CYLINDER:
+            widgetItem->setIcon(0, QIcon(":/sceneOptions/cylinder-outline.png"));
+            break;
+        }
+
         widgetItemObjects->addChild(widgetItem);
     }
 
