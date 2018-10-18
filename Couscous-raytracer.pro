@@ -36,7 +36,8 @@ SOURCES += \
     src/renderer/photonMapping.cpp \
     src/renderer/gridaccelerator.cpp \
     src/renderer/aabb.cpp \
-    src/gui/scene.cpp
+    src/gui/scene.cpp \
+    src/gui/dialogmaterial.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -53,10 +54,12 @@ HEADERS += \
     src/renderer/photonMapping.h \
     src/renderer/aabb.h \
     src/renderer/gridaccelerator.h \
-    src/gui/scene.h
+    src/gui/scene.h \
+    src/gui/dialogmaterial.h
 
 FORMS += \
-        src/gui/mainwindow.ui
+        src/gui/mainwindow.ui \
+    src/gui/dialogmaterial.ui
 
 INCLUDEPATH += glm src
 

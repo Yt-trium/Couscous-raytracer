@@ -47,6 +47,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->dockWidget_scene, SIGNAL(visibilityChanged(bool)), SLOT(slot_dock_widget_changed()));
     connect(ui->actionRender_Options, SIGNAL(triggered(bool)), SLOT(slot_action_dock_changed()));
     connect(ui->actionScene_Options, SIGNAL(triggered(bool)), SLOT(slot_action_dock_changed()));
+    connect(ui->treeWidget_scene,
+            SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),
+            SLOT(slot_treeWidget_itemDoubleClicked(QTreeWidgetItem*, int)));
 
     connect(
         &m_render,
@@ -86,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         PLANE,
                                         "white"));
 
-    scene.objects.push_back(SceneObject("light",
+    scene.objects.push_back(SceneObject("top_light",
                                         vec3(0.0f, 199.0f, 0.0f),
                                         vec3(1.0f, 0.0f, 0.0f),
                                         180.0f,
@@ -336,4 +339,31 @@ void MainWindow::slot_treeWidget_customContextMenuRequested(const QPoint &p)
     menu.addAction(ui->actionNew_object);
 
     menu.exec(ui->treeWidget_scene->mapToGlobal(p));
+}
+
+void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    QString itmname = item->text(column);
+    for(std::size_t i = 0 ; i < scene.materials.size() ; ++i)
+    {
+        if(QString::fromStdString(scene.materials.at(i).m_name) == itmname)
+        {
+            DialogMaterial *dlg = new DialogMaterial(this, &scene, i);
+            dlg->exec();
+            update_scene_widget();
+            return;
+        }
+    }
+    for(std::size_t i = 0 ; i < scene.objects.size() ; ++i)
+    {
+        if(QString::fromStdString(scene.objects.at(i).m_name) == itmname)
+        {
+            /*
+            DialogMaterial *dlg = new DialogMaterial();
+            dlg->exec();
+            */
+            return;
+        }
+    }
+
 }

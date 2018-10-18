@@ -4,6 +4,7 @@
 // couscous includes.
 #include "gui/frameviewer.h"
 #include "gui/scene.h"
+#include "gui/dialogmaterial.h"
 #include "renderer/render.h"
 
 // Qt includes.
@@ -13,6 +14,8 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QProgressBar>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 // Forward declarations.
 namespace Ui { class MainWindow; }
@@ -26,6 +29,8 @@ class MainWindow : public QMainWindow
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void update_scene_widget();
+
   signals:
     void signal_rendering_finished(const QImage&) const;
 
@@ -37,8 +42,6 @@ class MainWindow : public QMainWindow
     QProgressBar                    m_statusBarProgress;
 
     Scene scene;
-
-    void update_scene_widget();
 
   private slots:
     void slot_do_render();
@@ -52,6 +55,7 @@ class MainWindow : public QMainWindow
 
     void slot_update_scene_tree_widget();
     void slot_treeWidget_customContextMenuRequested(const QPoint &p);
+    void slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
 };
 
 #endif // MAINWINDOW_H
