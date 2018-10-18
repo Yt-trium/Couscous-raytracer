@@ -14,12 +14,18 @@
 #include <string>
 #include <vector>
 
-enum object_type {PLANE, CUBE};
+enum object_type {PLANE, CUBE, CYLINDER};
 
 class SceneObject
 {
 public:
-    SceneObject(std::string n, glm::vec3 t, glm::vec3 r, float rd, glm::vec3 s, object_type ot, std::string m)
+    SceneObject(std::string n,
+                glm::vec3 t,
+                glm::vec3 r,
+                float rd,
+                glm::vec3 s,
+                object_type ot,
+                std::string m)
         : m_name(n)
         , m_translate(t)
         , m_rotate(r)
@@ -27,7 +33,38 @@ public:
         , m_scale(s)
         , m_type(ot)
         , m_material(m)
+        , m_subdivisions(0)
+        , m_height(0)
+        , m_width(0)
+        , m_caps(false)
     {}
+
+    SceneObject(std::string n,
+                glm::vec3 t,
+                glm::vec3 r,
+                float rd,
+                glm::vec3 s,
+                object_type ot,
+                std::string m,
+                std::size_t sd,
+                float h,
+                float w,
+                bool c)
+        : m_name(n)
+        , m_translate(t)
+        , m_rotate(r)
+        , m_rotate_d(rd)
+        , m_scale(s)
+        , m_type(ot)
+        , m_material(m)
+        , m_subdivisions(sd)
+        , m_height(h)
+        , m_width(w)
+        , m_caps(c)
+    {
+        if(m_type == CYLINDER)
+            throw std::runtime_error("[SceneObject] CONSTRUCTOR ERROR");
+    }
 
     std::string m_name;
     glm::vec3 m_translate;
@@ -36,6 +73,11 @@ public:
     glm::vec3 m_scale;
     object_type m_type;
     std::string m_material;
+
+    std::size_t m_subdivisions;
+    float m_height;
+    float m_width;
+    bool m_caps;
 };
 
 class SceneMaterial

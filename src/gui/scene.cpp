@@ -53,6 +53,11 @@ void Scene::create_scene(MeshGroup &world)
         case CUBE:
             create_cube(world, mat_dft, transform);
             break;
+        case CYLINDER:
+            create_cylinder(world, mat_dft, object->m_subdivisions,
+                            object->m_height, object->m_width,
+                            object->m_caps, transform);
+            break;
         }
     }
 }
