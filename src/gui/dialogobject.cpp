@@ -12,58 +12,69 @@ DialogObject::DialogObject(QWidget *p, Scene *s, int i) :
     parent = p;
     ui->setupUi(this);
 
-    QString name = QString::fromStdString(s->objects.at(std::size_t(id)).m_name);
-    vec3 translate(s->objects.at(std::size_t(id)).m_translate);
-    vec3 rotate(s->objects.at(std::size_t(id)).m_rotate);
-    float rotate_d = s->objects.at(std::size_t(id)).m_rotate_d;
-    vec3 scale(s->objects.at(std::size_t(id)).m_scale);
-    object_type type = s->objects.at(std::size_t(id)).m_type;
-    QString material = QString::fromStdString(s->objects.at(std::size_t(id)).m_material);
-    std::size_t subdivisions = s->objects.at(std::size_t(id)).m_subdivisions;
-    float height = s->objects.at(std::size_t(id)).m_height;
-    float width = s->objects.at(std::size_t(id)).m_width;
-    bool caps = s->objects.at(std::size_t(id)).m_caps;
-
-    ui->lineEdit_name->setText(name);
-    ui->doubleSpinBox_translate_x->setValue(double(translate[0]));
-    ui->doubleSpinBox_translate_y->setValue(double(translate[1]));
-    ui->doubleSpinBox_translate_z->setValue(double(translate[2]));
-    ui->doubleSpinBox_rotate_x->setValue(double(rotate[0]));
-    ui->doubleSpinBox_rotate_y->setValue(double(rotate[1]));
-    ui->doubleSpinBox_rotate_z->setValue(double(rotate[2]));
-    ui->doubleSpinBox_rotate_angle->setValue(double(rotate_d));
-    ui->doubleSpinBox_scale_x->setValue(double(scale[0]));
-    ui->doubleSpinBox_scale_y->setValue(double(scale[1]));
-    ui->doubleSpinBox_scale_z->setValue(double(scale[2]));
-
-    switch(type)
+    if(id >= 0)
     {
-    case PLANE:
-        ui->comboBox_object_type->setCurrentIndex(0);
-        break;
-    case CUBE:
-        ui->comboBox_object_type->setCurrentIndex(1);
-        break;
-    case CYLINDER:
-        ui->comboBox_object_type->setCurrentIndex(2);
-        ui->spinBox_subdivisions->setEnabled(true);
-        ui->doubleSpinBox_height->setEnabled(true);
-        ui->doubleSpinBox_width->setEnabled(true);
-        ui->checkBox_caps->setEnabled(true);
-        break;
-    }
 
-    for(std::size_t x = 0 ; x < scene->materials.size() ; ++x)
+        QString name = QString::fromStdString(s->objects.at(std::size_t(id)).m_name);
+        vec3 translate(s->objects.at(std::size_t(id)).m_translate);
+        vec3 rotate(s->objects.at(std::size_t(id)).m_rotate);
+        float rotate_d = s->objects.at(std::size_t(id)).m_rotate_d;
+        vec3 scale(s->objects.at(std::size_t(id)).m_scale);
+        object_type type = s->objects.at(std::size_t(id)).m_type;
+        QString material = QString::fromStdString(s->objects.at(std::size_t(id)).m_material);
+        std::size_t subdivisions = s->objects.at(std::size_t(id)).m_subdivisions;
+        float height = s->objects.at(std::size_t(id)).m_height;
+        float width = s->objects.at(std::size_t(id)).m_width;
+        bool caps = s->objects.at(std::size_t(id)).m_caps;
+
+        ui->lineEdit_name->setText(name);
+        ui->doubleSpinBox_translate_x->setValue(double(translate[0]));
+        ui->doubleSpinBox_translate_y->setValue(double(translate[1]));
+        ui->doubleSpinBox_translate_z->setValue(double(translate[2]));
+        ui->doubleSpinBox_rotate_x->setValue(double(rotate[0]));
+        ui->doubleSpinBox_rotate_y->setValue(double(rotate[1]));
+        ui->doubleSpinBox_rotate_z->setValue(double(rotate[2]));
+        ui->doubleSpinBox_rotate_angle->setValue(double(rotate_d));
+        ui->doubleSpinBox_scale_x->setValue(double(scale[0]));
+        ui->doubleSpinBox_scale_y->setValue(double(scale[1]));
+        ui->doubleSpinBox_scale_z->setValue(double(scale[2]));
+
+        switch(type)
+        {
+        case PLANE:
+            ui->comboBox_object_type->setCurrentIndex(0);
+            break;
+        case CUBE:
+            ui->comboBox_object_type->setCurrentIndex(1);
+            break;
+        case CYLINDER:
+            ui->comboBox_object_type->setCurrentIndex(2);
+            ui->spinBox_subdivisions->setEnabled(true);
+            ui->doubleSpinBox_height->setEnabled(true);
+            ui->doubleSpinBox_width->setEnabled(true);
+            ui->checkBox_caps->setEnabled(true);
+            break;
+        }
+
+        for(std::size_t x = 0 ; x < scene->materials.size() ; ++x)
+        {
+            ui->comboBox_material->addItem(QString::fromStdString(scene->materials.at(x).m_name));
+            if(QString::fromStdString(scene->materials.at(x).m_name) == material)
+                ui->comboBox_material->setCurrentIndex(int(x));
+        }
+
+        ui->spinBox_subdivisions->setValue(int(subdivisions));
+        ui->doubleSpinBox_height->setValue(double(height));
+        ui->doubleSpinBox_width->setValue(double(width));
+        ui->checkBox_caps->setChecked(caps);
+    }
+    else
     {
-        ui->comboBox_material->addItem(QString::fromStdString(scene->materials.at(x).m_name));
-        if(QString::fromStdString(scene->materials.at(x).m_name) == material)
-            ui->comboBox_material->setCurrentIndex(int(x));
+        for(std::size_t x = 0 ; x < scene->materials.size() ; ++x)
+        {
+            ui->comboBox_material->addItem(QString::fromStdString(scene->materials.at(x).m_name));
+        }
     }
-
-    ui->spinBox_subdivisions->setValue(int(subdivisions));
-    ui->doubleSpinBox_height->setValue(double(height));
-    ui->doubleSpinBox_width->setValue(double(width));
-    ui->checkBox_caps->setChecked(caps);
 }
 
 DialogObject::~DialogObject()
@@ -113,4 +124,49 @@ void DialogObject::on_buttonBox_accepted()
         scene->objects[std::size_t(id)] = so;
     else
         scene->objects.push_back(so);
+}
+
+void DialogObject::on_comboBox_object_type_currentIndexChanged(int index)
+{
+    object_type ot;
+
+    switch (ui->comboBox_object_type->currentIndex()) {
+    case 0:
+        ot = PLANE;
+        break;
+    case 1:
+        ot = CUBE;
+        break;
+    case 2:
+        ot = CYLINDER;
+        break;
+    default:
+        ot = PLANE;
+        break;
+    }
+    switch(ot)
+    {
+    case PLANE:
+        ui->comboBox_object_type->setCurrentIndex(0);
+        ui->spinBox_subdivisions->setEnabled(false);
+        ui->doubleSpinBox_height->setEnabled(false);
+        ui->doubleSpinBox_width->setEnabled(false);
+        ui->checkBox_caps->setEnabled(false);
+        break;
+    case CUBE:
+        ui->comboBox_object_type->setCurrentIndex(1);
+        ui->spinBox_subdivisions->setEnabled(false);
+        ui->doubleSpinBox_height->setEnabled(false);
+        ui->doubleSpinBox_width->setEnabled(false);
+        ui->checkBox_caps->setEnabled(false);
+        break;
+    case CYLINDER:
+        ui->comboBox_object_type->setCurrentIndex(2);
+        ui->spinBox_subdivisions->setEnabled(true);
+        ui->doubleSpinBox_height->setEnabled(true);
+        ui->doubleSpinBox_width->setEnabled(true);
+        ui->checkBox_caps->setEnabled(true);
+        break;
+    }
+
 }

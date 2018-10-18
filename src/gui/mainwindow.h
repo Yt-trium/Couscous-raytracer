@@ -57,6 +57,10 @@ class MainWindow : public QMainWindow
     void slot_update_scene_tree_widget();
     void slot_treeWidget_customContextMenuRequested(const QPoint &p);
     void slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column);
+
+    void slot_create_material();
+    void slot_create_object();
+    void slot_delete();
 };
 
 #endif // MAINWINDOW_H

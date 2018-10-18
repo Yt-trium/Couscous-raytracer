@@ -12,17 +12,20 @@ DialogMaterial::DialogMaterial(QWidget *p, Scene *s, int i) :
     parent = p;
     ui->setupUi(this);
 
-    QString name = QString::fromStdString(s->materials.at(std::size_t(id)).m_name);
-    vec3 color(s->materials.at(std::size_t(id)).m_color);
-    vec3 emission(s->materials.at(std::size_t(id)).m_emission);
+    if(id >= 0)
+    {
+        QString name = QString::fromStdString(s->materials.at(std::size_t(id)).m_name);
+        vec3 color(s->materials.at(std::size_t(id)).m_color);
+        vec3 emission(s->materials.at(std::size_t(id)).m_emission);
 
-    ui->lineEdit_name->setText(name);
-    ui->doubleSpinBox_color_r->setValue(double(color[0]));
-    ui->doubleSpinBox_color_g->setValue(double(color[1]));
-    ui->doubleSpinBox_color_b->setValue(double(color[2]));
-    ui->doubleSpinBox_emission_r->setValue(double(emission[0]));
-    ui->doubleSpinBox_emission_g->setValue(double(emission[1]));
-    ui->doubleSpinBox_emission_b->setValue(double(emission[2]));
+        ui->lineEdit_name->setText(name);
+        ui->doubleSpinBox_color_r->setValue(double(color[0]));
+        ui->doubleSpinBox_color_g->setValue(double(color[1]));
+        ui->doubleSpinBox_color_b->setValue(double(color[2]));
+        ui->doubleSpinBox_emission_r->setValue(double(emission[0]));
+        ui->doubleSpinBox_emission_g->setValue(double(emission[1]));
+        ui->doubleSpinBox_emission_b->setValue(double(emission[2]));
+    }
 }
 DialogMaterial::~DialogMaterial()
 {

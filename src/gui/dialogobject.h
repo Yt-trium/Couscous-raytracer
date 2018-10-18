@@ -25,6 +25,8 @@ public:
 private slots:
     void on_buttonBox_accepted();
 
+    void on_comboBox_object_type_currentIndexChanged(int index);
+
 private:
     QWidget *parent;
     Scene *scene;

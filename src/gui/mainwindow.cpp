@@ -60,6 +60,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->treeWidget_scene, SIGNAL(customContextMenuRequested(const QPoint&)),
             SLOT(slot_treeWidget_customContextMenuRequested(const QPoint&)));
 
+    connect(ui->actionNew_material, SIGNAL(triggered(bool)), SLOT(slot_create_material()));
+    connect(ui->actionNew_object, SIGNAL(triggered(bool)), SLOT(slot_create_object()));
+    connect(ui->actionDelete, SIGNAL(triggered(bool)), SLOT(slot_delete()));
+
     scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f)));
     scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f)));
     scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 0.45f, 0.15f), vec3(0.0f)));
@@ -337,6 +341,7 @@ void MainWindow::slot_treeWidget_customContextMenuRequested(const QPoint &p)
 
     menu.addAction(ui->actionNew_material);
     menu.addAction(ui->actionNew_object);
+    menu.addAction(ui->actionDelete);
 
     menu.exec(ui->treeWidget_scene->mapToGlobal(p));
 }
@@ -362,8 +367,59 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
             dlg->exec();
             update_scene_widget();
             return;
-            return;
         }
     }
 
+}
+
+void MainWindow::slot_create_material()
+{
+    DialogMaterial *dlg = new DialogMaterial(this, &scene, -1);
+    dlg->exec();
+    update_scene_widget();
+}
+
+void MainWindow::slot_create_object()
+{
+    DialogObject *dlg = new DialogObject(this, &scene, -1);
+    dlg->exec();
+    update_scene_widget();
+}
+
+void MainWindow::slot_delete()
+{
+    QList<QTreeWidgetItem *> selection = ui->treeWidget_scene->selectedItems();
+    QList<std::size_t> selection_materials;
+    QList<std::size_t> selection_objects;
+
+    for(int x = 0 ; x < selection.size() ; ++x)
+    {
+        QString name = selection.at(x)->text(0);
+
+        for(std::size_t i = 0 ; i < scene.materials.size() ; ++i)
+        {
+            if(QString::fromStdString(scene.materials.at(i).m_name) == name)
+            {
+                selection_materials.push_front(i);
+            }
+        }
+        for(std::size_t i = 0 ; i < scene.objects.size() ; ++i)
+        {
+            if(QString::fromStdString(scene.objects.at(i).m_name) == name)
+            {
+                selection_objects.push_front(i);
+            }
+        }
+    }
+
+    for(int x = 0 ; x < selection_materials.size() ; ++x)
+    {
+        scene.materials.erase(scene.materials.begin() + selection_materials.at(x));
+    }
+
+    for(int x = 0 ; x < selection_objects.size() ; ++x)
+    {
+        scene.objects.erase(scene.objects.begin() + selection_objects.at(x));
+    }
+    update_scene_widget();
 }
