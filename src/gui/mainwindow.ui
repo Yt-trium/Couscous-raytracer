@@ -467,33 +467,6 @@
          <string/>
         </property>
        </column>
-       <item>
-        <property name="text">
-         <string>scene</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../../icons/icons.qrc">
-          <normaloff>:/sceneOptions/baseline_landscape_black_18dp.png</normaloff>:/sceneOptions/baseline_landscape_black_18dp.png</iconset>
-        </property>
-        <item>
-         <property name="text">
-          <string>materials</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../../icons/icons.qrc">
-           <normaloff>:/sceneOptions/baseline_gradient_black_18dp.png</normaloff>:/sceneOptions/baseline_gradient_black_18dp.png</iconset>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>objects</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../../icons/icons.qrc">
-           <normaloff>:/sceneOptions/baseline_business_black_18dp.png</normaloff>:/sceneOptions/baseline_business_black_18dp.png</iconset>
-         </property>
-        </item>
-       </item>
       </widget>
      </item>
     </layout>
@@ -553,6 +526,9 @@
    </property>
    <property name="text">
     <string>Display Normals</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>
