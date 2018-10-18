@@ -255,7 +255,7 @@ void MainWindow::slot_do_render()
         m_statusBarProgress);
 
     m_statusBarProgress.setVisible(false);
-    QString message = "Rendering time : " + QString::number(render_timer.elapsed()) + " ms";
+    QString message = "Rendering time : " + QString::number(render_timer.elapsed()/1000) + "s " + QString::number(render_timer.elapsed()%1000) + "ms";
 
     ui->statusBar->showMessage(message);
     ui->pushButton_render->setEnabled(true);
