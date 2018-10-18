@@ -243,6 +243,7 @@ void MainWindow::slot_do_render()
         camera,
         accelerator,
         parallel,
+        ui->actionDisplay_Normals->isChecked(),
         m_image,
         m_statusBarProgress);
 

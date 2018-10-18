@@ -63,6 +63,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionRun_Unit_Test"/>
+    <addaction name="actionDisplay_Normals"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -544,6 +545,14 @@
   <action name="actionNew_material">
    <property name="text">
     <string>New material</string>
+   </property>
+  </action>
+  <action name="actionDisplay_Normals">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Normals</string>
    </property>
   </action>
  </widget>

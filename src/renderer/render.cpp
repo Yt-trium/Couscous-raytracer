@@ -19,9 +19,6 @@
 #include <algorithm>
 #include <limits>
 
-// Uncomment this to shade pixels with surface normal.
-// #define DEBUG_DISPLAY_NORMALS
-
 using namespace glm;
 using namespace std;
 
@@ -35,7 +32,6 @@ vec3 Render::get_ray_color(
 
     if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
     {
-#ifndef DEBUG_DISPLAY_NORMALS
         Ray scattered;
         vec3 attenuation;
         vec3 emitted = rec.mat->emission();
@@ -48,14 +44,24 @@ vec3 Render::get_ray_color(
         {
             return emitted;
         }
-#else
-        return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
-#endif
     }
     else
     {
         return vec3(0.0f);
     }
+}
+
+vec3 Render::get_ray_normal_color(const Ray &r, const VoxelGridAccelerator &grid) const
+{    HitRecord rec;
+
+     if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+     {
+         return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
+     }
+     else
+     {
+         return vec3(0.0f);
+     }
 }
 
 void Render::get_render_image(
@@ -66,6 +72,7 @@ void Render::get_render_image(
         const Camera&                   camera,
         const VoxelGridAccelerator&     grid,
         const bool                      parallel,
+        const bool                      get_normal_color,
         QImage&                         image,
         QProgressBar&                   progressBar)
 {
@@ -107,9 +114,12 @@ void Render::get_render_image(
                     const vec2 uv(
                         (pt.x + subpixel_pos.x) / frame.x,
                         (pt.y + subpixel_pos.y) / frame.y);
-
-                    color += get_ray_color(
-                        camera.get_ray(uv.x, uv.y), ray_max_depth, grid);
+                    if(get_normal_color)
+                        color += get_ray_normal_color(
+                                    camera.get_ray(uv.x, uv.y), grid);
+                    else
+                        color += get_ray_color(
+                            camera.get_ray(uv.x, uv.y), ray_max_depth, grid);
                 }
 
                 color /= static_cast<float>(samples);
