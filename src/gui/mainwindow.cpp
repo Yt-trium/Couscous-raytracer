@@ -125,6 +125,18 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(60.0f),
                                         CUBE,
                                         "white"));
+
+    scene.objects.push_back(SceneObject("left_light",
+                                        vec3(-80.0f, 80.0f, 100.0f),
+                                        vec3(0.0f, 1.0f, 0.0f),
+                                        0.0f,
+                                        vec3(10.0f),
+                                        CYLINDER,
+                                        "light",
+                                        50,
+                                        10,
+                                        1,
+                                        true));
     update_scene_widget();
 }
 

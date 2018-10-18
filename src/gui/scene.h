@@ -62,7 +62,7 @@ public:
         , m_width(w)
         , m_caps(c)
     {
-        if(m_type == CYLINDER)
+        if(m_type != CYLINDER)
             throw std::runtime_error("[SceneObject] CONSTRUCTOR ERROR");
     }
 
