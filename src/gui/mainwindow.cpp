@@ -33,8 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusBar->addPermanentWidget(&m_statusBarProgress);
     m_statusBarProgress.setVisible(false);
 
-    ui->treeWidget_scene->expandAll();
-
     // Add the image viewer.
     ui->viewer_container_layout->addWidget(&m_frame_viewer);
 
@@ -127,11 +125,50 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(60.0f),
                                         CUBE,
                                         "white"));
+    update_scene_widget();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::update_scene_widget()
+{
+    ui->treeWidget_scene->clear();
+
+    QTreeWidgetItem *widgetItemScene = new QTreeWidgetItem();
+    widgetItemScene->setText(0, tr("Scene"));
+    widgetItemScene->setIcon(0, QIcon(":/sceneOptions/baseline_landscape_black_18dp.png"));
+
+    QTreeWidgetItem *widgetItemMaterials = new QTreeWidgetItem();
+    widgetItemMaterials->setText(0, tr("Materials"));
+    widgetItemMaterials->setIcon(0, QIcon(":/sceneOptions/baseline_gradient_black_18dp.png"));
+
+    QTreeWidgetItem *widgetItemObjects = new QTreeWidgetItem();
+    widgetItemObjects->setText(0, tr("Objects"));
+    widgetItemObjects->setIcon(0, QIcon(":/sceneOptions/baseline_business_black_18dp.png"));
+
+
+    ui->treeWidget_scene->addTopLevelItem(widgetItemScene);
+    widgetItemScene->addChild(widgetItemMaterials);
+    widgetItemScene->addChild(widgetItemObjects);
+
+    for(std::size_t i = 0 ; i < scene.materials.size() ; ++i)
+    {
+        QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
+        widgetItem->setText(0, QString::fromStdString(scene.materials.at(i).m_name));
+        widgetItemMaterials->addChild(widgetItem);
+    }
+
+    for(std::size_t i = 0 ; i < scene.objects.size() ; ++i)
+    {
+        QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
+        widgetItem->setText(0, QString::fromStdString(scene.objects.at(i).m_name));
+        widgetItemObjects->addChild(widgetItem);
+    }
+
+    ui->treeWidget_scene->expandAll();
 }
 
 void MainWindow::slot_do_render()

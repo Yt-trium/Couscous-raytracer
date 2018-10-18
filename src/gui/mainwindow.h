@@ -38,6 +38,8 @@ class MainWindow : public QMainWindow
 
     Scene scene;
 
+    void update_scene_widget();
+
   private slots:
     void slot_do_render();
     void slot_save_as_image();
