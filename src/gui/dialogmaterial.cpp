@@ -3,7 +3,7 @@
 
 using namespace glm;
 
-DialogMaterial::DialogMaterial(QWidget *p, Scene *s, std::size_t i) :
+DialogMaterial::DialogMaterial(QWidget *p, Scene *s, int i) :
     QDialog(p),
     ui(new Ui::DialogMaterial)
 {
@@ -12,9 +12,9 @@ DialogMaterial::DialogMaterial(QWidget *p, Scene *s, std::size_t i) :
     parent = p;
     ui->setupUi(this);
 
-    QString name = QString::fromStdString(s->materials.at(i).m_name);
-    vec3 color(s->materials.at(i).m_color);
-    vec3 emission(s->materials.at(i).m_emission);
+    QString name = QString::fromStdString(s->materials.at(std::size_t(id)).m_name);
+    vec3 color(s->materials.at(std::size_t(id)).m_color);
+    vec3 emission(s->materials.at(std::size_t(id)).m_emission);
 
     ui->lineEdit_name->setText(name);
     ui->doubleSpinBox_color_r->setValue(double(color[0]));
@@ -40,5 +40,8 @@ void DialogMaterial::on_buttonBox_accepted()
                   ui->doubleSpinBox_emission_b->value());
 
     SceneMaterial sm(ui->lineEdit_name->text().toStdString(), color, emission);
-    scene->materials[id] = sm;
+    if(id >= 0)
+        scene->materials[std::size_t(id)] = sm;
+    else
+        scene->materials.push_back(sm);
 }

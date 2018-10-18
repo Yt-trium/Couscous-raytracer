@@ -1,5 +1,5 @@
-#ifndef DIALOGMATERIAL_H
-#define DIALOGMATERIAL_H
+#ifndef DIALOGOBJECT_H
+#define DIALOGOBJECT_H
 
 // couscous includes.
 #include "gui/scene.h"
@@ -11,16 +11,16 @@
 #include <glm/glm.hpp>
 
 namespace Ui {
-class DialogMaterial;
+class DialogObject;
 }
 
-class DialogMaterial : public QDialog
+class DialogObject : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit DialogMaterial(QWidget *p, Scene *s, int i);
-    ~DialogMaterial();
+    explicit DialogObject(QWidget *p, Scene *s, int i);
+    ~DialogObject();
 
 private slots:
     void on_buttonBox_accepted();
@@ -29,7 +29,7 @@ private:
     QWidget *parent;
     Scene *scene;
     int id;
-    Ui::DialogMaterial *ui;
+    Ui::DialogObject *ui;
 };
 
-#endif // DIALOGMATERIAL_H
+#endif // DIALOGOBJECT_H

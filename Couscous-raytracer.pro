@@ -37,7 +37,8 @@ SOURCES += \
     src/renderer/gridaccelerator.cpp \
     src/renderer/aabb.cpp \
     src/gui/scene.cpp \
-    src/gui/dialogmaterial.cpp
+    src/gui/dialogmaterial.cpp \
+    src/gui/dialogobject.cpp
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -55,11 +56,13 @@ HEADERS += \
     src/renderer/aabb.h \
     src/renderer/gridaccelerator.h \
     src/gui/scene.h \
-    src/gui/dialogmaterial.h
+    src/gui/dialogmaterial.h \
+    src/gui/dialogobject.h
 
 FORMS += \
         src/gui/mainwindow.ui \
-    src/gui/dialogmaterial.ui
+    src/gui/dialogmaterial.ui \
+    src/gui/dialogobject.ui
 
 INCLUDEPATH += glm src
 

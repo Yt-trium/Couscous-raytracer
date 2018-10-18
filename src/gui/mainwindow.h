@@ -5,6 +5,7 @@
 #include "gui/frameviewer.h"
 #include "gui/scene.h"
 #include "gui/dialogmaterial.h"
+#include "gui/dialogobject.h"
 #include "renderer/render.h"
 
 // Qt includes.

@@ -348,7 +348,7 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
     {
         if(QString::fromStdString(scene.materials.at(i).m_name) == itmname)
         {
-            DialogMaterial *dlg = new DialogMaterial(this, &scene, i);
+            DialogMaterial *dlg = new DialogMaterial(this, &scene, int(i));
             dlg->exec();
             update_scene_widget();
             return;
@@ -358,10 +358,10 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
     {
         if(QString::fromStdString(scene.objects.at(i).m_name) == itmname)
         {
-            /*
-            DialogMaterial *dlg = new DialogMaterial();
+            DialogObject *dlg = new DialogObject(this, &scene, int(i));
             dlg->exec();
-            */
+            update_scene_widget();
+            return;
             return;
         }
     }
