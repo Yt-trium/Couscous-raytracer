@@ -17,7 +17,7 @@ CMakeLists.txt.user
 *.slo
 *.lo
 *.o
-*.obj
+# *.obj
 # Precompiled Headers
 *.gch
 *.pch
