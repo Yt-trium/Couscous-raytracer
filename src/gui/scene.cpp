@@ -3,10 +3,13 @@
 using namespace std;
 using namespace glm;
 
+#include <iostream>
+
 void Scene::create_scene(MeshGroup &world)
 {
     SceneMaterial *material;
     SceneObject *object;
+    SceneOBJ *obj;
     std::size_t i, j;
 
     std::vector<std::shared_ptr<Material>> mats;
@@ -30,6 +33,7 @@ void Scene::create_scene(MeshGroup &world)
     for(i = 0 ; i < objects.size() ; ++i)
     {
         object = &objects.at(i);
+
         mat4 transform;
         transform = translate(mat4(1.0f), object->m_translate);
         if(object->m_rotate_d != 0.0f)
@@ -59,5 +63,33 @@ void Scene::create_scene(MeshGroup &world)
                             object->m_caps, transform);
             break;
         }
+    }
+
+    for(i = 0 ; i < objs.size() ; ++i)
+    {
+        obj = &objs.at(i);
+
+        if(obj->normals.size() == 0 ||
+           obj->triangles.size() == 0 ||
+           obj->vertices.size() == 0)
+            continue;
+
+        std::cout << obj->triangles.size() << " " <<
+                     obj->vertices.size() << " " <<
+                     obj->normals.size() << " " <<
+                     obj->triangles.data() << " " <<
+                     obj->vertices.data() << " " <<
+                     obj->normals.data() << std::endl;
+
+        obj = &objs.at(i);
+        shared_ptr<Material> mat_dft(new Lambertian(vec3(0.73f, 0.73f, 0.73f)));
+        create_triangle_mesh(world,
+                             size_t(obj->triangles.size()/3),
+                             obj->vertices.size(),
+                             obj->triangles.data(),
+                             obj->vertices.data(),
+                             obj->normals.data(),
+                             mat_dft,
+                             mat4(0.0001f));
     }
 }

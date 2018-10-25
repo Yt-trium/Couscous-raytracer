@@ -16,6 +16,20 @@
 
 enum object_type {PLANE, CUBE, CYLINDER};
 
+class SceneMaterial
+{
+public:
+    SceneMaterial(std::string n, glm::vec3 c, glm::vec3 e)
+        : m_name(n)
+        , m_color(c)
+        , m_emission(e)
+    {}
+
+    std::string m_name;
+    glm::vec3 m_color;
+    glm::vec3 m_emission;
+};
+
 class SceneObject
 {
 public:
@@ -78,18 +92,14 @@ public:
     bool m_caps;
 };
 
-class SceneMaterial
+class SceneOBJ
 {
 public:
-    SceneMaterial(std::string n, glm::vec3 c, glm::vec3 e)
-        : m_name(n)
-        , m_color(c)
-        , m_emission(e)
-    {}
+    SceneOBJ(){}
 
-    std::string m_name;
-    glm::vec3 m_color;
-    glm::vec3 m_emission;
+    std::vector<glm::vec3> vertices;
+    std::vector<std::size_t> triangles;
+    std::vector<glm::vec3> normals;
 };
 
 class Scene
@@ -101,6 +111,7 @@ public:
 
     std::vector<SceneMaterial> materials;
     std::vector<SceneObject> objects;
+    std::vector<SceneOBJ> objs;
 };
 
 #endif // SCENE_H

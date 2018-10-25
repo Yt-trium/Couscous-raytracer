@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 
 // couscous includes.
+#include "io/objfileformat.h"
 #include "renderer/camera.h"
 #include "renderer/material.h"
 #include "renderer/gridaccelerator.h"
@@ -144,6 +145,9 @@ MainWindow::MainWindow(QWidget *parent)
                                         10,
                                         1,
                                         true));
+
+    // scene.objs.push_back(OBJFileFormat::readOBJ("test_object_triangulated.obj"));
+
     update_scene_widget();
 }
 
