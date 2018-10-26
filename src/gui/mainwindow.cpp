@@ -146,7 +146,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         1,
                                         true));
 
-    // scene.objs.push_back(OBJFileFormat::readOBJ("test_object_triangulated.obj"));
+    // scene.objs.push_back(OBJFileFormat::readOBJ("test_object2_triangulated.obj"));
 
     update_scene_widget();
 }

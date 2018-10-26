@@ -90,6 +90,6 @@ void Scene::create_scene(MeshGroup &world)
                              obj->vertices.data(),
                              obj->normals.data(),
                              mat_dft,
-                             mat4(0.0001f));
+                             mat4(1.0f));
     }
 }
