@@ -12,5 +12,7 @@
         <file>cube-outline.png</file>
         <file>checkbox-blank-circle-outline.png</file>
         <file>baseline_texture_black_18dp.png</file>
+        <file>file_format_obj.png</file>
+        <file>file_format_off.png</file>
     </qresource>
 </RCC>
