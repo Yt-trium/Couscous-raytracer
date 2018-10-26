@@ -51,6 +51,12 @@ list (APPEND couscous_sources
     ${renderer_sources})
 
 set (gui_sources
+    src/gui/dialogmaterial.cpp
+    src/gui/dialogmaterial.h
+    src/gui/dialogmaterial.ui
+    src/gui/dialogobject.cpp
+    src/gui/dialogobject.h
+    src/gui/dialogobject.ui
     src/gui/frameviewer.cpp
     src/gui/frameviewer.h
     src/gui/mainwindow.cpp
@@ -62,6 +68,16 @@ set (gui_sources
 
 list (APPEND couscous_sources
     ${gui_sources})
+
+set (io_sources
+    src/io/cscfileformat.cpp
+    src/io/cscfileformat.h
+    src/io/objfileformat.cpp
+    src/io/objfileformat.h
+)
+
+list (APPEND couscous_sources
+    ${io_sources})
 
 set (test_sources
     src/test/catch.hpp
@@ -83,7 +99,7 @@ set (resources
 if (CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
     if (CMAKE_BUILD_TYPE EQUAL "RELEASE")
-        set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O2")
+        set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3")
     endif()
 endif()
 

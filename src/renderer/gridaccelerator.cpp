@@ -12,7 +12,7 @@
 
 // Uncomment this if you don't want to use the grid
 // accelerator while rendering.
-#define DEBUG_DISABLE_ACCELERATOR
+// #define DEBUG_DISABLE_ACCELERATOR
 
 using namespace glm;
 using namespace std;

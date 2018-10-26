@@ -19,6 +19,9 @@ SceneOBJ OBJFileFormat::readOBJ(std::string filename)
     string line;
     ifstream objfile (filename);
 
+    // Todo: handle wrong path.
+    assert(objfile.is_open());
+
     if(objfile.is_open())
     {
         while(getline(objfile, line, '\n'))
@@ -28,41 +31,45 @@ SceneOBJ OBJFileFormat::readOBJ(std::string filename)
             {
                 if(line.compare("v") == 0)
                 {
-                    float x, y, z;
-
                     getline(lineStream, line, ' ');
-                    x = stof(line);
+                    const float x = stof(line);
                     getline(lineStream, line, ' ');
-                    y = stof(line);
+                    const float y = stof(line);
                     getline(lineStream, line, ' ');
-                    z = stof(line);
+                    const float z = stof(line);
 
                     obj.vertices.push_back(vec3(x, y, z));
                 }
-                if(line.compare("f") == 0)
+                else if(line.compare("f") == 0)
                 {
-                    size_t a, b, c;
-
                     getline(lineStream, line, ' ');
-                    a = size_t(stoi(line)-1);
+                    const size_t a = static_cast<size_t>(stoi(line) - 1);
                     getline(lineStream, line, ' ');
-                    b = size_t(stoi(line)-1);
+                    const size_t b = static_cast<size_t>(stoi(line) - 1);
                     getline(lineStream, line, ' ');
-                    c = size_t(stoi(line)-1);
+                    const size_t c = static_cast<size_t>(stoi(line) - 1);
 
                     obj.triangles.push_back(a);
                     obj.triangles.push_back(b);
                     obj.triangles.push_back(c);
 
-                    vec3 n = cross((obj.vertices.at(b)-obj.vertices.at(a)),
-                                   (obj.vertices.at(c)-obj.vertices.at(a)));
+                    assert(a < obj.vertices.size());
+                    assert(b < obj.vertices.size());
+                    assert(c < obj.vertices.size());
+
+                    vec3 n =
+                        cross(
+                            (obj.vertices.at(b) - obj.vertices.at(a)),
+                            (obj.vertices.at(c) - obj.vertices.at(a)));
 
                     obj.normals.push_back(n);
                 }
             }
         }
+
         objfile.close();
     }
 
     return obj;
 }
+
