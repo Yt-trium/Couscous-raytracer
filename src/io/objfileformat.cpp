@@ -1,5 +1,8 @@
 #include "objfileformat.h"
 
+#include <QMessageBox>
+#include <QString>
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -18,9 +21,6 @@ SceneOBJ OBJFileFormat::readOBJ(std::string filename)
     SceneOBJ obj;
     string line;
     ifstream objfile (filename);
-
-    // Todo: handle wrong path.
-    assert(objfile.is_open());
 
     if(objfile.is_open())
     {
@@ -68,6 +68,10 @@ SceneOBJ OBJFileFormat::readOBJ(std::string filename)
         }
 
         objfile.close();
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, "ERREUR", "ERREUR : Impossible d'ouvrir le fichier : " + QString::fromStdString(filename));
     }
 
     return obj;
