@@ -65,6 +65,9 @@ SceneOBJ OBJFileFormat::readOBJ(std::string filename)
                     obj.normals.push_back(n);
                 }
             }
+
+            obj.m_name = filename;
+            obj.m_type = OBJ;
         }
 
         objfile.close();

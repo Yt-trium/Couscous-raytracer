@@ -146,8 +146,8 @@ MainWindow::MainWindow(QWidget *parent)
                                         1,
                                         true));
 
-    //scene.objects.clear();
-    //scene.objs.push_back(OBJFileFormat::readOBJ("assets/test_object2_triangulated.obj"));
+    // scene.objects.clear();
+    scene.objs.push_back(OBJFileFormat::readOBJ("assets/test_object_triangulated.obj"));
 
     update_scene_widget();
 }
@@ -201,6 +201,24 @@ void MainWindow::update_scene_widget()
             break;
         case CYLINDER:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/cylinder-outline.png"));
+            break;
+        }
+
+        widgetItemObjects->addChild(widgetItem);
+    }
+
+    for(std::size_t i = 0 ; i < scene.objs.size() ; ++i)
+    {
+        QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
+        widgetItem->setText(0, QString::fromStdString(scene.objs.at(i).m_name));
+
+        switch(scene.objs.at(i).m_type)
+        {
+        case OBJ:
+            widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_obj.png"));
+            break;
+        case OFF:
+            widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_off.png"));
             break;
         }
 

@@ -15,6 +15,7 @@
 #include <vector>
 
 enum object_type {PLANE, CUBE, CYLINDER};
+enum obj_type {OBJ, OFF};
 
 class SceneMaterial
 {
@@ -96,6 +97,13 @@ class SceneOBJ
 {
 public:
     SceneOBJ(){}
+    std::string m_name;
+    glm::vec3 m_translate;
+    glm::vec3 m_rotate;
+    float m_rotate_d;
+    glm::vec3 m_scale;
+    obj_type m_type;
+    std::string m_material;
 
     std::vector<glm::vec3> vertices;
     std::vector<std::size_t> triangles;
