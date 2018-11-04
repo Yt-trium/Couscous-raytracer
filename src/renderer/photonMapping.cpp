@@ -168,10 +168,10 @@ void PhotonMap::compute_map(
         const size_t                    ray_max_depth,
         const VoxelGridAccelerator&     grid,
         const MeshGroup&                rawWorld,
+        const MeshGroup&                lights,
         const                           bool parallel)
 {
     std::shared_ptr<TriangleMesh> currentLight;
-    MeshGroup lights;
     std::vector<QFuture<void>> threads;
     glm::vec3 rayOrigin, rayDirection;
 
@@ -180,16 +180,6 @@ void PhotonMap::compute_map(
     int nbRays = std::floor(samples);
     int nbRaysPerLight = 0;
     int nbTriangleOfCurrentLight = 0;
-
-    // Retrieve lights in scene
-    for(auto it = rawWorld.begin(); it != rawWorld.end(); ++it)
-    {
-        currentLight = std::dynamic_pointer_cast<TriangleMesh>(*it);
-        if( currentLight != nullptr && std::dynamic_pointer_cast<Light>((*currentLight).getMaterial()) != nullptr )
-        {
-            lights.push_back(*it);
-        }
-    }
 
     // TODO: Tell the user if there isn't any light and stop safely.
     assert(lights.size() > 0);

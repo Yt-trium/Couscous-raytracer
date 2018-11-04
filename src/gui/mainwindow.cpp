@@ -268,8 +268,8 @@ void MainWindow::slot_do_render()
     m_statusBarProgress.setVisible(true);
 
     // Create photon map.
-    // PhotonMap pmap;
-    // pmap.compute_map(10, 8, accelerator, world, false);
+    PhotonMap pmap;
+    pmap.compute_map(10, 8, accelerator, world, lights, false);
 
     m_frame_viewer.on_render_begin(width, height);
 

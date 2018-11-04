@@ -85,6 +85,7 @@ class PhotonMap
         const size_t                    ray_max_depth,
         const VoxelGridAccelerator&     grid,
         const MeshGroup&                rawWorld,
+        const MeshGroup&                lights,
         const bool                      parallel);
 
     std::vector<Photon*> get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber);
