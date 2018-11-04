@@ -75,8 +75,21 @@ public:
 
 class PhotonMap
 {
-private:
+  public:
+    PhotonMap();
+    PhotonMap(std::vector<Photon*> map);
+    ~PhotonMap();
 
+    void compute_map(
+        const size_t                    samples,
+        const size_t                    ray_max_depth,
+        const VoxelGridAccelerator&     grid,
+        const MeshGroup&                rawWorld,
+        const bool                      parallel);
+
+    std::vector<Photon*> get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber);
+
+  private:
     void trace_photon_ray(
             const Ray&                      r,
             const size_t                    ray_max_depth,
@@ -90,24 +103,6 @@ private:
 
     glm::vec3 random_in_unit_sphere() const;
 
-public:
-
-    PhotonMap();
-
-    PhotonMap(std::vector<Photon*> map);
-
-    ~PhotonMap();
-
-    void compute_map(
-        const size_t                    samples,
-        const size_t                    ray_max_depth,
-        const VoxelGridAccelerator&     grid,
-        const MeshGroup&                rawWorld,
-        const bool                      parallel);
-
-    std::vector<Photon*> get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber);
-
-private:
 
     std::vector<Photon*> map;
 

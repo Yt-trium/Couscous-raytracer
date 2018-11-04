@@ -44,6 +44,8 @@ class VisualObject
         HitRecord&  rec) const = 0;
 
     virtual const AABB& bbox() const = 0;
+
+    virtual const std::shared_ptr<Material>& mat() const = 0;
 };
 
 // A list of 3D intersectable objects.
@@ -56,6 +58,9 @@ bool hit_world(
     const float         tmin,
     const float         tmax,
     HitRecord&          rec);
+
+// Returns all light objects from the given world.
+MeshGroup fetch_lights(const MeshGroup& world);
 
 
 //
@@ -78,6 +83,7 @@ class Sphere : public VisualObject
 
     const AABB& bbox() const override;
 
+    const std::shared_ptr<Material>& mat() const override;
 
   private:
     const glm::vec3             m_center;
@@ -135,6 +141,8 @@ class Triangle : public VisualObject
         HitRecord&                          rec) const override;
 
     const AABB& bbox() const override;
+
+    const std::shared_ptr<Material>& mat() const override;
 
   private:
     std::shared_ptr<TriangleMesh>       m_mesh;

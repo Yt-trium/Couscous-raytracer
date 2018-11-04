@@ -191,6 +191,9 @@ void PhotonMap::compute_map(
         }
     }
 
+    // TODO: Tell the user if there isn't any light and stop safely.
+    assert(lights.size() > 0);
+
     nbRaysPerLight = nbRays/lights.size();
     totalEnergy = EnergyForOneLight * lights.size();
     energyForOneRay = totalEnergy/nbRays;

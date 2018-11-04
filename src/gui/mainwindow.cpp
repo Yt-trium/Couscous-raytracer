@@ -7,6 +7,7 @@
 #include "io/objfileformat.h"
 #include "renderer/camera.h"
 #include "renderer/material.h"
+#include "renderer/photonMapping.h"
 #include "renderer/gridaccelerator.h"
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
@@ -147,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         true));
 
     // scene.objects.clear();
-    scene.objs.push_back(OBJFileFormat::readOBJ("assets/test_object_triangulated.obj"));
+    //scene.objs.push_back(OBJFileFormat::readOBJ("assets/test_object_triangulated.obj"));
 
     update_scene_widget();
 }
@@ -253,8 +254,11 @@ void MainWindow::slot_do_render()
     // Create cornell box.
     MeshGroup world;
 
-    // Get visual
+    // Get visual.
     scene.create_scene(world);
+
+    // Get lights from the scene.
+    const MeshGroup lights = fetch_lights(world);
 
     VoxelGridAccelerator accelerator(world);
 
@@ -262,6 +266,10 @@ void MainWindow::slot_do_render()
     render_timer.start();
     ui->statusBar->showMessage("Rendering progress : ");
     m_statusBarProgress.setVisible(true);
+
+    // Create photon map.
+    // PhotonMap pmap;
+    // pmap.compute_map(10, 8, accelerator, world, false);
 
     m_frame_viewer.on_render_begin(width, height);
 

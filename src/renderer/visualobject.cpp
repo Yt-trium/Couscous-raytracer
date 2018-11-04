@@ -38,6 +38,24 @@ bool hit_world(
     return hit_something;
 }
 
+MeshGroup fetch_lights(const MeshGroup& world)
+{
+    MeshGroup lights;
+
+    auto filter_light = [&](const shared_ptr<VisualObject>& mesh)
+    {
+        // Is it a light ?
+        auto mat = mesh->mat();
+
+        if (mat->emission() != vec3(0.0f))
+            lights.push_back(mesh);
+    };
+
+    for_each(world.begin(), world.end(), filter_light);
+
+    return lights;
+}
+
 
 //
 // Usual shapes implementation.
@@ -98,6 +116,11 @@ bool Sphere::hit(
 const AABB& Sphere::bbox() const
 {
     return m_bbox;
+}
+
+const std::shared_ptr<Material>& Sphere::mat() const
+{
+    return m_mat;
 }
 
 TriangleMesh::TriangleMesh(
@@ -260,6 +283,11 @@ bool Triangle::hit(
 const AABB& Triangle::bbox() const
 {
     return m_bbox;
+}
+
+const std::shared_ptr<Material>& Triangle::mat() const
+{
+    return m_mesh->m_mat;
 }
 
 
