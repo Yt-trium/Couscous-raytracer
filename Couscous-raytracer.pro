@@ -57,6 +57,8 @@ HEADERS += \
     src/renderer/photonMapping.h \
     src/renderer/aabb.h \
     src/renderer/gridaccelerator.h \
+    src/renderer/kDTree.h \
+    src/renderer/kDTree.hpp \
     src/gui/scene.h \
     src/gui/dialogmaterial.h \
     src/gui/dialogobject.h \

@@ -29,10 +29,17 @@ vec3 Material::emission() const
     return vec3(0.0f);
 }
 
+float Material::brdf() const
+{
+    return 0.0f;
+}
+
 Lambertian::Lambertian(
     const vec3&         albedo)
   : m_albedo(albedo)
 {
+    m_rf = max<float>(albedo.x, albedo.y);
+    m_rf = max<float>(m_rf, albedo.z);
 }
 
 bool Lambertian::scatter(
@@ -47,12 +54,19 @@ bool Lambertian::scatter(
     return true;
 }
 
+float Lambertian::brdf() const
+{
+    return m_rf;
+}
+
 Metal::Metal(
     const vec3&         albedo,
     const float         fuzz)
   : m_albedo(albedo)
   , m_fuzz(fuzz)
 {
+    m_rf = max<float>(albedo.x, albedo.y);
+    m_rf = max<float>(m_rf, albedo.z);
 }
 
 bool Metal::scatter(
@@ -67,10 +81,16 @@ bool Metal::scatter(
     return (dot(scattered.dir, rec.normal) > 0.0f);
 }
 
+float Metal::brdf() const
+{
+    return m_rf;
+}
+
 Light::Light(
     const vec3&         emission)
   : m_emission(emission)
 {
+    m_rf = 0.0f;
 }
 
 bool Light::scatter(
@@ -80,6 +100,11 @@ bool Light::scatter(
     Ray&                scattered) const
 {
     return false;
+}
+
+float Light::brdf() const
+{
+    return m_rf;
 }
 
 vec3 Light::emission() const

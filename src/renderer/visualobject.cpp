@@ -137,6 +137,23 @@ TriangleMesh::TriangleMesh(
     }
 }
 
+std::shared_ptr<Material> TriangleMesh::getMaterial()
+{
+    return m_mat;
+}
+
+void TriangleMesh::getTriangleVertices(int triangleindice, glm::vec3& v1, glm::vec3& v2, glm::vec3& v3)
+{
+    v1 = m_vertices[m_indices[triangleindice]];
+    v2 = m_vertices[m_indices[triangleindice+1]];
+    v3 = m_vertices[m_indices[triangleindice+2]];
+}
+
+size_t TriangleMesh::getTriangleCount()
+{
+    return m_triangle_count;
+}
+
 Triangle::Triangle(
     const shared_ptr<TriangleMesh>&     mesh,
     const size_t                        indice)

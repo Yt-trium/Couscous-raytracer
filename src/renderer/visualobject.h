@@ -104,6 +104,12 @@ class TriangleMesh
         const std::shared_ptr<Material>&    material,
         const glm::mat4&                    transform = glm::mat4(1.0f));
 
+    std::shared_ptr<Material> getMaterial();
+
+    void getTriangleVertices(int triangleindice, glm::vec3& v1, glm::vec3& v2, glm::vec3& v3);
+
+    size_t getTriangleCount();
+
   private:
     size_t                          m_triangle_count; // number of triangles
     size_t                          m_vertices_count; // number of vertices

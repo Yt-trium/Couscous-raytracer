@@ -45,6 +45,10 @@ set (renderer_sources
     src/renderer/visualobject.cpp
     src/renderer/visualobject.h
     src/renderer/utility.h
+    src/renderer/kDTree.h
+    src/renderer/kDTree.hpp
+    src/renderer/photonMapping.h
+    src/renderer/photonMapping.cpp
 )
 
 list (APPEND couscous_sources
