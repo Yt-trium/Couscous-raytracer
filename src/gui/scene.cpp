@@ -4,6 +4,7 @@ using namespace std;
 using namespace glm;
 
 #include <iostream>
+#include "renderer/visualobject.h"
 
 void Scene::create_scene(MeshGroup &world)
 {

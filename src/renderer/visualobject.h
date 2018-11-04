@@ -88,8 +88,6 @@ class TriangleMesh
 
     std::shared_ptr<Material> getMaterial();
 
-    void getTriangleVertices(int triangleindice, glm::vec3& v1, glm::vec3& v2, glm::vec3& v3);
-
     size_t getTriangleCount();
 
   private:
@@ -119,6 +117,8 @@ class Triangle : public VisualObject
     const AABB& bbox() const override;
 
     const std::shared_ptr<Material>& mat() const override;
+
+    void getVertices(glm::vec3& v1, glm::vec3& v2, glm::vec3& v3);
 
   private:
     std::shared_ptr<TriangleMesh>       m_mesh;

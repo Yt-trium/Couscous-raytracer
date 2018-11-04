@@ -7,6 +7,7 @@
 #include "gui/dialogmaterial.h"
 #include "gui/dialogobject.h"
 #include "renderer/render.h"
+#include "renderer/gridaccelerator.h"
 
 // Qt includes.
 #include <QFileDialog>

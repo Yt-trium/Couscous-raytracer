@@ -3,6 +3,7 @@
 
 // couscous includes.
 #include "renderer/ray.h"
+#include "visualobject.h"
 
 // glm includes.
 #include <glm/glm.hpp>

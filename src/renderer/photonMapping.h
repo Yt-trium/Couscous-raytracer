@@ -100,7 +100,7 @@ class PhotonMap
 
     void add_photon(Photon* photon);
 
-    glm::vec3 randomPointInTriangle(std::shared_ptr<TriangleMesh> triangleMesh, int triangleIndice);
+    glm::vec3 randomPointInTriangle(std::shared_ptr<Triangle> triangle);
 
     glm::vec3 random_in_unit_sphere() const;
 

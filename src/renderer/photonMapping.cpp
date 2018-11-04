@@ -132,7 +132,7 @@ void PhotonMap::add_photon(Photon *photon)
 }
 
 
-glm::vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<TriangleMesh> triangleMesh, int triangleIndice)
+glm::vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
 {
     glm::vec3 v1, v2, v3, answ;
     float r1 = distributor(engine);
@@ -141,7 +141,7 @@ glm::vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<TriangleMesh> triangl
     float m2=sqrt(r1) * (1-r2);
     float m3=r2 * sqrt(r1);
 
-    (*triangleMesh).getTriangleVertices(triangleIndice, v1, v2, v3);
+    (*triangle).getVertices(v1, v2, v3);
 
     answ = m1*v1 + m2*v2 + m3*v3;
 
@@ -171,7 +171,7 @@ void PhotonMap::compute_map(
         const MeshGroup&                lights,
         const                           bool parallel)
 {
-    std::shared_ptr<TriangleMesh> currentLight;
+    std::shared_ptr<Triangle> currentLight;
     std::vector<QFuture<void>> threads;
     glm::vec3 rayOrigin, rayDirection;
 
@@ -179,7 +179,6 @@ void PhotonMap::compute_map(
     float energyForOneRay = 0.0f;
     int nbRays = std::floor(samples);
     int nbRaysPerLight = 0;
-    int nbTriangleOfCurrentLight = 0;
 
     // TODO: Tell the user if there isn't any light and stop safely.
     assert(lights.size() > 0);
@@ -203,13 +202,11 @@ void PhotonMap::compute_map(
     // Compute all rays
     for(auto it=lights.begin(); it != lights.end(); ++it)
     {
-        int currentTriangleIndice = 0;
-        currentLight = std::dynamic_pointer_cast<TriangleMesh>(*it);
-        nbTriangleOfCurrentLight = std::floor((*currentLight).getTriangleCount());
+        currentLight = std::dynamic_pointer_cast<Triangle>(*it);
 
         for(int i=0; i<nbRaysPerLight + (i < nbRays%lights.size() ? 1 : 0); i++)
         {
-            rayOrigin = randomPointInTriangle(currentLight, currentTriangleIndice);
+            rayOrigin = randomPointInTriangle(currentLight);
             rayDirection = random_in_unit_sphere();
             if (parallel)
             {
@@ -220,8 +217,6 @@ void PhotonMap::compute_map(
             {
                 trace_photon_ray(Ray(rayOrigin, rayDirection), ray_max_depth, grid, energyForOneRay);
             }
-
-            currentTriangleIndice = (currentTriangleIndice + 1) % nbTriangleOfCurrentLight;
         }
     }
 
