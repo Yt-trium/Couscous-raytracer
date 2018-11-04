@@ -34,8 +34,12 @@ set (renderer_sources
     src/renderer/camera.h
     src/renderer/gridaccelerator.cpp
     src/renderer/gridaccelerator.h
+    src/renderer/kDTree.hpp
+    src/renderer/kDTree.h
     src/renderer/material.cpp
     src/renderer/material.h
+    src/renderer/photonMapping.cpp
+    src/renderer/photonMapping.h
     src/renderer/ray.cpp
     src/renderer/ray.h
     src/renderer/render.h
@@ -45,10 +49,6 @@ set (renderer_sources
     src/renderer/visualobject.cpp
     src/renderer/visualobject.h
     src/renderer/utility.h
-    src/renderer/kDTree.h
-    src/renderer/kDTree.hpp
-    src/renderer/photonMapping.h
-    src/renderer/photonMapping.cpp
 )
 
 list (APPEND couscous_sources
