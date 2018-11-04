@@ -74,10 +74,8 @@ list (APPEND couscous_sources
     ${gui_sources})
 
 set (io_sources
-    src/io/cscfileformat.cpp
-    src/io/cscfileformat.h
-    src/io/objfileformat.cpp
-    src/io/objfileformat.h
+    src/io/scenefilereader.cpp
+    src/io/scenefilereader.h
 )
 
 list (APPEND couscous_sources

@@ -39,8 +39,7 @@ SOURCES += \
     src/gui/scene.cpp \
     src/gui/dialogmaterial.cpp \
     src/gui/dialogobject.cpp \
-    src/io/objfileformat.cpp \
-    src/io/cscfileformat.cpp
+    src/io/scenefilereader.cpp 
 
 HEADERS += \
         src/gui/mainwindow.h \
@@ -62,8 +61,7 @@ HEADERS += \
     src/gui/scene.h \
     src/gui/dialogmaterial.h \
     src/gui/dialogobject.h \
-    src/io/objfileformat.h \
-    src/io/cscfileformat.h
+    src/io/scenefilereader.h 
 
 FORMS += \
         src/gui/mainwindow.ui \

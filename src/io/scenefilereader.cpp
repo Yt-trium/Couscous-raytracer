@@ -1,26 +1,19 @@
-#include "objfileformat.h"
+#include "scenefilereader.h"
 
 #include <QMessageBox>
-#include <QString>
 
 #include <iostream>
-#include <string>
 #include <fstream>
 #include <sstream>
 
 using namespace std;
 using namespace glm;
 
-OBJFileFormat::OBJFileFormat()
-{
-
-}
-
-SceneOBJ OBJFileFormat::readOBJ(std::string filename)
+SceneOBJ read_obj(const std::string& filename)
 {
     SceneOBJ obj;
     string line;
-    ifstream objfile (filename);
+    ifstream objfile(filename);
 
     if(objfile.is_open())
     {

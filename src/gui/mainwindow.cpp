@@ -4,7 +4,7 @@
 #include "ui_mainwindow.h"
 
 // couscous includes.
-#include "io/objfileformat.h"
+#include "io/scenefilereader.h"
 #include "renderer/camera.h"
 #include "renderer/material.h"
 #include "renderer/photonMapping.h"
@@ -147,8 +147,8 @@ MainWindow::MainWindow(QWidget *parent)
                                         1,
                                         true));
 
-    // scene.objects.clear();
-    //scene.objs.push_back(OBJFileFormat::readOBJ("assets/test_object_triangulated.obj"));
+    //scene.objects.clear();
+    //scene.objs.push_back(read_obj("assets/test_object_triangulated.obj"));
 
     update_scene_widget();
 }
