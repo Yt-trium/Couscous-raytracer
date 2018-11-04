@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(0.0f, 0.0f, 0.0f),
                                         0.0f,
                                         vec3(200.0f),
-                                        PLANE,
+                                        ObjectType::PLANE,
                                         "white"));
 
     scene.objects.push_back(SceneObject("background",
@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(1.0f, 0.0f, 0.0f),
                                         90.0f,
                                         vec3(200.0f),
-                                        PLANE,
+                                        ObjectType::PLANE,
                                         "white"));
 
     scene.objects.push_back(SceneObject("ceilling",
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(1.0f, 0.0f, 0.0f),
                                         180.0f,
                                         vec3(200.0f),
-                                        PLANE,
+                                        ObjectType::PLANE,
                                         "white"));
 
     scene.objects.push_back(SceneObject("top_light",
@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(1.0f, 0.0f, 0.0f),
                                         180.0f,
                                         vec3(30.0f),
-                                        PLANE,
+                                        ObjectType::PLANE,
                                         "light"));
 
     scene.objects.push_back(SceneObject("left",
@@ -108,7 +108,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(0.0f, 0.0f, 1.0f),
                                         90.0f,
                                         vec3(200.0f),
-                                        PLANE,
+                                        ObjectType::PLANE,
                                         "green"));
 
     scene.objects.push_back(SceneObject("right",
@@ -116,7 +116,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(0.0f, 0.0f, 1.0f),
                                         -90.0f,
                                         vec3(200.0f),
-                                        PLANE,
+                                        ObjectType::PLANE,
                                         "red"));
 
     scene.objects.push_back(SceneObject("left_box",
@@ -124,7 +124,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(0.0f, 1.0f, 0.0f),
                                         -20.0f,
                                         vec3(60.0f, 100.0f, 60.0f),
-                                        CUBE,
+                                        ObjectType::CUBE,
                                         "white"));
 
     scene.objects.push_back(SceneObject("right_box",
@@ -132,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(0.0f, 1.0f, 0.0f),
                                         20.0f,
                                         vec3(60.0f),
-                                        CUBE,
+                                        ObjectType::CUBE,
                                         "white"));
 
     scene.objects.push_back(SceneObject("left_light",
@@ -140,7 +140,7 @@ MainWindow::MainWindow(QWidget *parent)
                                         vec3(0.0f, 1.0f, 0.0f),
                                         0.0f,
                                         vec3(10.0f),
-                                        CYLINDER,
+                                        ObjectType::CYLINDER,
                                         "light",
                                         50,
                                         10,
@@ -194,13 +194,13 @@ void MainWindow::update_scene_widget()
 
         switch(scene.objects.at(i).m_type)
         {
-        case PLANE:
+            case ObjectType::PLANE:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/square-outline.png"));
             break;
-        case CUBE:
+            case ObjectType::CUBE:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/cube-outline.png"));
             break;
-        case CYLINDER:
+            case ObjectType::CYLINDER:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/cylinder-outline.png"));
             break;
         }
@@ -215,10 +215,10 @@ void MainWindow::update_scene_widget()
 
         switch(scene.objs.at(i).m_type)
         {
-        case OBJ:
+            case ObjectType::OBJ:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_obj.png"));
             break;
-        case OFF:
+            case ObjectType::OFF:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_off.png"));
             break;
         }

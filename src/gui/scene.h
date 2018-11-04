@@ -6,29 +6,27 @@
 #include "renderer/visualobject.h"
 
 // glm includes.
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 // Standard includes.
 #include <memory>
 #include <string>
 #include <vector>
 
-enum object_type {PLANE, CUBE, CYLINDER};
-enum obj_type {OBJ, OFF};
+enum class ObjectType { PLANE, CUBE, CYLINDER, OBJ, OFF };
 
 class SceneMaterial
 {
-public:
-    SceneMaterial(std::string n, glm::vec3 c, glm::vec3 e)
-        : m_name(n)
-        , m_color(c)
-        , m_emission(e)
-    {}
+  public:
+    SceneMaterial(
+        const std::string&   name,
+        const glm::vec3&     color,
+        const glm::vec3&     emission);
 
     std::string m_name;
-    glm::vec3 m_color;
-    glm::vec3 m_emission;
+    glm::vec3   m_color;
+    glm::vec3   m_emission;
 };
 
 class SceneObject
@@ -39,7 +37,7 @@ public:
                 glm::vec3 r,
                 float rd,
                 glm::vec3 s,
-                object_type ot,
+                ObjectType ot,
                 std::string m)
         : m_name(n)
         , m_translate(t)
@@ -59,7 +57,7 @@ public:
                 glm::vec3 r,
                 float rd,
                 glm::vec3 s,
-                object_type ot,
+                ObjectType ot,
                 std::string m,
                 std::size_t sd,
                 float h,
@@ -84,7 +82,7 @@ public:
     glm::vec3 m_rotate;
     float m_rotate_d;
     glm::vec3 m_scale;
-    object_type m_type;
+    ObjectType m_type;
     std::string m_material;
 
     std::size_t m_subdivisions;
@@ -102,7 +100,7 @@ public:
     glm::vec3 m_rotate;
     float m_rotate_d;
     glm::vec3 m_scale;
-    obj_type m_type;
+    ObjectType m_type;
     std::string m_material;
 
     std::vector<glm::vec3> vertices;

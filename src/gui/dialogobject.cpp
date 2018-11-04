@@ -20,7 +20,7 @@ DialogObject::DialogObject(QWidget *p, Scene *s, int i) :
         vec3 rotate(s->objects.at(std::size_t(id)).m_rotate);
         float rotate_d = s->objects.at(std::size_t(id)).m_rotate_d;
         vec3 scale(s->objects.at(std::size_t(id)).m_scale);
-        object_type type = s->objects.at(std::size_t(id)).m_type;
+        ObjectType type = s->objects.at(std::size_t(id)).m_type;
         QString material = QString::fromStdString(s->objects.at(std::size_t(id)).m_material);
         std::size_t subdivisions = s->objects.at(std::size_t(id)).m_subdivisions;
         float height = s->objects.at(std::size_t(id)).m_height;
@@ -41,13 +41,13 @@ DialogObject::DialogObject(QWidget *p, Scene *s, int i) :
 
         switch(type)
         {
-        case PLANE:
+            case ObjectType::PLANE:
             ui->comboBox_object_type->setCurrentIndex(0);
             break;
-        case CUBE:
+            case ObjectType::CUBE:
             ui->comboBox_object_type->setCurrentIndex(1);
             break;
-        case CYLINDER:
+            case ObjectType::CYLINDER:
             ui->comboBox_object_type->setCurrentIndex(2);
             ui->spinBox_subdivisions->setEnabled(true);
             ui->doubleSpinBox_height->setEnabled(true);
@@ -84,20 +84,20 @@ DialogObject::~DialogObject()
 
 void DialogObject::on_buttonBox_accepted()
 {
-    object_type ot;
+    ObjectType ot;
 
     switch (ui->comboBox_object_type->currentIndex()) {
     case 0:
-        ot = PLANE;
+        ot = ObjectType::PLANE;
         break;
     case 1:
-        ot = CUBE;
+        ot = ObjectType::CUBE;
         break;
     case 2:
-        ot = CYLINDER;
+        ot = ObjectType::CYLINDER;
         break;
     default:
-        ot = PLANE;
+        ot = ObjectType::PLANE;
         break;
     }
 
@@ -128,39 +128,39 @@ void DialogObject::on_buttonBox_accepted()
 
 void DialogObject::on_comboBox_object_type_currentIndexChanged(int index)
 {
-    object_type ot;
+    ObjectType ot;
 
     switch (ui->comboBox_object_type->currentIndex()) {
     case 0:
-        ot = PLANE;
+        ot = ObjectType::PLANE;
         break;
     case 1:
-        ot = CUBE;
+        ot = ObjectType::CUBE;
         break;
     case 2:
-        ot = CYLINDER;
+        ot = ObjectType::CYLINDER;
         break;
     default:
-        ot = PLANE;
+        ot = ObjectType::PLANE;
         break;
     }
     switch(ot)
     {
-    case PLANE:
+        case ObjectType::PLANE:
         ui->comboBox_object_type->setCurrentIndex(0);
         ui->spinBox_subdivisions->setEnabled(false);
         ui->doubleSpinBox_height->setEnabled(false);
         ui->doubleSpinBox_width->setEnabled(false);
         ui->checkBox_caps->setEnabled(false);
         break;
-    case CUBE:
+    case ObjectType::CUBE:
         ui->comboBox_object_type->setCurrentIndex(1);
         ui->spinBox_subdivisions->setEnabled(false);
         ui->doubleSpinBox_height->setEnabled(false);
         ui->doubleSpinBox_width->setEnabled(false);
         ui->checkBox_caps->setEnabled(false);
         break;
-    case CYLINDER:
+    case ObjectType::CYLINDER:
         ui->comboBox_object_type->setCurrentIndex(2);
         ui->spinBox_subdivisions->setEnabled(true);
         ui->doubleSpinBox_height->setEnabled(true);

@@ -1,10 +1,19 @@
 #include "scene.h"
 
+#include "renderer/visualobject.h"
+
 using namespace std;
 using namespace glm;
 
-#include <iostream>
-#include "renderer/visualobject.h"
+SceneMaterial::SceneMaterial(
+    const string&   name,
+    const vec3&     color,
+    const vec3&     emission)
+  : m_name(name)
+  , m_color(color)
+  , m_emission(emission)
+{
+}
 
 void Scene::create_scene(MeshGroup &world)
 {
@@ -52,13 +61,13 @@ void Scene::create_scene(MeshGroup &world)
         }
         switch(object->m_type)
         {
-        case PLANE:
+        case ObjectType::PLANE:
             create_plane(world, mat_dft, transform);
             break;
-        case CUBE:
+        case ObjectType::CUBE:
             create_cube(world, mat_dft, transform);
             break;
-        case CYLINDER:
+        case ObjectType::CYLINDER:
             create_cylinder(world, mat_dft, object->m_subdivisions,
                             object->m_height, object->m_width,
                             object->m_caps, transform);
@@ -75,12 +84,14 @@ void Scene::create_scene(MeshGroup &world)
            obj->vertices.size() == 0)
             continue;
 
+        /*
         std::cout << obj->triangles.size() << " " <<
                      obj->vertices.size() << " " <<
                      obj->normals.size() << " " <<
                      obj->triangles.data() << " " <<
                      obj->vertices.data() << " " <<
                      obj->normals.data() << std::endl;
+        */
 
         obj = &objs.at(i);
         shared_ptr<Material> mat_dft(new Lambertian(vec3(0.73f, 0.73f, 0.73f)));
