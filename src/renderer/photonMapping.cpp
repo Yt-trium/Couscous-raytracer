@@ -37,11 +37,13 @@ Photon::Photon()
 
 Photon::Photon(glm::vec3 position,
                glm::vec3 inDirection,
-               float energy)
+               float energy,
+               Material* mat)
 {
     this->position = position;
     this->inDirection = inDirection;
     this->energy = energy;
+    this->mat = mat;
 }
 
 
@@ -108,7 +110,7 @@ void PhotonMap::trace_photon_ray(
         hitPointEnergy = terminationSystem.modifyEnergy(alpha, hitPointEnergy);
         if(hitPointEnergy >= photonMinErnergy)
         {
-            hitPoint = new Photon(rec.p, r.origin, hitPointEnergy);
+            hitPoint = new Photon(rec.p, r.origin, hitPointEnergy, rec.mat);
             add_photon(hitPoint);
 
             // scatterd ray (cast here should not cause any problem, because ray depth will not be greater thant MAX_INT in practice)

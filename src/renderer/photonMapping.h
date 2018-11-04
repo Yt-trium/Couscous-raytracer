@@ -57,7 +57,8 @@ public:
 
     Photon(glm::vec3 position,
            glm::vec3 inDirection,
-           float energy);
+           float energy,
+           Material* mat);
 
     static float compute_energy(float inEnergy,
                                  float fr);
@@ -67,6 +68,8 @@ public:
     glm::vec3 inDirection;
 
     float energy;
+
+    Material* mat;
 };
 
 
