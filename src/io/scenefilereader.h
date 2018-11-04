@@ -12,6 +12,6 @@
  * @param filename
  * @return
  */
-SceneOBJ read_obj(const std::string& filename);
+SceneObjectFile read_obj(const std::string& filename);
 
 #endif // IO_SCENEFILEREADER_H

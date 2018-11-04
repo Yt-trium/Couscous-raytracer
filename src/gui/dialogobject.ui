@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>566</width>
     <height>400</height>
    </rect>
   </property>
@@ -40,16 +40,6 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="0" colspan="4">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="2">
     <widget class="QDoubleSpinBox" name="doubleSpinBox_translate_y">
      <property name="decimals">
@@ -70,14 +60,24 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="11" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <widget class="QLabel" name="label_scale">
      <property name="text">
       <string>Scale</string>
      </property>
     </widget>
    </item>
-   <item row="11" column="0" colspan="4">
+   <item row="10" column="0" colspan="4">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -93,7 +93,7 @@
    <item row="2" column="0">
     <widget class="QLabel" name="label_rotation_plan">
      <property name="text">
-      <string>Rotation Plan</string>
+      <string>Rotation</string>
      </property>
     </widget>
    </item>
@@ -110,14 +110,14 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="label_material">
      <property name="text">
       <string>Material</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="1" colspan="3">
+   <item row="9" column="1" colspan="3">
     <widget class="QCheckBox" name="checkBox_caps">
      <property name="enabled">
       <bool>false</bool>
@@ -127,17 +127,17 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1" colspan="3">
+   <item row="4" column="1" colspan="3">
     <widget class="QComboBox" name="comboBox_material"/>
    </item>
-   <item row="8" column="0">
+   <item row="7" column="0">
     <widget class="QLabel" name="label_height">
      <property name="text">
       <string>Height</string>
      </property>
     </widget>
    </item>
-   <item row="9" column="1" colspan="3">
+   <item row="8" column="1" colspan="3">
     <widget class="QDoubleSpinBox" name="doubleSpinBox_width">
      <property name="enabled">
       <bool>false</bool>
@@ -153,7 +153,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="3" column="1">
     <widget class="QDoubleSpinBox" name="doubleSpinBox_scale_x">
      <property name="decimals">
       <number>4</number>
@@ -171,19 +171,6 @@
    </item>
    <item row="1" column="3">
     <widget class="QDoubleSpinBox" name="doubleSpinBox_translate_z">
-     <property name="decimals">
-      <number>4</number>
-     </property>
-     <property name="minimum">
-      <double>-9999999999.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>9999999999.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1" colspan="3">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_rotate_angle">
      <property name="decimals">
       <number>4</number>
      </property>
@@ -215,21 +202,14 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_rotation_angle">
-     <property name="text">
-      <string>Rotation Angle</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
+   <item row="5" column="0">
     <widget class="QLabel" name="label_object_type">
      <property name="text">
       <string>Object Type</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="1" colspan="3">
+   <item row="5" column="1" colspan="3">
     <widget class="QComboBox" name="comboBox_object_type">
      <item>
       <property name="text">
@@ -248,7 +228,7 @@
      </item>
     </widget>
    </item>
-   <item row="4" column="2">
+   <item row="3" column="2">
     <widget class="QDoubleSpinBox" name="doubleSpinBox_scale_y">
      <property name="decimals">
       <number>4</number>
@@ -261,7 +241,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="3">
+   <item row="3" column="3">
     <widget class="QDoubleSpinBox" name="doubleSpinBox_scale_z">
      <property name="decimals">
       <number>4</number>
@@ -274,14 +254,14 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
+   <item row="8" column="0">
     <widget class="QLabel" name="label_width">
      <property name="text">
       <string>Width</string>
      </property>
     </widget>
    </item>
-   <item row="8" column="1" colspan="3">
+   <item row="7" column="1" colspan="3">
     <widget class="QDoubleSpinBox" name="doubleSpinBox_height">
      <property name="enabled">
       <bool>false</bool>
@@ -297,14 +277,14 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="6" column="0">
     <widget class="QLabel" name="label_subdivisions">
      <property name="text">
       <string>Subdivisions</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="1" colspan="3">
+   <item row="6" column="1" colspan="3">
     <widget class="QSpinBox" name="spinBox_subdivisions">
      <property name="enabled">
       <bool>false</bool>
@@ -321,7 +301,6 @@
   <tabstop>doubleSpinBox_rotate_x</tabstop>
   <tabstop>doubleSpinBox_rotate_y</tabstop>
   <tabstop>doubleSpinBox_rotate_z</tabstop>
-  <tabstop>doubleSpinBox_rotate_angle</tabstop>
   <tabstop>doubleSpinBox_scale_x</tabstop>
   <tabstop>doubleSpinBox_scale_y</tabstop>
   <tabstop>doubleSpinBox_scale_z</tabstop>

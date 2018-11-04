@@ -2,6 +2,7 @@
 #include "ui_dialogobject.h"
 
 using namespace glm;
+using namespace std;
 
 DialogObject::DialogObject(QWidget *p, Scene *s, int i) :
     QDialog(p),
@@ -14,52 +15,50 @@ DialogObject::DialogObject(QWidget *p, Scene *s, int i) :
 
     if(id >= 0)
     {
+        const auto& object = s->objects.at(static_cast<size_t>(id));
 
-        QString name = QString::fromStdString(s->objects.at(std::size_t(id)).m_name);
-        vec3 translate(s->objects.at(std::size_t(id)).m_translate);
-        vec3 rotate(s->objects.at(std::size_t(id)).m_rotate);
-        float rotate_d = s->objects.at(std::size_t(id)).m_rotate_d;
-        vec3 scale(s->objects.at(std::size_t(id)).m_scale);
-        ObjectType type = s->objects.at(std::size_t(id)).m_type;
-        QString material = QString::fromStdString(s->objects.at(std::size_t(id)).m_material);
-        std::size_t subdivisions = s->objects.at(std::size_t(id)).m_subdivisions;
-        float height = s->objects.at(std::size_t(id)).m_height;
-        float width = s->objects.at(std::size_t(id)).m_width;
-        bool caps = s->objects.at(std::size_t(id)).m_caps;
+        const QString name = QString::fromStdString(object.name);
+        const Transform& transform = object.transform;
+        const ObjectType type = object.type;
+        const QString material = QString::fromStdString(object.material);
+
+        const size_t subdivisions = object.subdivisions;
+        const float width = object.width;
+        const float height = object.height;
+        const bool caps = object.caps;
 
         ui->lineEdit_name->setText(name);
-        ui->doubleSpinBox_translate_x->setValue(double(translate[0]));
-        ui->doubleSpinBox_translate_y->setValue(double(translate[1]));
-        ui->doubleSpinBox_translate_z->setValue(double(translate[2]));
-        ui->doubleSpinBox_rotate_x->setValue(double(rotate[0]));
-        ui->doubleSpinBox_rotate_y->setValue(double(rotate[1]));
-        ui->doubleSpinBox_rotate_z->setValue(double(rotate[2]));
-        ui->doubleSpinBox_rotate_angle->setValue(double(rotate_d));
-        ui->doubleSpinBox_scale_x->setValue(double(scale[0]));
-        ui->doubleSpinBox_scale_y->setValue(double(scale[1]));
-        ui->doubleSpinBox_scale_z->setValue(double(scale[2]));
+        ui->doubleSpinBox_translate_x->setValue(double(transform.translate[0]));
+        ui->doubleSpinBox_translate_y->setValue(double(transform.translate[1]));
+        ui->doubleSpinBox_translate_z->setValue(double(transform.translate[2]));
+        ui->doubleSpinBox_rotate_x->setValue(double(transform.rotation[0]));
+        ui->doubleSpinBox_rotate_y->setValue(double(transform.rotation[1]));
+        ui->doubleSpinBox_rotate_z->setValue(double(transform.rotation[2]));
+        ui->doubleSpinBox_scale_x->setValue(double(transform.scale[0]));
+        ui->doubleSpinBox_scale_y->setValue(double(transform.scale[1]));
+        ui->doubleSpinBox_scale_z->setValue(double(transform.scale[2]));
 
         switch(type)
         {
             case ObjectType::PLANE:
-            ui->comboBox_object_type->setCurrentIndex(0);
-            break;
+                ui->comboBox_object_type->setCurrentIndex(0);
+                break;
             case ObjectType::CUBE:
-            ui->comboBox_object_type->setCurrentIndex(1);
-            break;
+                ui->comboBox_object_type->setCurrentIndex(1);
+                break;
             case ObjectType::CYLINDER:
-            ui->comboBox_object_type->setCurrentIndex(2);
-            ui->spinBox_subdivisions->setEnabled(true);
-            ui->doubleSpinBox_height->setEnabled(true);
-            ui->doubleSpinBox_width->setEnabled(true);
-            ui->checkBox_caps->setEnabled(true);
-            break;
+                ui->comboBox_object_type->setCurrentIndex(2);
+                ui->spinBox_subdivisions->setEnabled(true);
+                ui->doubleSpinBox_height->setEnabled(true);
+                ui->doubleSpinBox_width->setEnabled(true);
+                ui->checkBox_caps->setEnabled(true);
+                break;
         }
 
-        for(std::size_t x = 0 ; x < scene->materials.size() ; ++x)
+        for(size_t x = 0; x < scene->materials.size(); ++x)
         {
-            ui->comboBox_material->addItem(QString::fromStdString(scene->materials.at(x).m_name));
-            if(QString::fromStdString(scene->materials.at(x).m_name) == material)
+            ui->comboBox_material->addItem(QString::fromStdString(scene->materials.at(x).name));
+            if(QString::fromStdString(scene->materials.at(x).name) == material)
                 ui->comboBox_material->setCurrentIndex(int(x));
         }
 
@@ -70,9 +69,9 @@ DialogObject::DialogObject(QWidget *p, Scene *s, int i) :
     }
     else
     {
-        for(std::size_t x = 0 ; x < scene->materials.size() ; ++x)
+        for(size_t x = 0; x < scene->materials.size(); ++x)
         {
-            ui->comboBox_material->addItem(QString::fromStdString(scene->materials.at(x).m_name));
+            ui->comboBox_material->addItem(QString::fromStdString(scene->materials.at(x).name));
         }
     }
 }
@@ -87,38 +86,42 @@ void DialogObject::on_buttonBox_accepted()
     ObjectType ot;
 
     switch (ui->comboBox_object_type->currentIndex()) {
-    case 0:
+      default:
+      case 0:
         ot = ObjectType::PLANE;
         break;
-    case 1:
+      case 1:
         ot = ObjectType::CUBE;
         break;
-    case 2:
+      case 2:
         ot = ObjectType::CYLINDER;
-        break;
-    default:
-        ot = ObjectType::PLANE;
         break;
     }
 
-    SceneObject so(ui->lineEdit_name->text().toStdString(),
-                   vec3(ui->doubleSpinBox_translate_x->value(),
-                        ui->doubleSpinBox_translate_y->value(),
-                        ui->doubleSpinBox_translate_z->value()),
-                   vec3(ui->doubleSpinBox_rotate_x->value(),
-                        ui->doubleSpinBox_rotate_y->value(),
-                        ui->doubleSpinBox_rotate_z->value()),
-                   float(ui->doubleSpinBox_rotate_angle->value()),
-                   vec3(ui->doubleSpinBox_scale_x->value(),
-                        ui->doubleSpinBox_scale_y->value(),
-                        ui->doubleSpinBox_scale_z->value()),
-                   ot,
-                   ui->comboBox_material->currentText().toStdString(),
-                   std::size_t(ui->spinBox_subdivisions->value()),
-                   float(ui->doubleSpinBox_height->value()),
-                   float(ui->doubleSpinBox_width->value()),
-                   ui->checkBox_caps->isChecked()
-                   );
+    const Transform transform(
+        vec3(ui->doubleSpinBox_translate_x->value(),
+            ui->doubleSpinBox_translate_y->value(),
+            ui->doubleSpinBox_translate_z->value()),
+        vec3(ui->doubleSpinBox_rotate_x->value(),
+            ui->doubleSpinBox_rotate_y->value(),
+            ui->doubleSpinBox_rotate_z->value()),
+        vec3(ui->doubleSpinBox_scale_x->value(),
+            ui->doubleSpinBox_scale_y->value(),
+            ui->doubleSpinBox_scale_z->value()));
+
+    SceneObject so(
+        ui->lineEdit_name->text().toStdString(),
+        transform,
+        ot,
+        ui->comboBox_material->currentText().toStdString());
+
+    if (ot == ObjectType::CYLINDER)
+    {
+        so.subdivisions = std::size_t(ui->spinBox_subdivisions->value());
+        so.width = float(ui->doubleSpinBox_width->value());
+        so.height = float(ui->doubleSpinBox_width->value());
+        so.caps = ui->checkBox_caps->isChecked();
+    }
 
     if(id >= 0)
         scene->objects[std::size_t(id)] = so;
@@ -130,37 +133,37 @@ void DialogObject::on_comboBox_object_type_currentIndexChanged(int index)
 {
     ObjectType ot;
 
-    switch (ui->comboBox_object_type->currentIndex()) {
-    case 0:
+    switch (ui->comboBox_object_type->currentIndex())
+    {
+      default:
+      case 0:
         ot = ObjectType::PLANE;
         break;
-    case 1:
+      case 1:
         ot = ObjectType::CUBE;
         break;
-    case 2:
+      case 2:
         ot = ObjectType::CYLINDER;
         break;
-    default:
-        ot = ObjectType::PLANE;
-        break;
     }
+
     switch(ot)
     {
-        case ObjectType::PLANE:
+      case ObjectType::PLANE:
         ui->comboBox_object_type->setCurrentIndex(0);
         ui->spinBox_subdivisions->setEnabled(false);
         ui->doubleSpinBox_height->setEnabled(false);
         ui->doubleSpinBox_width->setEnabled(false);
         ui->checkBox_caps->setEnabled(false);
         break;
-    case ObjectType::CUBE:
+      case ObjectType::CUBE:
         ui->comboBox_object_type->setCurrentIndex(1);
         ui->spinBox_subdivisions->setEnabled(false);
         ui->doubleSpinBox_height->setEnabled(false);
         ui->doubleSpinBox_width->setEnabled(false);
         ui->checkBox_caps->setEnabled(false);
         break;
-    case ObjectType::CYLINDER:
+      case ObjectType::CYLINDER:
         ui->comboBox_object_type->setCurrentIndex(2);
         ui->spinBox_subdivisions->setEnabled(true);
         ui->doubleSpinBox_height->setEnabled(true);
@@ -168,5 +171,5 @@ void DialogObject::on_comboBox_object_type_currentIndexChanged(int index)
         ui->checkBox_caps->setEnabled(true);
         break;
     }
-
 }
+

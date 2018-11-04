@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 
 // couscous includes.
+#include "gui/scene.h"
 #include "io/scenefilereader.h"
 #include "renderer/camera.h"
 #include "renderer/material.h"
@@ -66,89 +67,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionNew_object, SIGNAL(triggered(bool)), SLOT(slot_create_object()));
     connect(ui->actionDelete, SIGNAL(triggered(bool)), SLOT(slot_delete()));
 
-    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f)));
-    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f)));
-    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 0.45f, 0.15f), vec3(0.0f)));
-    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f)));
-
-    scene.objects.push_back(SceneObject("floor",
-                                        vec3(0.0f, 0.0f, 0.0f),
-                                        vec3(0.0f, 0.0f, 0.0f),
-                                        0.0f,
-                                        vec3(200.0f),
-                                        ObjectType::PLANE,
-                                        "white"));
-
-    scene.objects.push_back(SceneObject("background",
-                                        vec3(0.0f, 100.0f, -100.0f),
-                                        vec3(1.0f, 0.0f, 0.0f),
-                                        90.0f,
-                                        vec3(200.0f),
-                                        ObjectType::PLANE,
-                                        "white"));
-
-    scene.objects.push_back(SceneObject("ceilling",
-                                        vec3(0.0f, 200.0f, 0.0f),
-                                        vec3(1.0f, 0.0f, 0.0f),
-                                        180.0f,
-                                        vec3(200.0f),
-                                        ObjectType::PLANE,
-                                        "white"));
-
-    scene.objects.push_back(SceneObject("top_light",
-                                        vec3(0.0f, 199.0f, 0.0f),
-                                        vec3(1.0f, 0.0f, 0.0f),
-                                        180.0f,
-                                        vec3(30.0f),
-                                        ObjectType::PLANE,
-                                        "light"));
-
-    scene.objects.push_back(SceneObject("left",
-                                        vec3(100.0f, 100.0f, 0.0f),
-                                        vec3(0.0f, 0.0f, 1.0f),
-                                        90.0f,
-                                        vec3(200.0f),
-                                        ObjectType::PLANE,
-                                        "green"));
-
-    scene.objects.push_back(SceneObject("right",
-                                        vec3(-100.0f, 100.0f, 0.0f),
-                                        vec3(0.0f, 0.0f, 1.0f),
-                                        -90.0f,
-                                        vec3(200.0f),
-                                        ObjectType::PLANE,
-                                        "red"));
-
-    scene.objects.push_back(SceneObject("left_box",
-                                        vec3(50.0f, 50.0f, -30.0f),
-                                        vec3(0.0f, 1.0f, 0.0f),
-                                        -20.0f,
-                                        vec3(60.0f, 100.0f, 60.0f),
-                                        ObjectType::CUBE,
-                                        "white"));
-
-    scene.objects.push_back(SceneObject("right_box",
-                                        vec3(-50.0f, 30.0f, 30.0f),
-                                        vec3(0.0f, 1.0f, 0.0f),
-                                        20.0f,
-                                        vec3(60.0f),
-                                        ObjectType::CUBE,
-                                        "white"));
-
-    scene.objects.push_back(SceneObject("left_light",
-                                        vec3(-80.0f, 80.0f, 100.0f),
-                                        vec3(0.0f, 1.0f, 0.0f),
-                                        0.0f,
-                                        vec3(10.0f),
-                                        ObjectType::CYLINDER,
-                                        "light",
-                                        50,
-                                        10,
-                                        1,
-                                        true));
-
-    //scene.objects.clear();
-    //scene.objs.push_back(read_obj("assets/test_object_triangulated.obj"));
+    scene = Scene::cornell_box();
 
     update_scene_widget();
 }
@@ -182,7 +101,7 @@ void MainWindow::update_scene_widget()
     for(std::size_t i = 0 ; i < scene.materials.size() ; ++i)
     {
         QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
-        widgetItem->setText(0, QString::fromStdString(scene.materials.at(i).m_name));
+        widgetItem->setText(0, QString::fromStdString(scene.materials.at(i).name));
         widgetItem->setIcon(0, QIcon(":/sceneOptions/baseline_texture_black_18dp.png"));
         widgetItemMaterials->addChild(widgetItem);
     }
@@ -190,17 +109,17 @@ void MainWindow::update_scene_widget()
     for(std::size_t i = 0 ; i < scene.objects.size() ; ++i)
     {
         QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
-        widgetItem->setText(0, QString::fromStdString(scene.objects.at(i).m_name));
+        widgetItem->setText(0, QString::fromStdString(scene.objects.at(i).name));
 
-        switch(scene.objects.at(i).m_type)
+        switch(scene.objects.at(i).type)
         {
-            case ObjectType::PLANE:
+          case ObjectType::PLANE:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/square-outline.png"));
             break;
-            case ObjectType::CUBE:
+          case ObjectType::CUBE:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/cube-outline.png"));
             break;
-            case ObjectType::CYLINDER:
+          case ObjectType::CYLINDER:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/cylinder-outline.png"));
             break;
         }
@@ -208,17 +127,17 @@ void MainWindow::update_scene_widget()
         widgetItemObjects->addChild(widgetItem);
     }
 
-    for(std::size_t i = 0 ; i < scene.objs.size() ; ++i)
+    for(std::size_t i = 0 ; i < scene.object_files.size() ; ++i)
     {
         QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
-        widgetItem->setText(0, QString::fromStdString(scene.objs.at(i).m_name));
+        widgetItem->setText(0, QString::fromStdString(scene.object_files.at(i).name));
 
-        switch(scene.objs.at(i).m_type)
+        switch(scene.object_files.at(i).type)
         {
-            case ObjectType::OBJ:
+          case ObjectFileType::OBJ:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_obj.png"));
             break;
-            case ObjectType::OFF:
+          case ObjectFileType::OFF:
             widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_off.png"));
             break;
         }
@@ -382,7 +301,7 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
     QString itmname = item->text(column);
     for(std::size_t i = 0 ; i < scene.materials.size() ; ++i)
     {
-        if(QString::fromStdString(scene.materials.at(i).m_name) == itmname)
+        if(QString::fromStdString(scene.materials.at(i).name) == itmname)
         {
             DialogMaterial *dlg = new DialogMaterial(this, &scene, int(i));
             dlg->exec();
@@ -392,7 +311,7 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
     }
     for(std::size_t i = 0 ; i < scene.objects.size() ; ++i)
     {
-        if(QString::fromStdString(scene.objects.at(i).m_name) == itmname)
+        if(QString::fromStdString(scene.objects.at(i).name) == itmname)
         {
             DialogObject *dlg = new DialogObject(this, &scene, int(i));
             dlg->exec();
@@ -429,14 +348,14 @@ void MainWindow::slot_delete()
 
         for(std::size_t i = 0 ; i < scene.materials.size() ; ++i)
         {
-            if(QString::fromStdString(scene.materials.at(i).m_name) == name)
+            if(QString::fromStdString(scene.materials.at(i).name) == name)
             {
                 selection_materials.push_front(i);
             }
         }
         for(std::size_t i = 0 ; i < scene.objects.size() ; ++i)
         {
-            if(QString::fromStdString(scene.objects.at(i).m_name) == name)
+            if(QString::fromStdString(scene.objects.at(i).name) == name)
             {
                 selection_objects.push_front(i);
             }
@@ -452,5 +371,6 @@ void MainWindow::slot_delete()
     {
         scene.objects.erase(scene.objects.begin() + selection_objects.at(x));
     }
+
     update_scene_widget();
 }

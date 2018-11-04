@@ -14,9 +14,10 @@ DialogMaterial::DialogMaterial(QWidget *p, Scene *s, int i) :
 
     if(id >= 0)
     {
-        QString name = QString::fromStdString(s->materials.at(std::size_t(id)).m_name);
-        vec3 color(s->materials.at(std::size_t(id)).m_color);
-        vec3 emission(s->materials.at(std::size_t(id)).m_emission);
+        const auto& object = s->materials.at(static_cast<size_t>(id));
+        const QString name = QString::fromStdString(object.name);
+        const vec3& color = object.color;
+        const vec3& emission = object.emission;
 
         ui->lineEdit_name->setText(name);
         ui->doubleSpinBox_color_r->setValue(double(color[0]));
@@ -48,3 +49,4 @@ void DialogMaterial::on_buttonBox_accepted()
     else
         scene->materials.push_back(sm);
 }
+
