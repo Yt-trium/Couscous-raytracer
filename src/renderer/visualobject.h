@@ -48,8 +48,11 @@ class VisualObject
     virtual const std::shared_ptr<Material>& mat() const = 0;
 };
 
+class Triangle;
+
 // A list of 3D intersectable objects.
-typedef std::vector<std::shared_ptr<VisualObject>> MeshGroup;
+typedef std::shared_ptr<Triangle> Shape;
+typedef std::vector<Shape> MeshGroup;
 
 // Test the intersection in the whole world.
 bool hit_world(
@@ -66,33 +69,6 @@ MeshGroup fetch_lights(const MeshGroup& world);
 //
 // Usual shapes.
 //
-
-class Sphere : public VisualObject
-{
-  public:
-    Sphere(
-        const glm::vec3&                    center,
-        float                               radius,
-        const std::shared_ptr<Material>&    mat);
-
-    bool hit(
-        const Ray&                          r,
-        const float                         tmin,
-        const float                         tmax,
-        HitRecord&                          rec) const override;
-
-    const AABB& bbox() const override;
-
-    const std::shared_ptr<Material>& mat() const override;
-
-  private:
-    const glm::vec3             m_center;
-    const float                 m_radius;
-    const AABB                  m_bbox;
-    std::shared_ptr<Material>   m_mat;
-};
-
-class Triangle;
 
 // 3D mesh.
 // It stores only 1 normal per triangle.

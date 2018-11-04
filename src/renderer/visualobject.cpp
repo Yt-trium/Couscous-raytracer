@@ -42,7 +42,7 @@ MeshGroup fetch_lights(const MeshGroup& world)
 {
     MeshGroup lights;
 
-    auto filter_light = [&](const shared_ptr<VisualObject>& mesh)
+    auto filter_light = [&](const Shape& mesh)
     {
         // Is it a light ?
         auto mat = mesh->mat();
@@ -60,68 +60,6 @@ MeshGroup fetch_lights(const MeshGroup& world)
 //
 // Usual shapes implementation.
 //
-
-Sphere::Sphere(
-    const glm::vec3&                center,
-    float                           radius,
-    const shared_ptr<Material>&     mat)
-  : m_center(center)
-  , m_radius(radius)
-  , m_bbox(center - radius, center + radius)
-  , m_mat(mat)
-{
-}
-
-bool Sphere::hit(
-    const Ray&                      r,
-    const float                     tmin,
-    const float                     tmax,
-    HitRecord&                      rec) const
-{
-    vec3 oc = r.origin - m_center;
-
-    float a = dot(r.dir, r.dir);
-    float b = 2.0f * dot(oc, r.dir);
-    float c = dot(oc, oc) - m_radius * m_radius;
-    float d = b * b - 4.0f * a * c;
-
-    if(d > 0)
-    {
-        // Solution 1.
-        float tmp = (-b - sqrt(d)) / (2.0f * a);
-        if(tmp < tmax && tmp > tmin)
-        {
-            rec.t = tmp;
-            rec.p = r.point(rec.t);
-            rec.normal = (rec.p - m_center) / m_radius;
-            rec.mat = m_mat.get();
-            return true;
-        }
-
-        // Solution 2.
-        tmp = (-b + sqrt(d)) / (2.0f * a);
-        if(tmp < tmax && tmp > tmin)
-        {
-            rec.t = tmp;
-            rec.p = r.point(rec.t);
-            rec.normal = (rec.p - m_center) / m_radius;
-            rec.mat = m_mat.get();
-            return true;
-        }
-    }
-
-    return false;
-}
-
-const AABB& Sphere::bbox() const
-{
-    return m_bbox;
-}
-
-const std::shared_ptr<Material>& Sphere::mat() const
-{
-    return m_mat;
-}
 
 TriangleMesh::TriangleMesh(
     const size_t                    triangle_count,
