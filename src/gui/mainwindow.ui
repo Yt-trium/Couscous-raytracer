@@ -75,7 +75,17 @@
     <property name="title">
      <string>&amp;Debug</string>
     </property>
+    <widget class="QMenu" name="menuLogLevel">
+     <property name="title">
+      <string>&amp;Log level</string>
+     </property>
+     <addaction name="actionLogLevelDebug"/>
+     <addaction name="actionLogLevelInfo"/>
+     <addaction name="actionLogLevelError"/>
+     <addaction name="actionLogLevelNone"/>
+    </widget>
     <addaction name="actionDisplay_Normals"/>
+    <addaction name="menuLogLevel"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -441,7 +451,7 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Scene options</string>
+    <string>S&amp;cene options</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -551,6 +561,44 @@
   <action name="actionDisplay_normals">
    <property name="text">
     <string>Display normals</string>
+   </property>
+  </action>
+  <action name="actionLogLevelDebug">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Debug</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionLogLevelInfo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Info</string>
+   </property>
+  </action>
+  <action name="actionLogLevelError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Error</string>
+   </property>
+  </action>
+  <action name="actionLogLevelNone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;None</string>
    </property>
   </action>
  </widget>

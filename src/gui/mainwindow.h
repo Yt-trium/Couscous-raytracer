@@ -62,6 +62,8 @@ class MainWindow : public QMainWindow
     void slot_create_material();
     void slot_create_object();
     void slot_delete();
+
+    void slot_log_level_changed(QAction* action);
 };
 
 #endif // MAINWINDOW_H

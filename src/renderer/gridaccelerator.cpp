@@ -2,8 +2,9 @@
 #include "renderer/gridaccelerator.h"
 
 // couscous includes.
+#include "common/logger.h"
 #include "renderer/ray.h"
-#include "visualobject.h"
+#include "renderer/visualobject.h"
 
 // glm includes.
 #include <glm/glm.hpp>
@@ -86,6 +87,13 @@ VoxelGridAccelerator::VoxelGridAccelerator(
 
     const size_t resolution = m_voxels_per_axis[0] * m_voxels_per_axis[1] * m_voxels_per_axis[2];
     m_voxels.reset(new Voxel[resolution]);
+
+    Logger::log_debug("grid voxel count: " + to_string(resolution) + ".");
+    Logger::log_debug(
+        "grid resolution: ("
+        + to_string(m_voxels_per_axis[0]) + ","
+        + to_string(m_voxels_per_axis[1]) + ","
+        + to_string(m_voxels_per_axis[2]) + ").");
 
     // Link shapes to voxels.
     for (size_t i = 0, e = world.size(); i < e; ++i)

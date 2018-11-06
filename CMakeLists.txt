@@ -81,6 +81,14 @@ set (io_sources
 list (APPEND couscous_sources
     ${io_sources})
 
+set (common_sources
+    src/common/logger.cpp
+    src/common/logger.h
+)
+
+list (APPEND couscous_sources
+    ${common_sources})
+
 set (test_sources
     src/test/catch.hpp
     src/test/test.cpp

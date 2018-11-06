@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 
 // couscous includes.
+#include "common/logger.h"
 #include "gui/scene.h"
 #include "io/scenefilereader.h"
 #include "renderer/camera.h"
@@ -13,6 +14,10 @@
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
 #include "test/test.h"
+
+// Qt includes.
+#include <QAction>
+#include <QActionGroup>
 
 // glm includes.
 #include <glm/glm.hpp>
@@ -67,7 +72,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionNew_object, SIGNAL(triggered(bool)), SLOT(slot_create_object()));
     connect(ui->actionDelete, SIGNAL(triggered(bool)), SLOT(slot_delete()));
 
+    // Makes sure we can't select multiple log level at once.
+    auto log_level_action_group = new QActionGroup(this);
+    log_level_action_group->addAction(ui->actionLogLevelDebug);
+    log_level_action_group->addAction(ui->actionLogLevelInfo);
+    log_level_action_group->addAction(ui->actionLogLevelError);
+    log_level_action_group->addAction(ui->actionLogLevelNone);
+
+    // Map log level events.
+    connect(log_level_action_group, SIGNAL(triggered(QAction*)), SLOT(slot_log_level_changed(QAction*)));
+
+    // Create a default scene.
     scene = Scene::cornell_box();
+
+    // Hook up the gui status bar to the logger.
+    Logger::set_gui_bar(ui->statusBar);
 
     update_scene_widget();
 }
@@ -92,7 +111,6 @@ void MainWindow::update_scene_widget()
     QTreeWidgetItem *widgetItemObjects = new QTreeWidgetItem();
     widgetItemObjects->setText(0, tr("Objects"));
     widgetItemObjects->setIcon(0, QIcon(":/sceneOptions/baseline_business_black_18dp.png"));
-
 
     ui->treeWidget_scene->addTopLevelItem(widgetItemScene);
     widgetItemScene->addChild(widgetItemMaterials);
@@ -174,16 +192,20 @@ void MainWindow::slot_do_render()
     MeshGroup world;
 
     // Get visual.
+    Logger::log_info("creating the scene...");
     scene.create_scene(world);
 
     // Get lights from the scene.
     const MeshGroup lights = fetch_lights(world);
+    Logger::log_debug(to_string(lights.size()) + " light triangles");
+    Logger::log_debug(to_string(world.size() - lights.size()) + " triangles");
 
+    Logger::log_info("building a grid accelerator...");
     VoxelGridAccelerator accelerator(world);
 
     QTime render_timer;
+    Logger::log_info("rendering...");
     render_timer.start();
-    ui->statusBar->showMessage("Rendering progress : ");
     m_statusBarProgress.setVisible(true);
 
     // Create photon map.
@@ -205,9 +227,17 @@ void MainWindow::slot_do_render()
         m_statusBarProgress);
 
     m_statusBarProgress.setVisible(false);
-    QString message = "Rendering time : " + QString::number(render_timer.elapsed()/1000) + "s " + QString::number(render_timer.elapsed()%1000) + "ms";
 
-    ui->statusBar->showMessage(message);
+    const auto& elapsed = render_timer.elapsed();
+
+    QString message =
+        QString("rendering finished in ")
+        + ((elapsed > 1000.0f)
+            ? (QString::number(render_timer.elapsed() / 1000.0f) + "s.")
+            : (QString::number(render_timer.elapsed()%1000) + "ms."));
+
+    Logger::log_info(message.toStdString().c_str());
+
     ui->pushButton_render->setEnabled(true);
 }
 
@@ -374,3 +404,24 @@ void MainWindow::slot_delete()
 
     update_scene_widget();
 }
+
+void MainWindow::slot_log_level_changed(QAction* action)
+{
+    if (action == ui->actionLogLevelDebug)
+    {
+        Logger::set_level(LogLevel::Debug);
+    }
+    else if (action == ui->actionLogLevelInfo)
+    {
+        Logger::set_level(LogLevel::Info);
+    }
+    else if (action == ui->actionLogLevelError)
+    {
+        Logger::set_level(LogLevel::Error);
+    }
+    else if (action == ui->actionLogLevelNone)
+    {
+        Logger::set_level(LogLevel::None);
+    }
+}
+
