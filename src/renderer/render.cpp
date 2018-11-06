@@ -17,6 +17,7 @@
 
 // Standard includes.
 #include <algorithm>
+#include <cmath>
 #include <limits>
 
 using namespace glm;
@@ -76,7 +77,22 @@ namespace
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
-            return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
+            const vec3& hit_point = rec.p;
+            auto photons = pmap.get_nearest_neihgboorhood(hit_point, 1);
+            auto& photon = photons[0];
+
+            assert(!photons.empty());
+
+            // TODO: Clean this shit.
+            Ray scattered;
+            vec3 attenuation;
+            photon->mat->scatter(r, rec, attenuation, scattered);
+
+            // With attenuation.
+            const vec3 p_to_photon = photon->position - hit_point;
+            const float effector = 1.0 / pow(length(p_to_photon), 2.0);
+            const vec3 color = attenuation * effector;
+            return color;
         }
         else
         {

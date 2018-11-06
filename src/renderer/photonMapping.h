@@ -85,7 +85,7 @@ class PhotonMap
         const MeshGroup&                rawWorld,
         const MeshGroup&                lights);
 
-    std::vector<Photon*> get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber);
+    std::vector<Photon*> get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber) const;
 
   private:
     void trace_photon_ray(

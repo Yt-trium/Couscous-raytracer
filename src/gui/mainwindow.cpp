@@ -205,7 +205,7 @@ void MainWindow::slot_do_render()
 
     // Create photon map.
     PhotonMap pmap;
-    pmap.compute_map(1000, 8, accelerator, world, lights);
+    pmap.compute_map(1000, 5, accelerator, world, lights);
 
     QTime render_timer;
     Logger::log_info("rendering...");

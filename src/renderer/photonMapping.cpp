@@ -233,7 +233,7 @@ void PhotonMap::compute_map(
     }
 }
 
-std::vector<Photon*> PhotonMap::get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber)
+std::vector<Photon*> PhotonMap::get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber) const
 {
     kDTree<Photon*> tree;
     kDTreeObjectContainer<Photon*>* refPosition = new kDTreeObjectContainer<Photon*> (nullptr, photonPosition.x, photonPosition.y, photonPosition.z);
