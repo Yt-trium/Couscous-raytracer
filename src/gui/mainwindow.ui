@@ -49,7 +49,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -63,7 +63,6 @@
      <string>Help</string>
     </property>
     <addaction name="actionRun_Unit_Test"/>
-    <addaction name="actionDisplay_Normals"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -72,8 +71,15 @@
     <addaction name="actionRender_Options"/>
     <addaction name="actionScene_Options"/>
    </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>&amp;Debug</string>
+    </property>
+    <addaction name="actionDisplay_Normals"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuDebug"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_render">
@@ -87,7 +93,7 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Render options</string>
+    <string>Re&amp;nder options</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -418,6 +424,9 @@
        <property name="text">
         <string>Render</string>
        </property>
+       <property name="shortcut">
+        <string>Ctrl+R</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -487,9 +496,6 @@
    <property name="text">
     <string>&amp;Run Unit Test</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
   </action>
   <action name="actionRender_Options">
    <property name="checkable">
@@ -499,7 +505,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Render Options</string>
+    <string>&amp;Render Options</string>
    </property>
   </action>
   <action name="actionScene_Options">
@@ -510,7 +516,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Scene Options</string>
+    <string>&amp;Scene Options</string>
    </property>
   </action>
   <action name="actionNew_object">
@@ -528,7 +534,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Display Normals</string>
+    <string>&amp;Display Normals</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -540,6 +546,11 @@
    </property>
    <property name="toolTip">
     <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionDisplay_normals">
+   <property name="text">
+    <string>Display normals</string>
    </property>
   </action>
  </widget>
