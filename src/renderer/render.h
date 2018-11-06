@@ -13,6 +13,7 @@
 #include "renderer/ray.h"
 #include "renderer/visualobject.h"
 #include "renderer/samplegenerator.h"
+#include "renderer/photonMapping.h"
 
 // Math includes.
 #include <glm/vec3.hpp>
@@ -32,6 +33,7 @@ class Render : public QObject
         const size_t                    ray_max_depth,
         const Camera&                   camera,
         const VoxelGridAccelerator&     grid,
+        const PhotonMap&                photon_map,
         const bool                      parallel,
         const bool                      get_normal_color,
         const bool                      display_photon_map,

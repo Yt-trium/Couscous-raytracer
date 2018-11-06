@@ -221,6 +221,7 @@ void MainWindow::slot_do_render()
         ray_max_depth,
         camera,
         accelerator,
+        pmap,
         parallel,
         ui->actionDisplay_Normals->isChecked(),
         ui->actionDisplayPhotonMap->isChecked(),

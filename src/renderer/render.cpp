@@ -54,29 +54,34 @@ namespace
     }
 
     vec3 get_ray_normal_color(const Ray &r, const VoxelGridAccelerator &grid)
-    {    HitRecord rec;
+    {
+        HitRecord rec;
 
-         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
-         {
-             return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
-         }
-         else
-         {
-             return vec3(0.0f);
-         }
+        if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+        {
+            return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
+        }
+        else
+        {
+            return vec3(0.0f);
+        }
     }
 
-    vec3 get_ray_photon_map(const Ray &r, const VoxelGridAccelerator &grid)
-    {    HitRecord rec;
+    vec3 get_ray_photon_map(
+        const Ray&                      r,
+        const VoxelGridAccelerator&     grid,
+        const PhotonMap&                pmap)
+    {
+        HitRecord rec;
 
-         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
-         {
-             return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
-         }
-         else
-         {
-             return vec3(0.0f);
-         }
+        if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+        {
+            return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
+        }
+        else
+        {
+            return vec3(0.0f);
+        }
     }
 }
 
@@ -87,6 +92,7 @@ void Render::get_render_image(
     const size_t                    ray_max_depth,
     const Camera&                   camera,
     const VoxelGridAccelerator&     grid,
+    const PhotonMap&                photon_map,
     const bool                      parallel,
     const bool                      get_normal_color,
     const bool                      display_photon_map,
@@ -139,7 +145,7 @@ void Render::get_render_image(
                     }
                     else if (display_photon_map)
                     {
-                        color += get_ray_photon_map(r, grid);
+                        color += get_ray_photon_map(r, grid, photon_map);
                     }
                     else
                     {
