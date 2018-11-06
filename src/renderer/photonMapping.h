@@ -22,8 +22,6 @@
 #include <map>
 #include <random>
 
-
-#define EnergyForOneLight 150.0f
 #define photonMinErnergy 0.2f
 #define rangeMin 0.0f
 #define rangeMax 1.0f
@@ -85,8 +83,7 @@ class PhotonMap
         const size_t                    ray_max_depth,
         const VoxelGridAccelerator&     grid,
         const MeshGroup&                rawWorld,
-        const MeshGroup&                lights,
-        const bool                      parallel);
+        const MeshGroup&                lights);
 
     std::vector<Photon*> get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber);
 
@@ -104,24 +101,14 @@ class PhotonMap
 
     glm::vec3 random_in_unit_sphere() const;
 
-
-    std::vector<Photon*> map;
-
-    std::vector<kDTreeObjectContainer<Photon*>*> kdtreephotonData;
-
-    QMutex mapMutex;
-
-    RussianRoulette terminationSystem;
-
-    float alpha;
-
-    std::mt19937 engine;
-
-    std::uniform_real_distribution<> distributor;
+    std::vector<Photon*>                            map;
+    std::vector<kDTreeObjectContainer<Photon*>*>    kdtreephotonData;
+    QMutex                                          mapMutex;
+    RussianRoulette                                 terminationSystem;
+    float                                           alpha;
+    std::mt19937                                    engine;
+    std::uniform_real_distribution<>                distributor;
 };
 
-
-
-
-
 #endif
+

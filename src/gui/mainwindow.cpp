@@ -200,17 +200,17 @@ void MainWindow::slot_do_render()
     Logger::log_debug(to_string(lights.size()) + " light triangles");
     Logger::log_debug(to_string(world.size() - lights.size()) + " triangles");
 
-    Logger::log_info("building a grid accelerator...");
+    // Create the grid accelerator.
     VoxelGridAccelerator accelerator(world);
+
+    // Create photon map.
+    PhotonMap pmap;
+    pmap.compute_map(10, 8, accelerator, world, lights);
 
     QTime render_timer;
     Logger::log_info("rendering...");
     render_timer.start();
     m_statusBarProgress.setVisible(true);
-
-    // Create photon map.
-    PhotonMap pmap;
-    pmap.compute_map(10, 8, accelerator, world, lights, false);
 
     m_frame_viewer.on_render_begin(width, height);
 

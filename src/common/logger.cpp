@@ -25,7 +25,7 @@ namespace
             const char* header,
             const char* message)
         {
-            cout << header << '\t' << message << endl;
+            cout << header << "| " << message << endl;
 
             if (gui_bar != nullptr)
             {
@@ -59,7 +59,7 @@ void Logger::log_debug(const char* message)
     if (LoggerImpl::get_instance().level < LogLevel::Debug)
         return;
 
-    LoggerImpl::get_instance().message("debug: ", message);
+    LoggerImpl::get_instance().message("debug ", message);
 }
 
 void Logger::log_info(const char* message)
@@ -67,7 +67,7 @@ void Logger::log_info(const char* message)
     if (LoggerImpl::get_instance().level < LogLevel::Info)
         return;
 
-    LoggerImpl::get_instance().message("info: ", message);
+    LoggerImpl::get_instance().message("info  ", message);
 }
 
 void Logger::log_error(const char* message)
@@ -75,7 +75,7 @@ void Logger::log_error(const char* message)
     if (LoggerImpl::get_instance().level < LogLevel::Error)
         return;
 
-    LoggerImpl::get_instance().message("error: ", message);
+    LoggerImpl::get_instance().message("error ", message);
 }
 
 void Logger::set_gui_bar(QStatusBar* bar)

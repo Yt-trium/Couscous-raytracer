@@ -46,6 +46,8 @@ VoxelGridAccelerator::VoxelGridAccelerator(
 {
     assert(world.size());
 
+    Logger::log_info("building a grid accelerator...");
+
     m_bounds = world[0]->bbox();
 
     // Create bbox and choose a resolution.

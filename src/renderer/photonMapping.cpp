@@ -1,9 +1,19 @@
 #include "photonMapping.h"
 
+// couscous includes.
+#include "common/logger.h"
 
-// ---------
-// Russian roulette
+// Standard includes.
+#include <string>
 
+using namespace std;
+
+// For the creation of the photon map on a single thread.
+// #define FORCE_SINGLE_THREAD
+
+//
+// Russian roulette.
+//
 
 RussianRoulette::RussianRoulette()
 {
@@ -24,16 +34,15 @@ float RussianRoulette::modifyEnergy(float alpha,
 }
 
 
-// ---------
-// Photon
-
+//
+// Photon implementation.
+//
 
 Photon::Photon()
 {
     this->position = glm::vec3(0.0f, 0.0f, 0.0f);
     this->energy = 0.0f;
 }
-
 
 Photon::Photon(glm::vec3 position,
                glm::vec3 inDirection,
@@ -46,36 +55,30 @@ Photon::Photon(glm::vec3 position,
     this->mat = mat;
 }
 
-
 float compute_energy(float inEnergy, float fr)
 {
     return inEnergy * fr;
 }
 
 
+//
+// Photon map implementation.
+//
 
-// ----
-// Photon map
-
-
-PhotonMap::PhotonMap() :
-    alpha(0.6f)
+PhotonMap::PhotonMap()
+  : alpha(0.6f)
+  , engine(random_device()())
+  , distributor(0.0f, 1.0f)
 {
-    std::random_device rd;
-    engine = std::mt19937(rd());
-    distributor = std::uniform_real_distribution<>(0.0f, 1.0f);
 }
 
-
-PhotonMap::PhotonMap(std::vector<Photon*> map) :
-    map(map),
-    alpha(0.6f)
+PhotonMap::PhotonMap(std::vector<Photon*> map)
+  : map(map)
+  , alpha(0.6f)
+  , engine(random_device()())
+  , distributor(0.0f, 1.0f)
 {
-    std::random_device rd;
-    engine = std::mt19937(rd());
-    distributor = std::uniform_real_distribution<>(0.0f, 1.0f);
 }
-
 
 PhotonMap::~PhotonMap()
 {
@@ -86,13 +89,12 @@ PhotonMap::~PhotonMap()
     }
 }
 
-
 void PhotonMap::trace_photon_ray(
-        const Ray&                      r,
-        const size_t                    ray_max_depth,
-        const VoxelGridAccelerator&     grid,
-        const float                     inEnergy,
-        const int                       depth)
+    const Ray&                      r,
+    const size_t                    ray_max_depth,
+    const VoxelGridAccelerator&     grid,
+    const float                     inEnergy,
+    const int                       depth)
 {
     HitRecord rec;
 
@@ -120,9 +122,7 @@ void PhotonMap::trace_photon_ray(
             }
         }
     }
-
 }
-
 
 void PhotonMap::add_photon(Photon *photon)
 {
@@ -130,7 +130,6 @@ void PhotonMap::add_photon(Photon *photon)
     this->map.push_back(photon);
     mapMutex.unlock();
 }
-
 
 glm::vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
 {
@@ -148,7 +147,6 @@ glm::vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
     return answ;
 }
 
-
 glm::vec3 PhotonMap::random_in_unit_sphere() const
 {
     glm::vec3 p;
@@ -162,31 +160,30 @@ glm::vec3 PhotonMap::random_in_unit_sphere() const
     return p;
 }
 
-
 void PhotonMap::compute_map(
-        const size_t                    samples,
-        const size_t                    ray_max_depth,
-        const VoxelGridAccelerator&     grid,
-        const MeshGroup&                rawWorld,
-        const MeshGroup&                lights,
-        const                           bool parallel)
+    const size_t                    samples,
+    const size_t                    ray_max_depth,
+    const VoxelGridAccelerator&     grid,
+    const MeshGroup&                rawWorld,
+    const MeshGroup&                lights)
 {
-    std::shared_ptr<Triangle> currentLight;
-    std::vector<QFuture<void>> threads;
-    glm::vec3 rayOrigin, rayDirection;
-
-    float totalEnergy = 0.0f;
-    float energyForOneRay = 0.0f;
-    int nbRays = std::floor(samples);
-    int nbRaysPerLight = 0;
+    static float EnergyForOneLight = 150.0f;
 
     // TODO: Tell the user if there isn't any light and stop safely.
     assert(lights.size() > 0);
 
-    nbRaysPerLight = nbRays/lights.size();
-    totalEnergy = EnergyForOneLight * lights.size();
-    energyForOneRay = totalEnergy/nbRays;
+    Logger::log_info("compute photon map...");
 
+    const size_t nbRaysPerLight = samples / lights.size();
+
+    Logger::log_debug("pm rays per light: " + to_string(nbRaysPerLight) + ".");
+
+    Logger::log_debug("pm total initial rays: " + to_string(samples) + ".");
+
+    const float totalEnergy = EnergyForOneLight * static_cast<float>(lights.size());
+    // TODO: Use the light emmissive value to define the energy of each ray.
+    const float energyForOneRay = totalEnergy/ static_cast<float>(samples);
+    Logger::log_debug("pm initial rays energy: " + to_string(energyForOneRay) + " W.");
 
     // Job for computing a photon path
     auto compute =
@@ -199,39 +196,42 @@ void PhotonMap::compute_map(
         map->trace_photon_ray(r, ray_max_depth, grid, inEnergy);
     };
 
-    // Compute all rays
-    for(auto it=lights.begin(); it != lights.end(); ++it)
-    {
-        currentLight = std::dynamic_pointer_cast<Triangle>(*it);
+    std::vector<QFuture<void>> threads;
 
-        for(int i=0; i<nbRaysPerLight + (i < nbRays%lights.size() ? 1 : 0); i++)
+    // Compute all rays for each light.
+    for(auto it = lights.begin(); it != lights.end(); ++it)
+    {
+        const auto& currentLight = *it;
+
+        for(size_t i = 0; i < nbRaysPerLight; ++i)
         {
-            rayOrigin = randomPointInTriangle(currentLight);
-            rayDirection = random_in_unit_sphere();
-            if (parallel)
-            {
-                QFuture<void> future = QtConcurrent::run(compute, Ray(rayOrigin, rayDirection), energyForOneRay, this);
-                threads.push_back(future);
-            }
-            else
-            {
-                trace_photon_ray(Ray(rayOrigin, rayDirection), ray_max_depth, grid, energyForOneRay);
-            }
+            // Create a ray starting from the current light
+            // and going in a random direction.
+            const Ray r(randomPointInTriangle(currentLight), random_in_unit_sphere());
+
+#ifdef FORCE_SINGLE_THREAD
+            trace_photon_ray(r, ray_max_depth, grid, energyForOneRay);
+#else
+            QFuture<void> future = QtConcurrent::run(compute, r, energyForOneRay, this);
+            threads.push_back(future);
+#endif
         }
     }
 
-
+    // Waiting for tracing to end.
     for(size_t i = 0; i < threads.size(); ++i)
     {
         threads.at(i).waitForFinished();
     }
+
+    // Create a Kd-tree for storing all photons.
+    Logger::log_info("adding photons in a kd-tree...");
 
     for(auto it = map.begin(); it != map.end(); ++it)
     {
         kdtreephotonData.push_back(new kDTreeObjectContainer<Photon*>(*it, (*it)->position.x, (*it)->position.y, (*it)->position.z));
     }
 }
-
 
 std::vector<Photon*> PhotonMap::get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber)
 {
@@ -251,22 +251,4 @@ std::vector<Photon*> PhotonMap::get_nearest_neihgboorhood(glm::vec3 photonPositi
 
     return answAsPhotonVector;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
