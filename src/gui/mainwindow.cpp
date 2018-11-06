@@ -205,7 +205,7 @@ void MainWindow::slot_do_render()
 
     // Create photon map.
     PhotonMap pmap;
-    pmap.compute_map(10, 8, accelerator, world, lights);
+    pmap.compute_map(1000, 8, accelerator, world, lights);
 
     QTime render_timer;
     Logger::log_info("rendering...");
@@ -223,6 +223,7 @@ void MainWindow::slot_do_render()
         accelerator,
         parallel,
         ui->actionDisplay_Normals->isChecked(),
+        ui->actionDisplayPhotonMap->isChecked(),
         m_image,
         m_statusBarProgress);
 

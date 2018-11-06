@@ -85,6 +85,7 @@
      <addaction name="actionLogLevelNone"/>
     </widget>
     <addaction name="actionDisplay_Normals"/>
+    <addaction name="actionDisplayPhotonMap"/>
     <addaction name="menuLogLevel"/>
    </widget>
    <addaction name="menuFile"/>
@@ -599,6 +600,14 @@
    </property>
    <property name="text">
     <string>&amp;None</string>
+   </property>
+  </action>
+  <action name="actionDisplayPhotonMap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display Photon Map</string>
    </property>
   </action>
  </widget>

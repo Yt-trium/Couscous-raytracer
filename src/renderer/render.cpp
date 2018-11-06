@@ -22,59 +22,76 @@
 using namespace glm;
 using namespace std;
 
-vec3 Render::get_ray_color(
-    const Ray&                      r,
-    const size_t                    ray_max_depth,
-    const VoxelGridAccelerator&     grid,
-    const int                       depth) const
+namespace
 {
-    HitRecord rec;
-
-    if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+    vec3 get_ray_color(
+        const Ray&                      r,
+        const size_t                    ray_max_depth,
+        const VoxelGridAccelerator&     grid,
+        const int                       current_depth)
     {
-        Ray scattered;
-        vec3 attenuation;
-        vec3 emitted = rec.mat->emission();
+        HitRecord rec;
 
-        if (depth < int(ray_max_depth) && rec.mat->scatter(r, rec, attenuation, scattered))
+        if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
-            return emitted + attenuation * get_ray_color(scattered, ray_max_depth, grid, depth + 1);
+            Ray scattered;
+            vec3 attenuation;
+            vec3 emitted = rec.mat->emission();
+
+            if (current_depth < int(ray_max_depth) && rec.mat->scatter(r, rec, attenuation, scattered))
+            {
+                return emitted + attenuation * get_ray_color(scattered, ray_max_depth, grid, current_depth + 1);
+            }
+            else
+            {
+                return emitted;
+            }
         }
         else
         {
-            return emitted;
+            return vec3(0.0f);
         }
     }
-    else
-    {
-        return vec3(0.0f);
+
+    vec3 get_ray_normal_color(const Ray &r, const VoxelGridAccelerator &grid)
+    {    HitRecord rec;
+
+         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+         {
+             return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
+         }
+         else
+         {
+             return vec3(0.0f);
+         }
     }
-}
 
-vec3 Render::get_ray_normal_color(const Ray &r, const VoxelGridAccelerator &grid) const
-{    HitRecord rec;
+    vec3 get_ray_photon_map(const Ray &r, const VoxelGridAccelerator &grid)
+    {    HitRecord rec;
 
-     if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
-     {
-         return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
-     }
-     else
-     {
-         return vec3(0.0f);
-     }
+         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+         {
+             return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
+         }
+         else
+         {
+             return vec3(0.0f);
+         }
+    }
 }
 
 void Render::get_render_image(
-        const size_t                    width,
-        const size_t                    height,
-        const size_t                    spp,
-        const size_t                    ray_max_depth,
-        const Camera&                   camera,
-        const VoxelGridAccelerator&     grid,
-        const bool                      parallel,
-        const bool                      get_normal_color,
-        QImage&                         image,
-        QProgressBar&                   progressBar)
+    const size_t                    width,
+    const size_t                    height,
+    const size_t                    spp,
+    const size_t                    ray_max_depth,
+    const Camera&                   camera,
+    const VoxelGridAccelerator&     grid,
+    const bool                      parallel,
+    const bool                      get_normal_color,
+    const bool                      display_photon_map,
+    QImage&                         image,
+    QProgressBar&                   progressBar)
 {
     progressBar.setValue(53);
     progressBar.setRange(0, int((width/64)*(height/64)));
@@ -114,12 +131,20 @@ void Render::get_render_image(
                     const vec2 uv(
                         (pt.x + subpixel_pos.x) / frame.x,
                         (pt.y + subpixel_pos.y) / frame.y);
+                    const Ray r = camera.get_ray(uv.x, uv.y);
+
                     if(get_normal_color)
-                        color += get_ray_normal_color(
-                                    camera.get_ray(uv.x, uv.y), grid);
+                    {
+                        color += get_ray_normal_color(r, grid);
+                    }
+                    else if (display_photon_map)
+                    {
+                        color += get_ray_photon_map(r, grid);
+                    }
                     else
-                        color += get_ray_color(
-                            camera.get_ray(uv.x, uv.y), ray_max_depth, grid);
+                    {
+                        color += get_ray_color(r, ray_max_depth, grid, 0);
+                    }
                 }
 
                 color /= static_cast<float>(samples);
@@ -190,15 +215,3 @@ void Render::get_render_image(
     progressBar.setValue(progressBar.maximum());
 }
 
-vec3 Render::random_in_unit_sphere() const
-{
-    vec3 p;
-    do
-    {
-        p = 2.0f * vec3(
-            random<float>(),
-            random<float>(),
-            random<float>()) - vec3(1, 1, 1);
-    } while(dot(p, p) >= 1);
-    return p;
-}

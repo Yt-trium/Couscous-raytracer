@@ -25,20 +25,6 @@ class Render : public QObject
     Q_OBJECT
 
   public:
-    glm::vec3 get_ray_color(
-        const Ray&                      r,
-        const size_t                    ray_max_depth,
-        const VoxelGridAccelerator&     grid,
-        const int                       depth = 0) const;
-    glm::vec3 get_ray_normal_color(
-            const Ray&                      r,
-            const VoxelGridAccelerator&     grid) const;
-
-    float ray_hit_sphere(
-        const glm::vec3&                center,
-        float                           radius,
-        const Ray&                      r);
-
     void get_render_image(
         const size_t                    width,
         const size_t                    height,
@@ -48,6 +34,7 @@ class Render : public QObject
         const VoxelGridAccelerator&     grid,
         const bool                      parallel,
         const bool                      get_normal_color,
+        const bool                      display_photon_map,
         QImage&                         image,
         QProgressBar&                   progressBar);
 
@@ -67,9 +54,6 @@ class Render : public QObject
         const size_t                    x1,
         const size_t                    y1,
         const QImage&                   frame);
-
-  private:
-    glm::vec3 random_in_unit_sphere() const;
 };
 
 #endif // RENDER_H
