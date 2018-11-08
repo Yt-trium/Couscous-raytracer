@@ -49,7 +49,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -82,6 +82,7 @@
      </property>
      <addaction name="actionLogLevelDebug"/>
      <addaction name="actionLogLevelInfo"/>
+     <addaction name="actionLogLevelWarning"/>
      <addaction name="actionLogLevelError"/>
      <addaction name="actionLogLevelNone"/>
     </widget>
@@ -94,7 +95,7 @@
      <string>Presets</string>
     </property>
     <addaction name="actionPresetsCornellBox"/>
-    <addaction name="actionPresetsSuzanne"/>
+    <addaction name="actionPresetsEmpty"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -616,12 +617,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Display Photon Map</string>
+    <string>Display &amp;Photon Map</string>
    </property>
   </action>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -629,12 +630,20 @@
   </action>
   <action name="actionPresetsCornellBox">
    <property name="text">
-    <string>Cornell Box</string>
+    <string>&amp;Cornell Box</string>
    </property>
   </action>
-  <action name="actionPresetsSuzanne">
+  <action name="actionPresetsEmpty">
    <property name="text">
-    <string>Suzanne</string>
+    <string>&amp;Empty</string>
+   </property>
+  </action>
+  <action name="actionLogLevelWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
    </property>
   </action>
  </widget>

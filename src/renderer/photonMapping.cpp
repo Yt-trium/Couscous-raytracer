@@ -3,6 +3,9 @@
 // couscous includes.
 #include "common/logger.h"
 
+// Qt includes.
+#include <QTime>
+
 // Standard includes.
 #include <string>
 
@@ -172,17 +175,17 @@ void PhotonMap::compute_map(
     // TODO: Tell the user if there isn't any light and stop safely.
     assert(lights.size() > 0);
 
-    Logger::log_info("compute photon map...");
+    QTime timer;
+    timer.start();
+
 
     const size_t nbRaysPerLight = samples / lights.size();
-
-    Logger::log_debug("pm rays per light: " + to_string(nbRaysPerLight) + ".");
-
-    Logger::log_debug("pm total initial rays: " + to_string(samples) + ".");
-
     const float totalEnergy = EnergyForOneLight * static_cast<float>(lights.size());
     // TODO: Use the light emmissive value to define the energy of each ray.
     const float energyForOneRay = totalEnergy/ static_cast<float>(samples);
+
+    Logger::log_debug("pm rays per light: " + to_string(nbRaysPerLight) + ".");
+    Logger::log_debug("pm total initial rays: " + to_string(samples) + ".");
     Logger::log_debug("pm initial rays energy: " + to_string(energyForOneRay) + " W.");
 
     // Job for computing a photon path
@@ -224,13 +227,32 @@ void PhotonMap::compute_map(
         threads.at(i).waitForFinished();
     }
 
-    // Create a Kd-tree for storing all photons.
-    Logger::log_info("adding photons in a kd-tree...");
+    const int pm_elapsed = timer.elapsed();
+    timer.start();
 
+    QString message =
+        QString("built photon map in ")
+        + ((pm_elapsed > 1000)
+            ? (QString::number(pm_elapsed / 1000) + "s.")
+            : (QString::number(pm_elapsed % 1000) + "ms."));
+
+    Logger::log_info(message.toStdString().c_str());
+
+    // Create a Kd-tree for storing all photons.
     for(auto it = map.begin(); it != map.end(); ++it)
     {
         kdtreephotonData.push_back(new kDTreeObjectContainer<Photon*>(*it, (*it)->position.x, (*it)->position.y, (*it)->position.z));
     }
+
+    const int kd_elapsed = timer.elapsed();
+
+    message =
+        QString("added photons in a kd-tree in ")
+        + ((kd_elapsed > 1000)
+            ? (QString::number(kd_elapsed / 1000) + "s.")
+            : (QString::number(kd_elapsed % 1000) + "ms."));
+
+    Logger::log_info(message.toStdString().c_str());
 }
 
 std::vector<Photon*> PhotonMap::get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber) const

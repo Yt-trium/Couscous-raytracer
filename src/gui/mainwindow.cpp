@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Presets selection events.
     auto presets_group = new QActionGroup(this);
     presets_group->addAction(ui->actionPresetsCornellBox);
-    presets_group->addAction(ui->actionPresetsSuzanne);
+    presets_group->addAction(ui->actionPresetsEmpty);
 
     connect(presets_group, SIGNAL(triggered(QAction*)), SLOT(slot_presets_changed(QAction*)));
 
@@ -202,6 +202,13 @@ void MainWindow::slot_do_render()
     Logger::log_info("creating the scene...");
     scene.create_scene(world);
 
+    if (world.empty())
+    {
+        Logger::log_warning("nothing to render.");
+        ui->pushButton_render->setEnabled(true);
+        return;
+    }
+
     // Get lights from the scene.
     const MeshGroup lights = fetch_lights(world);
     Logger::log_debug(to_string(lights.size()) + " light triangles");
@@ -237,13 +244,13 @@ void MainWindow::slot_do_render()
 
     m_statusBarProgress.setVisible(false);
 
-    const auto& elapsed = render_timer.elapsed();
+    const int elapsed = render_timer.elapsed();
 
     QString message =
         QString("rendering finished in ")
-        + ((elapsed > 1000.0f)
-            ? (QString::number(render_timer.elapsed() / 1000.0f) + "s.")
-            : (QString::number(render_timer.elapsed()%1000) + "ms."));
+        + ((elapsed > 1000)
+            ? (QString::number(elapsed / 1000) + "s.")
+            : (QString::number(elapsed % 1000) + "ms."));
 
     Logger::log_info(message.toStdString().c_str());
 
@@ -424,6 +431,10 @@ void MainWindow::slot_log_level_changed(QAction* action)
     {
         Logger::set_level(LogLevel::Info);
     }
+    else if (action == ui->actionLogLevelWarning)
+    {
+        Logger::set_level(LogLevel::Warning);
+    }
     else if (action == ui->actionLogLevelError)
     {
         Logger::set_level(LogLevel::Error);
@@ -440,15 +451,18 @@ void MainWindow::slot_presets_changed(QAction *action)
     {
         scene = Scene::cornell_box();
     }
-    else if(action == ui->actionPresetsSuzanne)
+    else if(action == ui->actionPresetsEmpty)
     {
         scene = Scene();
     }
+
+    Logger::log_info("loaded a new preset.");
+
     update_scene_widget();
 }
-
 
 void MainWindow::on_actionQuit_triggered()
 {
     QCoreApplication::quit();
 }
+
