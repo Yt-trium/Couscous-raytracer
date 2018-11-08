@@ -12,10 +12,11 @@ class QStatusBar;
 //
 
 enum class LogLevel {
-    Debug = 4,
-    Info  = 3,
-    Error = 2,
-    None  = 1
+    Debug    = 5,
+    Info     = 4,
+    Warning  = 3,
+    Error    = 2,
+    None     = 1
 };
 
 
@@ -33,6 +34,7 @@ class Logger
 
     static void log_debug(const char* message);
     static void log_info(const char* message);
+    static void log_warning(const char* message);
     static void log_error(const char* message);
 
     static void log_debug(const std::string& message)
@@ -43,6 +45,11 @@ class Logger
     static void log_info(const std::string& message)
     {
         Logger::log_info(message.c_str());
+    }
+
+    static void log_warning(const std::string& message)
+    {
+        Logger::log_warning(message.c_str());
     }
 
     static void log_error(const std::string& message)
