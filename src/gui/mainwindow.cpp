@@ -119,9 +119,15 @@ void MainWindow::update_scene_widget()
     widgetItemObjects->setText(0, tr("Objects"));
     widgetItemObjects->setIcon(0, QIcon(":/sceneOptions/baseline_business_black_18dp.png"));
 
+    QTreeWidgetItem *widgetItemCamera = new QTreeWidgetItem();
+    widgetItemCamera->setText(0, tr("Camera Presets"));
+    widgetItemCamera->setIcon(0, QIcon(":/sceneOptions/baseline_photo_camera_black_18dp.png"));
+
     ui->treeWidget_scene->addTopLevelItem(widgetItemScene);
     widgetItemScene->addChild(widgetItemMaterials);
     widgetItemScene->addChild(widgetItemObjects);
+
+    ui->treeWidget_scene->addTopLevelItem(widgetItemCamera);
 
     for(std::size_t i = 0 ; i < scene.materials.size() ; ++i)
     {
