@@ -14,5 +14,7 @@
         <file>baseline_texture_black_18dp.png</file>
         <file>file_format_obj.png</file>
         <file>file_format_off.png</file>
+        <file>baseline_videocam_black_18dp.png</file>
+        <file>baseline_photo_camera_black_18dp.png</file>
     </qresource>
 </RCC>
