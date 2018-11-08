@@ -427,3 +427,8 @@ void MainWindow::slot_log_level_changed(QAction* action)
     }
 }
 
+
+void MainWindow::on_actionQuit_triggered()
+{
+    QCoreApplication::quit();
+}

@@ -64,6 +64,7 @@ class MainWindow : public QMainWindow
     void slot_delete();
 
     void slot_log_level_changed(QAction* action);
+    void on_actionQuit_triggered();
 };
 
 #endif // MAINWINDOW_H
