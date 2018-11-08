@@ -89,8 +89,16 @@
     <addaction name="actionDisplayPhotonMap"/>
     <addaction name="menuLogLevel"/>
    </widget>
+   <widget class="QMenu" name="menuPresets">
+    <property name="title">
+     <string>Presets</string>
+    </property>
+    <addaction name="actionPresetsCornellBox"/>
+    <addaction name="actionPresetsSuzanne"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuPresets"/>
    <addaction name="menuDebug"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -617,6 +625,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionPresetsCornellBox">
+   <property name="text">
+    <string>Cornell Box</string>
+   </property>
+  </action>
+  <action name="actionPresetsSuzanne">
+   <property name="text">
+    <string>Suzanne</string>
    </property>
   </action>
  </widget>

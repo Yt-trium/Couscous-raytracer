@@ -82,6 +82,13 @@ MainWindow::MainWindow(QWidget *parent)
     // Map log level events.
     connect(log_level_action_group, SIGNAL(triggered(QAction*)), SLOT(slot_log_level_changed(QAction*)));
 
+    // Presets selection events.
+    auto presets_group = new QActionGroup(this);
+    presets_group->addAction(ui->actionPresetsCornellBox);
+    presets_group->addAction(ui->actionPresetsSuzanne);
+
+    connect(presets_group, SIGNAL(triggered(QAction*)), SLOT(slot_presets_changed(QAction*)));
+
     // Create a default scene.
     scene = Scene::cornell_box();
 
@@ -425,6 +432,19 @@ void MainWindow::slot_log_level_changed(QAction* action)
     {
         Logger::set_level(LogLevel::None);
     }
+}
+
+void MainWindow::slot_presets_changed(QAction *action)
+{
+    if(action == ui->actionPresetsCornellBox)
+    {
+        scene = Scene::cornell_box();
+    }
+    else if(action == ui->actionPresetsSuzanne)
+    {
+        scene = Scene();
+    }
+    update_scene_widget();
 }
 
 

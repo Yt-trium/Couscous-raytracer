@@ -64,6 +64,7 @@ class MainWindow : public QMainWindow
     void slot_delete();
 
     void slot_log_level_changed(QAction* action);
+    void slot_presets_changed(QAction* action);
     void on_actionQuit_triggered();
 };
 
