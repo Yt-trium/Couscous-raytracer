@@ -71,7 +71,6 @@ float Photon::compute_energy(
 // PhotonMap class implementation.
 //
 
-#include <iostream>
 PhotonMap::PhotonMap()
   : alpha(0.6f)
   , engine(random_device()())
