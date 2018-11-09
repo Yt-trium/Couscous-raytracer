@@ -176,6 +176,14 @@ void MainWindow::update_scene_widget()
         widgetItemObjects->addChild(widgetItem);
     }
 
+    for(std::size_t i = 0 ; i < scene.cameras.size() ; ++i)
+    {
+        QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
+        widgetItem->setText(0, QString::fromStdString(scene.cameras.at(i).name));
+        widgetItem->setIcon(0, QIcon(":/sceneOptions/baseline_videocam_black_18dp.png"));
+        widgetItemCamera->addChild(widgetItem);
+    }
+
     ui->treeWidget_scene->expandAll();
 }
 
@@ -368,6 +376,24 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
             DialogObject *dlg = new DialogObject(this, &scene, int(i));
             dlg->exec();
             update_scene_widget();
+            return;
+        }
+    }
+    for(std::size_t i = 0 ; i < scene.cameras.size() ; ++i)
+    {
+        if(QString::fromStdString(scene.cameras.at(i).name) == itmname)
+        {
+            SceneCamera cam = scene.cameras.at(i);
+            ui->doubleSpinBox_position_x->setValue(double(cam.position.x));
+            ui->doubleSpinBox_position_y->setValue(double(cam.position.y));
+            ui->doubleSpinBox_position_z->setValue(double(cam.position.z));
+
+            ui->doubleSpinBox_yaw->setValue(double(cam.yaw));
+            ui->doubleSpinBox_pitch->setValue(double(cam.pitch));
+            ui->doubleSpinBox_fov->setValue(double(cam.fov));
+
+            ui->spinBox_height->setValue(int(cam.height));
+            ui->spinBox_width->setValue(int(cam.width));
             return;
         }
     }

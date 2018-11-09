@@ -4,7 +4,6 @@
 // couscous includes.
 #include "renderer/material.h"
 #include "renderer/visualobject.h"
-#include "renderer/camera.h"
 
 // glm includes.
 #include <glm/glm.hpp>
@@ -107,9 +106,22 @@ class SceneObjectFile
 class SceneCamera
 {
 public:
-    SceneCamera();
+    SceneCamera(const std::string&  name = "cam",
+                const glm::vec3&    position = glm::vec3(0.0f),
+                const float&        yaw = -90.0f,
+                const float&        pitch = 0.0f,
+                const float&        fov = 85.0f,
+                const size_t&       width = 800,
+                const size_t&       height = 600);
+
+    glm::vec3   position;
+    float       yaw;
+    float       pitch;
+    float       fov;
+    size_t      width;
+    size_t      height;
+
     std::string name;
-    Camera cam;
 };
 
 class Scene

@@ -238,5 +238,39 @@ Scene Scene::cornell_box()
         ObjectType::CUBE,
         "white"));
 
+    scene.cameras.push_back(SceneCamera("CAM_1",
+                                        vec3(0, 100, 385),
+                                        -90,
+                                        0,
+                                        40,
+                                        512,
+                                        512));
+
+    scene.cameras.push_back(SceneCamera("CAM_2",
+                                        vec3(0, -100, 500),
+                                        -90,
+                                        25,
+                                        35,
+                                        256,
+                                        256));
+
     return scene;
+}
+
+SceneCamera::SceneCamera(const std::string& name,
+                         const vec3 &position,
+                         const float &yaw,
+                         const float &pitch,
+                         const float &fov,
+                         const size_t &width,
+                         const size_t &height)
+                         : name(name)
+                         , position(position)
+                         , yaw(yaw)
+                         , pitch(pitch)
+                         , fov(fov)
+                         , width(width)
+                         , height(height)
+{
+
 }
