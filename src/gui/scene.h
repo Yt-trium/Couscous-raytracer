@@ -105,23 +105,23 @@ class SceneObjectFile
 
 class SceneCamera
 {
-public:
-    SceneCamera(const std::string&  name = "cam",
-                const glm::vec3&    position = glm::vec3(0.0f),
-                float         yaw = -90.0f,
-                float         pitch = 0.0f,
-                float         fov = 85.0f,
-                size_t        width = 800,
-                size_t        height = 600);
+  public:
+    SceneCamera(
+        const std::string&  name,
+        const glm::vec3&    position,
+        const float         yaw,
+        const float         pitch,
+        const float         fov,
+        const size_t        width,
+        const size_t        height);
 
+    std::string name;
     glm::vec3   position;
     float       yaw;
     float       pitch;
     float       fov;
     size_t      width;
     size_t      height;
-
-    std::string name;
 };
 
 class Scene
