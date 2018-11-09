@@ -246,7 +246,7 @@ const Photon& PhotonMap::photon(const size_t index) const
 
 PhotonTree::PhotonTree(const PhotonMap& map)
   : map(map)
-  , m_index(3, map, nanoflann::KDTreeSingleIndexAdaptorParams(10))
+  , m_index(3, map, nanoflann::KDTreeSingleIndexAdaptorParams(10)) // leaf max size
 {
     QTime timer;
     timer.start();

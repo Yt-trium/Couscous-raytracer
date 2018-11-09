@@ -21,7 +21,7 @@
 #include <cmath>
 #include <limits>
 
-#define PHOTON_FETCH_SIZE 1
+#define PHOTON_FETCH_SIZE 5
 
 using namespace glm;
 using namespace std;
@@ -80,21 +80,30 @@ namespace
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
-            pfetcher.find_closest(rec.p);
-            const auto& photon = pfetcher.photon(0);
+            const size_t count = pfetcher.find_closest(rec.p);
 
-            // TODO: Clean this shit.
-            // I scatter only to get the albedo. lol.
-            // TODO: only get photons on this surface.
-            Ray scattered;
-            vec3 attenuation;
-            photon.mat->scatter(r, rec, attenuation, scattered);
+            float weight = 0.0f;
+            vec3 color(0.0f);
 
-            // With attenuation.
-            const vec3 p_to_photon = photon.position - rec.p;
-            const float effector = 1.0 / pow(length(p_to_photon), 2.0);
-            const vec3 color = attenuation * effector;
-            return color;
+            for (size_t i = 0; i < count; ++i)
+            {
+                const auto& photon = pfetcher.photon(i);
+
+                // TODO: Clean this shit.
+                // I scatter only to get the albedo. lol.
+                // TODO: only get photons on this surface.
+                Ray scattered;
+                vec3 attenuation;
+                photon.mat->scatter(r, rec, attenuation, scattered);
+
+                const float dist = pfetcher.squared_dist(i);
+                const float pweight = photon.energy;
+
+                weight += pweight;
+                color += (attenuation * pweight) / (dist * 0.01f);
+            }
+
+            return color / weight;
         }
         else
         {
@@ -120,9 +129,6 @@ void Render::get_render_image(
     progressBar.setValue(53);
     progressBar.setRange(0, int((width/64)*(height/64)));
 
-    // Create a photon fetcher.
-    PhotonTree::Fetcher<PHOTON_FETCH_SIZE> photon_fetcher = ptree.create_fetcher<PHOTON_FETCH_SIZE>();
-
     // Precompute subpixel samples position
     const size_t dimension_size =
         std::max(
@@ -144,6 +150,9 @@ void Render::get_render_image(
         size_t y1,
         size_t y2)
     {
+        // Create a photon fetcher.
+        PhotonTree::Fetcher<PHOTON_FETCH_SIZE> photon_fetcher = ptree.create_fetcher<PHOTON_FETCH_SIZE>();
+
         for (size_t y = y1; y < y2; ++y)
         {
             for (size_t x = x1; x < x2; ++x)

@@ -18,7 +18,6 @@
 #include <nanoflann/nanoflann.hpp>
 
 // Standard library includes
-#include <array>
 #include <map>
 #include <random>
 
@@ -133,7 +132,8 @@ class PhotonTree
     typedef nanoflann::KDTreeSingleIndexAdaptor<
         nanoflann::L2_Simple_Adaptor<float, PhotonMap>,
         PhotonMap,
-        3> PhotonTreeIndex;
+        3,
+        size_t> PhotonTreeIndex;
 
   public:
     // The kd-tree is built when the constructor is called.
@@ -152,9 +152,15 @@ class PhotonTree
         Fetcher(
             const PhotonMap&        map,
             const PhotonTreeIndex&  index)
-          : m_map(map)
-          , m_index(index)
+          : m_index(index)
+          , m_map(map)
         {
+            // Clear arrays.
+            for (size_t i = 0; i < N; ++i)
+            {
+                m_indices[i] = 0;
+                m_squared_dists[i] = 0.0f;
+            }
         }
 
         // Find all closest photons to a given point.
@@ -163,37 +169,38 @@ class PhotonTree
         // they can be accessed via photon().
         size_t find_closest(const glm::vec3& point)
         {
+            static nanoflann::SearchParams search_params(32, 0.0f, false);
+
+            nanoflann::KNNResultSet<float, size_t> result(N);
+            result.init(m_indices, m_squared_dists);
+
             // Fetch photon indices.
-            return m_index.knnSearch(glm::value_ptr(point), N, &m_indices[0], &m_squared_dists[0]);
-        }
-
-        // Returns indices of photons previously fetched.
-        const std::array<size_t, N>& indices() const
-        {
-            return m_indices;
-        }
-
-        // Returns distance from each previously fetched photon
-        // to the previously fetching point.
-        const std::array<float, N>& dists() const
-        {
-            return m_squared_dists;
+            m_index.findNeighbors(result, glm::value_ptr(point), search_params);
+            return result.size();
         }
 
         // Returns the nth photon from previously fetched photons.
-        const Photon& photon(const size_t index) const
+        inline const Photon& photon(const size_t index) const
         {
             assert(index < N);
             return m_map.photon(m_indices[index]);
         }
 
-      private:
-        const PhotonMap&            m_map;
-        const PhotonTreeIndex&      m_index;
+        // Returns the distance between the nth photon and
+        // previously used fetch point.
+        inline float squared_dist(const size_t index) const
+        {
+            assert(index < N);
+            return m_squared_dists[index];
+        }
 
+      private:
         // Nanoflann members.
-        std::array<size_t, N>       m_indices;
-        std::array<float, N>        m_squared_dists;
+        size_t  m_indices[N];
+        float   m_squared_dists[N];
+
+        const PhotonTreeIndex&                  m_index;
+        const PhotonMap&                        m_map;
     };
 
     template <size_t N>
