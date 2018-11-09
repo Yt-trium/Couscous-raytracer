@@ -208,21 +208,21 @@ Scene Scene::cornell_box()
 
     scene.objects.push_back(SceneObject("left",
         Transform(
-            vec3(100.0f, 100.0f, 0.0f),
-            vec3(0.0f, 0.0f, 90.0f),
-            vec3(200.0f)),
-        ObjectType::PLANE,
-        "green"));
-
-    scene.objects.push_back(SceneObject("right",
-        Transform(
             vec3(-100.0f, 100.0f, 0.0f),
             vec3(0.0f, 0.0f, -90.0f),
             vec3(200.0f)),
         ObjectType::PLANE,
         "red"));
 
-    scene.objects.push_back(SceneObject("left_box",
+    scene.objects.push_back(SceneObject("right",
+        Transform(
+            vec3(100.0f, 100.0f, 0.0f),
+            vec3(0.0f, 0.0f, 90.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "green"));
+
+    scene.objects.push_back(SceneObject("right_box",
         Transform(
             vec3(50.0f, 50.0f, -30.0f),
             vec3(0.0f, -20.0f, 0.0f),
@@ -230,7 +230,7 @@ Scene Scene::cornell_box()
         ObjectType::CUBE,
         "white"));
 
-    scene.objects.push_back(SceneObject("right_box",
+    scene.objects.push_back(SceneObject("left_box",
         Transform(
             vec3(-50.0f, 30.0f, 30.0f),
             vec3(0.0f, 20.0f, 0.0f),
@@ -240,6 +240,49 @@ Scene Scene::cornell_box()
 
     scene.cameras.push_back(SceneCamera("CAM_1",
         vec3(0.0f, 100.0f, 385.0f),
+        -90.0f,
+        0.0f,
+        40.0f,
+        512,
+        512));
+
+    return scene;
+}
+
+Scene Scene::simple_cube()
+{
+    Scene scene;
+
+    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(1.0f)));
+    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f)));
+    scene.materials.push_back(SceneMaterial("grey", vec3(0.2, 0.2, 0.2), vec3(0.0f)));
+
+    scene.objects.push_back(SceneObject("floor",
+        Transform(
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "grey"));
+
+    scene.objects.push_back(SceneObject("top_light",
+        Transform(
+            vec3(0.0f, 1.5f, 0.0f),
+            vec3(180.0f, 0.0f, 0.0f),
+            vec3(1.0f)),
+        ObjectType::PLANE,
+        "light"));
+
+    scene.objects.push_back(SceneObject("right_box",
+        Transform(
+            vec3(0.5f, 0.25f, 0.0f),
+            vec3(0.0f, 45.0f, 0.0f),
+            vec3(0.5f)),
+        ObjectType::CUBE,
+        "red"));
+
+    scene.cameras.push_back(SceneCamera("CAM_1",
+        vec3(0.0f, 0.8f, 3.0f),
         -90.0f,
         0.0f,
         40.0f,

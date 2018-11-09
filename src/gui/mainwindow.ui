@@ -88,10 +88,11 @@
     </widget>
     <widget class="QMenu" name="menuDebugView">
      <property name="title">
-      <string>View</string>
+      <string>&amp;View</string>
      </property>
      <addaction name="actionDisplay_Normals"/>
      <addaction name="actionDisplayPhotonMap"/>
+     <addaction name="actionDisplayNone"/>
     </widget>
     <addaction name="menuLogLevel"/>
     <addaction name="menuDebugView"/>
@@ -101,6 +102,7 @@
      <string>Presets</string>
     </property>
     <addaction name="actionPresetsCornellBox"/>
+    <addaction name="actionPresetsSimpleCube"/>
     <addaction name="actionPresetsEmpty"/>
    </widget>
    <addaction name="menuFile"/>
@@ -655,6 +657,19 @@
   <action name="actionC">
    <property name="text">
     <string>C</string>
+   </property>
+  </action>
+  <action name="actionPresetsSimpleCube">
+   <property name="text">
+    <string>&amp;Simple Cube</string>
+   </property>
+  </action>
+  <action name="actionDisplayNone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;None</string>
    </property>
   </action>
  </widget>

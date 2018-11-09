@@ -230,7 +230,7 @@ void PhotonMap::compute_map(
     Logger::log_info(message.toStdString().c_str());
 
     if (map.size() < samples)
-        Logger::log_warning("too few photons was generated.");
+        Logger::log_warning("too few photons were generated.");
 }
 
 const Photon& PhotonMap::photon(const size_t index) const

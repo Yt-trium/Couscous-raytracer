@@ -84,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
     auto debug_view_action_group = new QActionGroup(this);
     debug_view_action_group->addAction(ui->actionDisplay_Normals);
     debug_view_action_group->addAction(ui->actionDisplayPhotonMap);
+    debug_view_action_group->addAction(ui->actionDisplayNone);
 
     // Map log level events.
     connect(log_level_action_group, SIGNAL(triggered(QAction*)), SLOT(slot_log_level_changed(QAction*)));
@@ -91,6 +92,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Presets selection events.
     auto presets_group = new QActionGroup(this);
     presets_group->addAction(ui->actionPresetsCornellBox);
+    presets_group->addAction(ui->actionPresetsSimpleCube);
     presets_group->addAction(ui->actionPresetsEmpty);
 
     connect(presets_group, SIGNAL(triggered(QAction*)), SLOT(slot_presets_changed(QAction*)));
@@ -491,6 +493,10 @@ void MainWindow::slot_presets_changed(QAction *action)
     if(action == ui->actionPresetsCornellBox)
     {
         scene = Scene::cornell_box();
+    }
+    else if(action == ui->actionPresetsSimpleCube)
+    {
+        scene = Scene::simple_cube();
     }
     else if(action == ui->actionPresetsEmpty)
     {
