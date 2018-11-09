@@ -4,6 +4,7 @@
 // couscous includes.
 #include "renderer/material.h"
 #include "renderer/visualobject.h"
+#include "renderer/camera.h"
 
 // glm includes.
 #include <glm/glm.hpp>
@@ -99,6 +100,18 @@ class SceneObjectFile
     std::vector<glm::vec3>      normals;
 };
 
+//
+// A scene camera object.
+//
+
+class SceneCamera
+{
+public:
+    SceneCamera();
+    std::string name;
+    Camera cam;
+};
+
 class Scene
 {
   public:
@@ -110,6 +123,7 @@ class Scene
     std::vector<SceneMaterial>      materials;
     std::vector<SceneObject>        objects;
     std::vector<SceneObjectFile>    object_files;
+    std::vector<SceneCamera>        cameras;
 };
 
 #endif // SCENE_H
