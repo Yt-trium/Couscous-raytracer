@@ -169,7 +169,7 @@ class PhotonTree
         // they can be accessed via photon().
         size_t find_closest(const glm::vec3& point)
         {
-            static nanoflann::SearchParams search_params(32, 0.0f, false);
+            static nanoflann::SearchParams search_params(32, 0.0f, true);
 
             nanoflann::KNNResultSet<float, size_t> result(N);
             result.init(m_indices, m_squared_dists);
