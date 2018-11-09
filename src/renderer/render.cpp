@@ -7,6 +7,7 @@
 #include "renderer/samplegenerator.h"
 #include "renderer/utility.h"
 #include "renderer/visualobject.h"
+#include "renderer/photonMapping.h"
 
 // Math includes.
 #include <glm/glm.hpp>
@@ -71,25 +72,23 @@ namespace
     vec3 get_ray_photon_map(
         const Ray&                      r,
         const VoxelGridAccelerator&     grid,
-        const PhotonMap&                pmap)
+        const PhotonTree&               ptree)
     {
         HitRecord rec;
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
-            const vec3& hit_point = rec.p;
-            auto photons = pmap.get_nearest_neihgboorhood(hit_point, 1);
-            auto& photon = photons[0];
-
-            assert(!photons.empty());
+            const auto& photon = ptree.get_closest(rec.p);
 
             // TODO: Clean this shit.
+            // I scatter only to get the albedo. lol.
+            // TODO: only get photons on this surface.
             Ray scattered;
             vec3 attenuation;
-            photon->mat->scatter(r, rec, attenuation, scattered);
+            photon.mat->scatter(r, rec, attenuation, scattered);
 
             // With attenuation.
-            const vec3 p_to_photon = photon->position - hit_point;
+            const vec3 p_to_photon = photon.position - rec.p;
             const float effector = 1.0 / pow(length(p_to_photon), 2.0);
             const vec3 color = attenuation * effector;
             return color;
@@ -101,7 +100,6 @@ namespace
     }
 }
 
-#include <iostream>
 void Render::get_render_image(
     const size_t                    width,
     const size_t                    height,
@@ -109,7 +107,7 @@ void Render::get_render_image(
     const size_t                    ray_max_depth,
     const Camera&                   camera,
     const VoxelGridAccelerator&     grid,
-    const PhotonMap&                photon_map,
+    const PhotonTree&               ptree,
     const bool                      parallel,
     const bool                      get_normal_color,
     const bool                      display_photon_map,
@@ -163,7 +161,7 @@ void Render::get_render_image(
                     }
                     else if (display_photon_map)
                     {
-                        color += get_ray_photon_map(r, grid, photon_map);
+                        color += get_ray_photon_map(r, grid, ptree);
                     }
                     else
                     {

@@ -4,12 +4,19 @@
 #include "common/logger.h"
 
 // Qt includes.
+#include <QtConcurrentRun>
+#include <QFuture>
+#include <QObject>
 #include <QTime>
+
+// glm includes.
+#include <glm/gtc/type_ptr.hpp>
 
 // Standard includes.
 #include <string>
 
 using namespace std;
+using namespace glm;
 
 // For the creation of the photon map on a single thread.
 // #define FORCE_SINGLE_THREAD
@@ -25,15 +32,14 @@ RussianRoulette::RussianRoulette()
     distributor = std::uniform_real_distribution<>(rangeMin, rangeMax);
 }
 
-float RussianRoulette::modifyEnergy(float alpha,
-                   float energy)
+float RussianRoulette::modifyEnergy(
+    const float alpha,
+    const float energy)
 {
     if(distributor(engine) <= alpha)
-    {
         return 0.0f;
-    }
 
-    return energy/(1.0f-alpha);
+    return energy / (1.0f - alpha);
 }
 
 
@@ -41,33 +47,31 @@ float RussianRoulette::modifyEnergy(float alpha,
 // Photon implementation.
 //
 
-Photon::Photon()
+Photon::Photon(
+    const vec3&     position,
+    const vec3&     inDirection,
+    const float     energy,
+    const Material* mat)
+  : position(position)
+  , inDirection(inDirection)
+  , energy(energy)
+  , mat(mat)
 {
-    this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->energy = 0.0f;
 }
 
-Photon::Photon(glm::vec3 position,
-               glm::vec3 inDirection,
-               float energy,
-               Material* mat)
-{
-    this->position = position;
-    this->inDirection = inDirection;
-    this->energy = energy;
-    this->mat = mat;
-}
-
-float compute_energy(float inEnergy, float fr)
+float Photon::compute_energy(
+    const float inEnergy,
+    const float fr)
 {
     return inEnergy * fr;
 }
 
 
 //
-// Photon map implementation.
+// PhotonMap class implementation.
 //
 
+#include <iostream>
 PhotonMap::PhotonMap()
   : alpha(0.6f)
   , engine(random_device()())
@@ -75,21 +79,14 @@ PhotonMap::PhotonMap()
 {
 }
 
-PhotonMap::PhotonMap(std::vector<Photon*> map)
-  : map(map)
-  , alpha(0.6f)
-  , engine(random_device()())
-  , distributor(0.0f, 1.0f)
-{
-}
-
 PhotonMap::~PhotonMap()
 {
-
-    for(auto it =  this->map.begin() ; it != this->map.end(); ++it)
+    for (auto it = map.begin(); it != map.end(); ++it)
     {
-        delete(*it);
+        delete (*it);
     }
+
+    map.clear();
 }
 
 void PhotonMap::trace_photon_ray(
@@ -103,20 +100,19 @@ void PhotonMap::trace_photon_ray(
 
     if(grid.hit(r, 0.0001f, std::numeric_limits<float>::max(), rec))
     {
-        Photon* hitPoint = nullptr;
         Ray scattered;
-        glm::vec3 attenuation;
+        vec3 attenuation;
         bool isScatterValid = rec.mat->scatter(r, rec, attenuation, scattered);
 
 
-        float hitPointEnergy = compute_energy(inEnergy, rec.mat->brdf());
+        float hitPointEnergy = Photon::compute_energy(inEnergy, rec.mat->brdf());
 
         // Russian roulette here to know if we stop ourselves or not
         hitPointEnergy = terminationSystem.modifyEnergy(alpha, hitPointEnergy);
         if(hitPointEnergy >= photonMinErnergy)
         {
-            hitPoint = new Photon(rec.p, r.origin, hitPointEnergy, rec.mat);
-            add_photon(hitPoint);
+            Photon* photon = new Photon(rec.p, r.origin, hitPointEnergy, rec.mat);
+            add_photon(photon);
 
             // scatterd ray (cast here should not cause any problem, because ray depth will not be greater thant MAX_INT in practice)
             if(depth < static_cast<int>(ray_max_depth) && isScatterValid)
@@ -127,16 +123,16 @@ void PhotonMap::trace_photon_ray(
     }
 }
 
-void PhotonMap::add_photon(Photon *photon)
+void PhotonMap::add_photon(const Photon* photon)
 {
     mapMutex.lock();
-    this->map.push_back(photon);
+    map.push_back(photon);
     mapMutex.unlock();
 }
 
-glm::vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
+vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
 {
-    glm::vec3 v1, v2, v3, answ;
+    vec3 v1, v2, v3, answ;
     float r1 = distributor(engine);
     float r2 = distributor(engine);
     float m1=1 - sqrt(r1);
@@ -150,16 +146,16 @@ glm::vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
     return answ;
 }
 
-glm::vec3 PhotonMap::random_in_unit_sphere() const
+vec3 PhotonMap::random_in_unit_sphere() const
 {
-    glm::vec3 p;
+    vec3 p;
     do
     {
-        p = 2.0f * glm::vec3(
+        p = 2.0f * vec3(
             random<float>(),
             random<float>(),
-            random<float>()) - glm::vec3(1, 1, 1);
-    } while(glm::dot(p, p) >= 1);
+            random<float>()) - vec3(1, 1, 1);
+    } while(dot(p, p) >= 1);
     return p;
 }
 
@@ -178,7 +174,6 @@ void PhotonMap::compute_map(
     QTime timer;
     timer.start();
 
-
     const size_t nbRaysPerLight = samples / lights.size();
     const float totalEnergy = EnergyForOneLight * static_cast<float>(lights.size());
     // TODO: Use the light emmissive value to define the energy of each ray.
@@ -192,11 +187,10 @@ void PhotonMap::compute_map(
     auto compute =
     [&](
         const Ray&                      r,
-        const float                     inEnergy,
-        PhotonMap*                      map
+        const float                     inEnergy
        )
     {
-        map->trace_photon_ray(r, ray_max_depth, grid, inEnergy);
+        this->trace_photon_ray(r, ray_max_depth, grid, inEnergy);
     };
 
     std::vector<QFuture<void>> threads;
@@ -215,7 +209,7 @@ void PhotonMap::compute_map(
 #ifdef FORCE_SINGLE_THREAD
             trace_photon_ray(r, ray_max_depth, grid, energyForOneRay);
 #else
-            QFuture<void> future = QtConcurrent::run(compute, r, energyForOneRay, this);
+            QFuture<void> future = QtConcurrent::run(compute, r, energyForOneRay);
             threads.push_back(future);
 #endif
         }
@@ -228,25 +222,45 @@ void PhotonMap::compute_map(
     }
 
     const int pm_elapsed = timer.elapsed();
-    timer.start();
 
-    QString message =
-        QString("built photon map in ")
+    const QString message =
+        QString("generated ")
+        + QString::number(map.size())
+        +  QString(" photons in ")
         + ((pm_elapsed > 1000)
             ? (QString::number(pm_elapsed / 1000) + "s.")
             : (QString::number(pm_elapsed % 1000) + "ms."));
 
     Logger::log_info(message.toStdString().c_str());
 
-    // Create a Kd-tree for storing all photons.
-    for(auto it = map.begin(); it != map.end(); ++it)
-    {
-        kdtreephotonData.push_back(new kDTreeObjectContainer<Photon*>(*it, (*it)->position.x, (*it)->position.y, (*it)->position.z));
-    }
+    if (map.size() < samples)
+        Logger::log_warning("too few photons was generated.");
+}
+
+const Photon& PhotonMap::photon(const size_t index) const
+{
+    assert(index < map.size());
+    return *map[index];
+}
+
+
+//
+// PhotonTree class implementation.
+//
+
+PhotonTree::PhotonTree(const PhotonMap& map)
+  : map(map)
+  , m_index(3, map, nanoflann::KDTreeSingleIndexAdaptorParams(10))
+{
+    QTime timer;
+    timer.start();
+
+    // Build the kd-tree.
+    m_index.buildIndex();
 
     const int kd_elapsed = timer.elapsed();
 
-    message =
+    const QString message =
         QString("added photons in a kd-tree in ")
         + ((kd_elapsed > 1000)
             ? (QString::number(kd_elapsed / 1000) + "s.")
@@ -255,22 +269,15 @@ void PhotonMap::compute_map(
     Logger::log_info(message.toStdString().c_str());
 }
 
-std::vector<Photon*> PhotonMap::get_nearest_neihgboorhood(glm::vec3 photonPosition, unsigned int neighboorsNumber) const
+const Photon& PhotonTree::get_closest(const vec3& pos) const
 {
-    kDTree<Photon*> tree;
-    kDTreeObjectContainer<Photon*>* refPosition = new kDTreeObjectContainer<Photon*> (nullptr, photonPosition.x, photonPosition.y, photonPosition.z);
-    std::vector<kDTreeObjectContainer<Photon*>*> answ;
-    std::vector<Photon*> answAsPhotonVector;
+    // Nanoflann variables
+    size_t index;
+    float out_squared_dist;
 
-    tree.init(kdtreephotonData);
+    const size_t nbhd_count = m_index.knnSearch(value_ptr(pos), 1, &index, &out_squared_dist);
+    assert(nbhd_count == 1);
 
-    answ = tree.findKNN(refPosition, neighboorsNumber);
-
-    for(auto it = answ.begin(); it != answ.end(); ++it)
-    {
-        answAsPhotonVector.push_back((*it)->object);
-    }
-
-    return answAsPhotonVector;
+    return map.photon(index);
 }
 

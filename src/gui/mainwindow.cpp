@@ -76,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
     auto log_level_action_group = new QActionGroup(this);
     log_level_action_group->addAction(ui->actionLogLevelDebug);
     log_level_action_group->addAction(ui->actionLogLevelInfo);
+    log_level_action_group->addAction(ui->actionLogLevelWarning);
     log_level_action_group->addAction(ui->actionLogLevelError);
     log_level_action_group->addAction(ui->actionLogLevelNone);
 
@@ -204,7 +205,6 @@ void MainWindow::slot_do_render()
     // Create cornell box.
     MeshGroup world;
 
-    // Get visual.
     Logger::log_info("creating the scene...");
     scene.create_scene(world);
 
@@ -225,8 +225,12 @@ void MainWindow::slot_do_render()
 
     // Create photon map.
     PhotonMap pmap;
-    pmap.compute_map(1000, 5, accelerator, world, lights);
+    pmap.compute_map(1000, 1, accelerator, world, lights);
 
+    // Create photon tree.
+    PhotonTree ptree(pmap);
+
+    // Starts rendering.
     QTime render_timer;
     Logger::log_info("rendering...");
     render_timer.start();
@@ -241,7 +245,7 @@ void MainWindow::slot_do_render()
         ray_max_depth,
         camera,
         accelerator,
-        pmap,
+        ptree,
         parallel,
         ui->actionDisplay_Normals->isChecked(),
         ui->actionDisplayPhotonMap->isChecked(),

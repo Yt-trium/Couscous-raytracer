@@ -57,8 +57,6 @@ HEADERS += \
     src/renderer/photonMapping.h \
     src/renderer/aabb.h \
     src/renderer/gridaccelerator.h \
-    src/renderer/kDTree.h \
-    src/renderer/kDTree.hpp \
     src/gui/scene.h \
     src/gui/dialogmaterial.h \
     src/gui/dialogobject.h \
@@ -70,7 +68,7 @@ FORMS += \
     src/gui/dialogmaterial.ui \
     src/gui/dialogobject.ui
 
-INCLUDEPATH += glm src
+INCLUDEPATH += glm src distant
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

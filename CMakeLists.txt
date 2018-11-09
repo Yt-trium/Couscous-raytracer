@@ -34,8 +34,6 @@ set (renderer_sources
     src/renderer/camera.h
     src/renderer/gridaccelerator.cpp
     src/renderer/gridaccelerator.h
-    src/renderer/kDTree.hpp
-    src/renderer/kDTree.h
     src/renderer/material.cpp
     src/renderer/material.h
     src/renderer/photonMapping.cpp
@@ -128,8 +126,8 @@ QT4_ADD_RESOURCES (couscous_resource_files
 include (${QT_USE_FILE})
 include_directories(
     src
-    ${ASSIMP_INCLUDE_DIR})
-
+    ${ASSIMP_INCLUDE_DIR}
+    distant)
 
 add_executable(${PROJECT_NAME} ${couscous_sources} ${couscous_resource_files})
 
