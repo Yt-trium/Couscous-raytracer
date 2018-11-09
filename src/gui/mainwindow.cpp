@@ -503,6 +503,21 @@ void MainWindow::slot_presets_changed(QAction *action)
         scene = Scene();
     }
 
+    if(scene.cameras.size() > 0)
+    {
+        SceneCamera cam = scene.cameras.at(0);
+        ui->doubleSpinBox_position_x->setValue(double(cam.position.x));
+        ui->doubleSpinBox_position_y->setValue(double(cam.position.y));
+        ui->doubleSpinBox_position_z->setValue(double(cam.position.z));
+
+        ui->doubleSpinBox_yaw->setValue(double(cam.yaw));
+        ui->doubleSpinBox_pitch->setValue(double(cam.pitch));
+        ui->doubleSpinBox_fov->setValue(double(cam.fov));
+
+        ui->spinBox_height->setValue(int(cam.height));
+        ui->spinBox_width->setValue(int(cam.width));
+    }
+
     Logger::log_info("loaded a new preset.");
 
     update_scene_widget();
