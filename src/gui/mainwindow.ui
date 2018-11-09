@@ -86,9 +86,15 @@
      <addaction name="actionLogLevelError"/>
      <addaction name="actionLogLevelNone"/>
     </widget>
-    <addaction name="actionDisplay_Normals"/>
-    <addaction name="actionDisplayPhotonMap"/>
+    <widget class="QMenu" name="menuDebugView">
+     <property name="title">
+      <string>View</string>
+     </property>
+     <addaction name="actionDisplay_Normals"/>
+     <addaction name="actionDisplayPhotonMap"/>
+    </widget>
     <addaction name="menuLogLevel"/>
+    <addaction name="menuDebugView"/>
    </widget>
    <widget class="QMenu" name="menuPresets">
     <property name="title">
@@ -643,7 +649,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Warning</string>
+    <string>&amp;Warning</string>
+   </property>
+  </action>
+  <action name="actionC">
+   <property name="text">
+    <string>C</string>
    </property>
   </action>
  </widget>

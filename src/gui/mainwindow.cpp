@@ -80,6 +80,11 @@ MainWindow::MainWindow(QWidget *parent)
     log_level_action_group->addAction(ui->actionLogLevelError);
     log_level_action_group->addAction(ui->actionLogLevelNone);
 
+    // Makes sure we can't select multiple debug view at once.
+    auto debug_view_action_group = new QActionGroup(this);
+    debug_view_action_group->addAction(ui->actionDisplay_Normals);
+    debug_view_action_group->addAction(ui->actionDisplayPhotonMap);
+
     // Map log level events.
     connect(log_level_action_group, SIGNAL(triggered(QAction*)), SLOT(slot_log_level_changed(QAction*)));
 
