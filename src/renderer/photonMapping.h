@@ -12,11 +12,13 @@
 
 // glm includes.
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // nanoflann inclues.
 #include <nanoflann/nanoflann.hpp>
 
 // Standard library includes
+#include <array>
 #include <map>
 #include <random>
 
@@ -127,24 +129,80 @@ class PhotonMap
 
 class PhotonTree
 {
-  public:
-    // The kd-tree is built when the constructor is called.
-    PhotonTree(const PhotonMap& map);
-
-    // Returns the closest photon to a given point.
-    // This method isn't meant to be called in a loop
-    // because it is not optimized. It allocates memory
-    // to search for a photon.
-    const Photon& get_closest(const glm::vec3& pos) const;
-
-    const PhotonMap& map;
-
   private:
     typedef nanoflann::KDTreeSingleIndexAdaptor<
         nanoflann::L2_Simple_Adaptor<float, PhotonMap>,
         PhotonMap,
         3> PhotonTreeIndex;
 
+  public:
+    // The kd-tree is built when the constructor is called.
+    PhotonTree(const PhotonMap& map);
+
+    const PhotonMap& map;
+
+    // Fetcher for a fixed count of photons.
+    // Using a fetcher is optimized since we need
+    // to allocate kd-tree fetching variables only
+    // one time.
+    template <size_t N>
+    class Fetcher
+    {
+      public:
+        Fetcher(
+            const PhotonMap&        map,
+            const PhotonTreeIndex&  index)
+          : m_map(map)
+          , m_index(index)
+        {
+        }
+
+        // Find all closest photons to a given point.
+        // Returns the number of match.
+        // Photons are not directly returned but
+        // they can be accessed via photon().
+        size_t find_closest(const glm::vec3& point)
+        {
+            // Fetch photon indices.
+            return m_index.knnSearch(glm::value_ptr(point), N, &m_indices[0], &m_squared_dists[0]);
+        }
+
+        // Returns indices of photons previously fetched.
+        const std::array<size_t, N>& indices() const
+        {
+            return m_indices;
+        }
+
+        // Returns distance from each previously fetched photon
+        // to the previously fetching point.
+        const std::array<float, N>& dists() const
+        {
+            return m_squared_dists;
+        }
+
+        // Returns the nth photon from previously fetched photons.
+        const Photon& photon(const size_t index) const
+        {
+            assert(index < N);
+            return m_map.photon(m_indices[index]);
+        }
+
+      private:
+        const PhotonMap&            m_map;
+        const PhotonTreeIndex&      m_index;
+
+        // Nanoflann members.
+        std::array<size_t, N>       m_indices;
+        std::array<float, N>        m_squared_dists;
+    };
+
+    template <size_t N>
+    Fetcher<N> create_fetcher() const
+    {
+        return Fetcher<N>(map, m_index);
+    }
+
+  private:
     // Nanoflann used to search in the kd-tree.
     PhotonTreeIndex m_index;
 };

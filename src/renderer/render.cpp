@@ -21,6 +21,8 @@
 #include <cmath>
 #include <limits>
 
+#define PHOTON_FETCH_SIZE 1
+
 using namespace glm;
 using namespace std;
 
@@ -70,15 +72,16 @@ namespace
     }
 
     vec3 get_ray_photon_map(
-        const Ray&                      r,
-        const VoxelGridAccelerator&     grid,
-        const PhotonTree&               ptree)
+        const Ray&                                      r,
+        const VoxelGridAccelerator&                     grid,
+        PhotonTree::Fetcher<PHOTON_FETCH_SIZE>&         pfetcher)
     {
         HitRecord rec;
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
-            const auto& photon = ptree.get_closest(rec.p);
+            pfetcher.find_closest(rec.p);
+            const auto& photon = pfetcher.photon(0);
 
             // TODO: Clean this shit.
             // I scatter only to get the albedo. lol.
@@ -116,6 +119,9 @@ void Render::get_render_image(
 {
     progressBar.setValue(53);
     progressBar.setRange(0, int((width/64)*(height/64)));
+
+    // Create a photon fetcher.
+    PhotonTree::Fetcher<PHOTON_FETCH_SIZE> photon_fetcher = ptree.create_fetcher<PHOTON_FETCH_SIZE>();
 
     // Precompute subpixel samples position
     const size_t dimension_size =
@@ -161,7 +167,7 @@ void Render::get_render_image(
                     }
                     else if (display_photon_map)
                     {
-                        color += get_ray_photon_map(r, grid, ptree);
+                        color += get_ray_photon_map(r, grid, photon_fetcher);
                     }
                     else
                     {

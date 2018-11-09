@@ -9,9 +9,6 @@
 #include <QObject>
 #include <QTime>
 
-// glm includes.
-#include <glm/gtc/type_ptr.hpp>
-
 // Standard includes.
 #include <string>
 
@@ -266,17 +263,5 @@ PhotonTree::PhotonTree(const PhotonMap& map)
             : (QString::number(kd_elapsed % 1000) + "ms."));
 
     Logger::log_info(message.toStdString().c_str());
-}
-
-const Photon& PhotonTree::get_closest(const vec3& pos) const
-{
-    // Nanoflann variables
-    size_t index;
-    float out_squared_dist;
-
-    const size_t nbhd_count = m_index.knnSearch(value_ptr(pos), 1, &index, &out_squared_dist);
-    assert(nbhd_count == 1);
-
-    return map.photon(index);
 }
 
