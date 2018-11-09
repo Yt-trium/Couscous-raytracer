@@ -235,10 +235,13 @@ void FrameViewer::mouseReleaseEvent(QMouseEvent* event)
 void FrameViewer::paintEvent(QPaintEvent* event)
 {
     // Create transform matrix.
+    const float hwidth = static_cast<float>(m_image.width()) * 0.5f;
+    const float hheight = static_cast<float>(m_image.height()) * 0.5f;
 
     // Place image's center at (0, 0)
     QTransform center_image;
-    center_image.translate(-m_image.width() / 2, -m_image.height() / 2);
+    center_image.translate(-hwidth, -hheight);
+
     // Invert image because the Qt image space is different from the
     // renderer space.
     QTransform swap_y;
@@ -251,10 +254,12 @@ void FrameViewer::paintEvent(QPaintEvent* event)
     // Place image at the center of the widget
     // and apply translation.
     QTransform translate_image;
-    translate_image.translate(width() / 2, height() / 2);
+    translate_image.translate(
+        static_cast<float>(width()) * 0.5f,
+        static_cast<float>(height()) * 0.5f);
     translate_image.translate(m_translate_x, m_translate_y);
 
-    QTransform transform = center_image * swap_y * scale_image * translate_image;
+    QTransform transform = center_image * scale_image * translate_image;
 
     // Draw the image.
     m_painter.begin(this);
