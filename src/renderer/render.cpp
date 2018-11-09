@@ -101,6 +101,7 @@ namespace
     }
 }
 
+#include <iostream>
 void Render::get_render_image(
     const size_t                    width,
     const size_t                    height,
@@ -143,7 +144,8 @@ void Render::get_render_image(
         {
             for (size_t x = x1; x < x2; ++x)
             {
-                const vec2 pt(x, y);
+                // In Qt, y is going from top to bottom.
+                const vec2 pt(x, height - y - 1);
                 const vec2 frame(width, height);
 
                 vec3 color(0.0f, 0.0f, 0.0f);
@@ -180,7 +182,6 @@ void Render::get_render_image(
                     static_cast<int>(255.0f * color[1]),
                     static_cast<int>(255.0f * color[2]));
 
-                // In Qt, y is going from top to bottom.
                 image.setPixel(x, y, rgb_color);
             }
         }
