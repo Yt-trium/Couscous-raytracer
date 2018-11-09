@@ -108,11 +108,11 @@ class SceneCamera
 public:
     SceneCamera(const std::string&  name = "cam",
                 const glm::vec3&    position = glm::vec3(0.0f),
-                const float&        yaw = -90.0f,
-                const float&        pitch = 0.0f,
-                const float&        fov = 85.0f,
-                const size_t&       width = 800,
-                const size_t&       height = 600);
+                float         yaw = -90.0f,
+                float         pitch = 0.0f,
+                float         fov = 85.0f,
+                size_t        width = 800,
+                size_t        height = 600);
 
     glm::vec3   position;
     float       yaw;
