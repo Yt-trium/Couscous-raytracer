@@ -34,6 +34,21 @@ float Material::brdf() const
     return 0.0f;
 }
 
+float Material::getKD() const
+{
+    return kd;
+}
+
+float Material::getKS() const
+{
+    return ks;
+}
+
+float Material::getSpecularExponent() const
+{
+    return specularExponent;
+}
+
 Lambertian::Lambertian(
     const vec3&         albedo)
   : m_albedo(albedo)
@@ -57,6 +72,11 @@ bool Lambertian::scatter(
 float Lambertian::brdf() const
 {
     return m_rf;
+}
+
+vec3 Lambertian::getAlbedo() const
+{
+    return m_albedo;
 }
 
 Metal::Metal(
@@ -86,6 +106,11 @@ float Metal::brdf() const
     return m_rf;
 }
 
+vec3 Metal::getAlbedo() const
+{
+    return m_albedo;
+}
+
 Light::Light(
     const vec3&         emission)
   : m_emission(emission)
@@ -110,5 +135,20 @@ float Light::brdf() const
 vec3 Light::emission() const
 {
     return m_emission;
+}
+
+float Light::getKD() const
+{
+    return 0.0f;
+}
+
+float Light::getKS() const
+{
+    return 0.0f;
+}
+
+float Light::getSpecularExponent() const
+{
+    return 0.0f;
 }
 

@@ -207,6 +207,7 @@ bool Triangle::hit(
     rec.mat = m_mesh->m_mat.get();
     rec.p = p;
     rec.t = t;
+    rec.triangle = this;
 
     return true;
 }

@@ -21,13 +21,16 @@
 #include <cmath>
 #include <limits>
 
-#define PHOTON_FETCH_SIZE 5
+
+#define directlightRaysNumber 5
+
 
 using namespace glm;
 using namespace std;
 
 namespace
 {
+
     vec3 get_ray_color(
         const Ray&                      r,
         const size_t                    ray_max_depth,
@@ -112,6 +115,111 @@ namespace
     }
 }
 
+
+vec3 Render::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
+{
+    vec3 v1, v2, v3, answ;
+    float r1 = distributor(engine);
+    float r2 = distributor(engine);
+    float m1=1 - sqrt(r1);
+    float m2=sqrt(r1) * (1-r2);
+    float m3=r2 * sqrt(r1);
+
+    (*triangle).getVertices(v1, v2, v3);
+
+    answ = m1*v1 + m2*v2 + m3*v3;
+
+    return answ;
+}
+
+
+vec3 Render::getRandomPointOnLights(const MeshGroup& lights)
+{
+    int lightIndice = std::rand()/((RAND_MAX + 1u)/lights.size());
+
+    return randomPointInTriangle(lights[lightIndice]);
+}
+
+
+glm::vec3 Render::get_ray_color_phong(
+    const Ray&                                      r,
+    const VoxelGridAccelerator&                     grid,
+    const MeshGroup&                                lights,
+    PhotonTree::Fetcher<PHOTON_FETCH_SIZE>&         pfetcher)
+{
+    HitRecord rec;
+
+    // TODO - notify properly that material is not compatible with phong !
+    if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec) && ( dynamic_cast<Lambertian*>(rec.mat) != nullptr || dynamic_cast<Metal*>(rec.mat) != nullptr ) )
+    {
+        float lightIntensity = 0.0f, directLightIntensity = 0.0f, inDirectLightIntensity = 0.0f, diffuseComp = 0.0f;
+        glm::vec3 diffuse, specular, currentPointOnLight, albedo;
+        HitRecord directLightRec;
+        std::vector<glm::vec3> lightPoints;
+
+
+        // Compute direct lighting by sending rays to lights
+        for(int i=0; i<directlightRaysNumber; i++)
+        {
+            currentPointOnLight = getRandomPointOnLights(lights);
+            if(grid.hit(Ray(rec.p, currentPointOnLight), 0.0001f, numeric_limits<float>::max(), directLightRec) && (directLightRec.mat->emission() != glm::vec3(0.0f, 0.0f, 0.0f)) )
+            {
+                float currentDirectLightIntensity = directLightRec.mat->emission().x * 0.21f + directLightRec.mat->emission().y * 0.72f  + directLightRec.mat->emission().z * 0.07;
+                // Compute direct light intensity : Li * ( (kd/PI) + (ks * (n+2)/2PI) * cos^n(dot(r.origin, pointOnLight)) )
+                directLightIntensity += currentDirectLightIntensity * ( (rec.mat->getKD() / 3.14f) + (rec.mat->getKS() * ( (rec.mat->getSpecularExponent() + 2) / (3.14f * 2.0f) ) * std::pow( glm::dot(r.origin, currentPointOnLight), rec.mat->getSpecularExponent())) );
+
+                // Precompute diffuse element of computation : Sum( dot(rec.normal, pointOnLight ) / nbValidLights
+                diffuseComp += glm::dot(rec.normal, currentPointOnLight);
+
+                // Keep in memory valid lights point : valid light point means a visible one
+                lightPoints.push_back(currentPointOnLight);
+            }
+        }
+
+
+        // Compute indirect lighting with photon mapping
+        // TODO - NEED HELP FOR THIS SHIT, NOT SURE THAT WE HAVE TO HANDLE IT THAT WAY
+        const size_t count = pfetcher.find_closest(rec.p);
+        for (size_t i = 0; i < count; ++i)
+        {
+            const auto& photon = pfetcher.photon(i);
+            const float dist = pfetcher.squared_dist(i);
+
+            inDirectLightIntensity += photon.energy / (1 + dist * 0.01f) ;
+        }
+
+        // Compute total light intensity
+        lightIntensity = directLightIntensity + inDirectLightIntensity;
+
+        // Compute diffuse part
+        if(dynamic_cast<Lambertian*>(rec.mat) != nullptr)
+        {
+            albedo = dynamic_cast<Lambertian*>(rec.mat)->getAlbedo();
+        }
+        else if(dynamic_cast<Metal*>(rec.mat) != nullptr)
+        {
+            albedo = dynamic_cast<Metal*>(rec.mat)->getAlbedo();
+        }
+
+        diffuse = lightIntensity * albedo * (diffuseComp / lightPoints.size());
+
+        // Compute specular part
+        for(int i=0; i<lightPoints.size(); i++)
+        {
+            glm::vec3 rVec = 2*(glm::dot(rec.normal, lightPoints[i])) * rec.normal - lightPoints[i];
+
+            specular += (lightIntensity/lightPoints.size()) * std::pow(std::max(0.0f, glm::dot(r.origin, rVec)), rec.mat->getSpecularExponent());
+        }
+
+        return diffuse * rec.mat->getKD() + specular * rec.mat->getKS();
+    }
+    else
+    {
+        return vec3(0.0f);
+    }
+}
+
+
 void Render::get_render_image(
     const size_t                    width,
     const size_t                    height,
@@ -120,6 +228,7 @@ void Render::get_render_image(
     const Camera&                   camera,
     const VoxelGridAccelerator&     grid,
     const PhotonTree&               ptree,
+    const MeshGroup&                lights,
     const bool                      parallel,
     const bool                      get_normal_color,
     const bool                      display_photon_map,
@@ -128,6 +237,11 @@ void Render::get_render_image(
 {
     progressBar.setValue(53);
     progressBar.setRange(0, int((width/64)*(height/64)));
+
+    // Init random generator
+    std::random_device rd;
+    engine = std::mt19937(rd());
+    distributor = std::uniform_real_distribution<>(0.0f, 1.0f);
 
     // Precompute subpixel samples position
     const size_t dimension_size =
@@ -180,7 +294,8 @@ void Render::get_render_image(
                     }
                     else
                     {
-                        color += get_ray_color(r, ray_max_depth, grid, 0);
+                        color += get_ray_color_phong(r, grid, lights, photon_fetcher);
+                        // color += get_ray_color(r, ray_max_depth, grid, 0);
                     }
                 }
 

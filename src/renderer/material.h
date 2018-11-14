@@ -21,8 +21,17 @@ class Material
 
     virtual float brdf() const;
 
+    virtual float getKD() const;
+
+    virtual float getKS() const;
+
+    virtual float getSpecularExponent() const;
+
 protected:
     float       m_rf;
+    float       kd;
+    float       ks;
+    float       specularExponent;
 };
 
 class Lambertian : public Material
@@ -37,6 +46,8 @@ class Lambertian : public Material
         Ray&                scattered) const override;
 
     float brdf() const override;
+
+    glm::vec3 getAlbedo() const;
 
   private:
     glm::vec3 m_albedo;
@@ -55,6 +66,8 @@ class Metal : public Material
 
     float brdf() const override;
 
+    glm::vec3 getAlbedo() const;
+
   private:
     glm::vec3   m_albedo;
     float       m_fuzz;
@@ -72,6 +85,12 @@ class Light : public Material
         Ray&                scattered) const override;
 
     float brdf() const override;
+
+    virtual float getKD() const override;
+
+    virtual float getKS() const override;
+
+    virtual float getSpecularExponent() const override;
 
     glm::vec3 emission() const;
 

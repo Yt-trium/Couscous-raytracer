@@ -14,6 +14,7 @@
 
 // Forward declarations.
 class Material;
+class Triangle;
 
 //
 // Ray intersections data structures.
@@ -26,6 +27,7 @@ typedef struct HitRecord
     glm::vec3   p;
     glm::vec3   normal;
     Material*   mat;
+    const Triangle*   triangle;
 } HitRecord;
 
 

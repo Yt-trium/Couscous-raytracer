@@ -261,6 +261,7 @@ void MainWindow::slot_do_render()
         camera,
         accelerator,
         ptree,
+        lights,
         parallel,
         ui->actionDisplay_Normals->isChecked(),
         ui->actionDisplayPhotonMap->isChecked(),
