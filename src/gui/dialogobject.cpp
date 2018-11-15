@@ -133,7 +133,7 @@ void DialogObject::on_comboBox_object_type_currentIndexChanged(int index)
 {
     ObjectType ot;
 
-    switch (ui->comboBox_object_type->currentIndex())
+    switch (index)
     {
       default:
       case 0:

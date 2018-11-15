@@ -229,11 +229,15 @@ void FrameViewer::mousePressEvent(QMouseEvent* event)
 
 void FrameViewer::mouseReleaseEvent(QMouseEvent* event)
 {
+    event->accept();
+
     m_left_pressed = false;
 }
 
 void FrameViewer::paintEvent(QPaintEvent* event)
 {
+    event->accept();
+
     // Create transform matrix.
     const float hwidth = static_cast<float>(m_image.width()) * 0.5f;
     const float hheight = static_cast<float>(m_image.height()) * 0.5f;

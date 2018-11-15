@@ -22,7 +22,6 @@ using namespace std;
 bool Voxel::hit(
     const Ray&                          r,
     const float                         tmin,
-    const float                         tmax,
     HitRecord&                          rec) const
 {
     if (objects.empty())
@@ -208,7 +207,7 @@ bool VoxelGridAccelerator::hit(
     {
         // Check intersection with the current voxel.
         const Voxel& voxel = m_voxels[offset(pos[0], pos[1], pos[2])];
-        hit_something |= voxel.hit(r, tmin, rec.t, rec);
+        hit_something |= voxel.hit(r, tmin, rec);
 
         // Move to the next voxel.
         // We choose the best axis.

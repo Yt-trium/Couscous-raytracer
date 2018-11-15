@@ -22,7 +22,6 @@ class Voxel
     bool hit(
         const Ray&                          r,
         const float                         tmin,
-        const float                         tmax,
         HitRecord&                          rec) const;
 };
 

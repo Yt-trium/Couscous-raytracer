@@ -159,7 +159,6 @@ void PhotonMap::compute_map(
     const size_t                    samples,
     const size_t                    ray_max_depth,
     const VoxelGridAccelerator&     grid,
-    const MeshGroup&                rawWorld,
     const MeshGroup&                lights)
 {
     static float EnergyForOneLight = 150.0f;
