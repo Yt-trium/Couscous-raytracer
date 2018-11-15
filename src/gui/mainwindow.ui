@@ -90,7 +90,8 @@
      <property name="title">
       <string>&amp;View</string>
      </property>
-     <addaction name="actionDisplay_Normals"/>
+     <addaction name="actionDisplayNormals"/>
+     <addaction name="actionDisplayAlbedo"/>
      <addaction name="actionDisplayPhotonMap"/>
      <addaction name="actionDisplayNone"/>
     </widget>
@@ -558,12 +559,12 @@
     <string>New material</string>
    </property>
   </action>
-  <action name="actionDisplay_Normals">
+  <action name="actionDisplayNormals">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&amp;Display Normals</string>
+    <string>Normals</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -625,7 +626,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Display &amp;Photon Map</string>
+    <string>Photon Map</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -670,6 +671,14 @@
    </property>
    <property name="text">
     <string>&amp;None</string>
+   </property>
+  </action>
+  <action name="actionDisplayAlbedo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Albedo</string>
    </property>
   </action>
  </widget>

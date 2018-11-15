@@ -96,10 +96,9 @@ void PhotonMap::trace_photon_ray(
 
     if(grid.hit(r, 0.0001f, std::numeric_limits<float>::max(), rec))
     {
-        Ray scattered;
-        vec3 attenuation;
-        bool isScatterValid = rec.mat->scatter(r, rec, attenuation, scattered);
-
+        // TODO: apply fuzziness ? Or not.
+        const Ray scattered(rec.p, reflect(normalize(r.dir), rec.normal));
+        const bool isScatterValid = dot(scattered.dir, rec.normal) > 0.0f;
 
         float hitPointEnergy = Photon::compute_energy(inEnergy, rec.mat->brdf());
 

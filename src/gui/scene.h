@@ -21,13 +21,19 @@ class SceneMaterial
 {
   public:
     SceneMaterial(
-        const std::string&   name,
-        const glm::vec3&     color,
-        const glm::vec3&     emission);
+        const std::string&  name,
+        const glm::vec3&    color,
+        const glm::vec3&    emission,
+        const float         kd,
+        const float         ks,
+        const float         specularExponent);
 
     std::string name;
     glm::vec3   color;
     glm::vec3   emission;
+    float       kd;
+    float       ks;
+    float       specularExponent;
 };
 
 

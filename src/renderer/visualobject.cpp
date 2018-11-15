@@ -47,7 +47,7 @@ MeshGroup fetch_lights(const MeshGroup& world)
         // Is it a light ?
         auto mat = mesh->mat();
 
-        if (mat->emission() != vec3(0.0f))
+        if (mat->emission != vec3(0.0f))
             lights.push_back(mesh);
     };
 

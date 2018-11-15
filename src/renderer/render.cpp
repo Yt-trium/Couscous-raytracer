@@ -31,28 +31,15 @@ using namespace std;
 namespace
 {
 
-    vec3 get_ray_color(
+    vec3 get_albedo(
         const Ray&                      r,
-        const size_t                    ray_max_depth,
-        const VoxelGridAccelerator&     grid,
-        const int                       current_depth)
+        const VoxelGridAccelerator&     grid)
     {
         HitRecord rec;
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
-            Ray scattered;
-            vec3 attenuation;
-            vec3 emitted = rec.mat->emission();
-
-            if (current_depth < int(ray_max_depth) && rec.mat->scatter(r, rec, attenuation, scattered))
-            {
-                return emitted + attenuation * get_ray_color(scattered, ray_max_depth, grid, current_depth + 1);
-            }
-            else
-            {
-                return emitted;
-            }
+            return rec.mat->albedo;
         }
         else
         {
@@ -60,7 +47,9 @@ namespace
         }
     }
 
-    vec3 get_ray_normal_color(const Ray &r, const VoxelGridAccelerator &grid)
+    vec3 get_normal(
+        const Ray&                      r,
+        const VoxelGridAccelerator&     grid)
     {
         HitRecord rec;
 
@@ -92,18 +81,11 @@ namespace
             {
                 const auto& photon = pfetcher.photon(i);
 
-                // TODO: Clean this shit.
-                // I scatter only to get the albedo. lol.
-                // TODO: only get photons on this surface.
-                Ray scattered;
-                vec3 attenuation;
-                photon.mat->scatter(r, rec, attenuation, scattered);
-
                 const float dist = pfetcher.squared_dist(i);
                 const float pweight = photon.energy;
 
                 weight += pweight;
-                color += (attenuation * pweight) / (dist * 0.01f);
+                color += (photon.mat->albedo * pweight) / (dist * 0.01f);
             }
 
             return color / weight;
@@ -149,8 +131,7 @@ glm::vec3 Render::get_ray_color_phong(
 {
     HitRecord rec;
 
-    // TODO - notify properly that material is not compatible with phong !
-    if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec) && ( dynamic_cast<Lambertian*>(rec.mat) != nullptr || dynamic_cast<Metal*>(rec.mat) != nullptr ) )
+    if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
     {
         float lightIntensity = 0.0f, directLightIntensity = 0.0f, inDirectLightIntensity = 0.0f, diffuseComp = 0.0f;
         glm::vec3 diffuse, specular, currentPointOnLight, albedo;
@@ -162,11 +143,11 @@ glm::vec3 Render::get_ray_color_phong(
         for(int i=0; i<directlightRaysNumber; i++)
         {
             currentPointOnLight = getRandomPointOnLights(lights);
-            if(grid.hit(Ray(rec.p, currentPointOnLight), 0.0001f, numeric_limits<float>::max(), directLightRec) && (directLightRec.mat->emission() != glm::vec3(0.0f, 0.0f, 0.0f)) )
+            if(grid.hit(Ray(rec.p, currentPointOnLight), 0.0001f, numeric_limits<float>::max(), directLightRec) && (directLightRec.mat->emission != vec3(0.0f, 0.0f, 0.0f)) )
             {
-                float currentDirectLightIntensity = directLightRec.mat->emission().x * 0.21f + directLightRec.mat->emission().y * 0.72f  + directLightRec.mat->emission().z * 0.07;
+                float currentDirectLightIntensity = directLightRec.mat->emission.x * 0.21f + directLightRec.mat->emission.y * 0.72f  + directLightRec.mat->emission.z * 0.07;
                 // Compute direct light intensity : Li * ( (kd/PI) + (ks * (n+2)/2PI) * cos^n(dot(r.origin, pointOnLight)) )
-                directLightIntensity += currentDirectLightIntensity * ( (rec.mat->getKD() / 3.14f) + (rec.mat->getKS() * ( (rec.mat->getSpecularExponent() + 2) / (3.14f * 2.0f) ) * std::pow( glm::dot(r.origin, currentPointOnLight), rec.mat->getSpecularExponent())) );
+                directLightIntensity += currentDirectLightIntensity * ( (rec.mat->kd / 3.14f) + (rec.mat->ks * ( (rec.mat->specularExponent + 2) / (3.14f * 2.0f) ) * std::pow( glm::dot(r.origin, currentPointOnLight), rec.mat->specularExponent)) );
 
                 // Precompute diffuse element of computation : Sum( dot(rec.normal, pointOnLight ) / nbValidLights
                 diffuseComp += glm::dot(rec.normal, currentPointOnLight);
@@ -192,14 +173,7 @@ glm::vec3 Render::get_ray_color_phong(
         lightIntensity = directLightIntensity + inDirectLightIntensity;
 
         // Compute diffuse part
-        if(dynamic_cast<Lambertian*>(rec.mat) != nullptr)
-        {
-            albedo = dynamic_cast<Lambertian*>(rec.mat)->getAlbedo();
-        }
-        else if(dynamic_cast<Metal*>(rec.mat) != nullptr)
-        {
-            albedo = dynamic_cast<Metal*>(rec.mat)->getAlbedo();
-        }
+        albedo = rec.mat->albedo;
 
         diffuse = lightIntensity * albedo * (diffuseComp / lightPoints.size());
 
@@ -208,10 +182,10 @@ glm::vec3 Render::get_ray_color_phong(
         {
             glm::vec3 rVec = 2*(glm::dot(rec.normal, lightPoints[i])) * rec.normal - lightPoints[i];
 
-            specular += (lightIntensity/lightPoints.size()) * std::pow(std::max(0.0f, glm::dot(r.origin, rVec)), rec.mat->getSpecularExponent());
+            specular += (lightIntensity/lightPoints.size()) * std::pow(std::max(0.0f, glm::dot(r.origin, rVec)), rec.mat->specularExponent);
         }
 
-        return diffuse * rec.mat->getKD() + specular * rec.mat->getKS();
+        return diffuse * rec.mat->kd + specular * rec.mat->ks;
     }
     else
     {
@@ -231,6 +205,7 @@ void Render::get_render_image(
     const MeshGroup&                lights,
     const bool                      parallel,
     const bool                      get_normal_color,
+    const bool                      get_albedo_color,
     const bool                      display_photon_map,
     QImage&                         image,
     QProgressBar&                   progressBar)
@@ -286,7 +261,11 @@ void Render::get_render_image(
 
                     if(get_normal_color)
                     {
-                        color += get_ray_normal_color(r, grid);
+                        color += get_normal(r, grid);
+                    }
+                    else if(get_albedo_color)
+                    {
+                        color += get_albedo(r, grid);
                     }
                     else if (display_photon_map)
                     {
@@ -295,7 +274,6 @@ void Render::get_render_image(
                     else
                     {
                         color += get_ray_color_phong(r, grid, lights, photon_fetcher);
-                        // color += get_ray_color(r, ray_max_depth, grid, 0);
                     }
                 }
 

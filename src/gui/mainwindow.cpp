@@ -82,7 +82,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Makes sure we can't select multiple debug view at once.
     auto debug_view_action_group = new QActionGroup(this);
-    debug_view_action_group->addAction(ui->actionDisplay_Normals);
+    debug_view_action_group->addAction(ui->actionDisplayNormals);
+    debug_view_action_group->addAction(ui->actionDisplayAlbedo);
     debug_view_action_group->addAction(ui->actionDisplayPhotonMap);
     debug_view_action_group->addAction(ui->actionDisplayNone);
 
@@ -263,7 +264,8 @@ void MainWindow::slot_do_render()
         ptree,
         lights,
         parallel,
-        ui->actionDisplay_Normals->isChecked(),
+        ui->actionDisplayNormals->isChecked(),
+        ui->actionDisplayAlbedo->isChecked(),
         ui->actionDisplayPhotonMap->isChecked(),
         m_image,
         m_statusBarProgress);

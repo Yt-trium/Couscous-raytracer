@@ -12,12 +12,18 @@ using namespace glm;
 //
 
 SceneMaterial::SceneMaterial(
-    const string&   name,
-    const vec3&     color,
-    const vec3&     emission)
+    const string&       name,
+    const vec3&         color,
+    const vec3&         emission,
+    const float         kd,
+    const float         ks,
+    const float         specularExponent)
   : name(name)
   , color(color)
   , emission(emission)
+  , kd(kd)
+  , ks(ks)
+  , specularExponent(specularExponent)
 {
 }
 
@@ -91,16 +97,14 @@ void Scene::create_scene(MeshGroup &world)
     {
         material = &materials.at(i);
 
-        if(material->emission == vec3(0.0f))
-        {
-            shared_ptr<Material> mat(new Lambertian(material->color));
-            mats.push_back(mat);
-        }
-        else
-        {
-            shared_ptr<Material> mat(new Light(material->emission));
-            mats.push_back(mat);
-        }
+        shared_ptr<Material> mat(new Material(
+            material->color,
+            material->emission,
+            material->kd,
+            material->ks,
+            material->specularExponent));
+
+        mats.push_back(mat);
     }
 
     for(i = 0 ; i < objects.size() ; ++i)
@@ -109,27 +113,33 @@ void Scene::create_scene(MeshGroup &world)
 
         const mat4 transform = object->transform.matrix();
 
-        shared_ptr<Material> mat_dft(new Lambertian(vec3(0.73f, 0.73f, 0.73f)));
+        shared_ptr<Material> mat_default(
+            new Material(
+                vec3(1.0f, 0.0f, 1.0f),
+                vec3(1.0f, 0.0f, 1.0f),
+                1.0f, 1.0f, 1.0f));
+
         for(j = 0 ; j < materials.size() ; ++j)
         {
             if(object->material == materials.at(j).name)
             {
-                mat_dft = mats.at(j);
+                mat_default = mats.at(j);
                 break;
             }
         }
+
         switch(object->type)
         {
-        case ObjectType::PLANE:
-            create_plane(world, mat_dft, transform);
+          case ObjectType::PLANE:
+            create_plane(world, mat_default, transform);
             break;
-        case ObjectType::CUBE:
-            create_cube(world, mat_dft, transform);
+          case ObjectType::CUBE:
+            create_cube(world, mat_default, transform);
             break;
-        case ObjectType::CYLINDER:
-            create_cylinder(world, mat_dft, object->subdivisions,
-                            object->height, object->width,
-                            object->caps, transform);
+          case ObjectType::CYLINDER:
+            create_cylinder(world, mat_default, object->subdivisions,
+                object->height, object->width,
+                object->caps, transform);
             break;
         }
     }
@@ -153,14 +163,20 @@ void Scene::create_scene(MeshGroup &world)
         */
 
         obj = &object_files.at(i);
-        shared_ptr<Material> mat_dft(new Lambertian(vec3(0.73f, 0.73f, 0.73f)));
+
+        shared_ptr<Material> mat_default(
+            new Material(
+                vec3(1.0f, 0.0f, 1.0f),
+                vec3(1.0f, 0.0f, 1.0f),
+                1.0f, 1.0f, 1.0f));
+
         create_triangle_mesh(world,
                              size_t(obj->triangles.size()/3),
                              obj->vertices.size(),
                              obj->triangles.data(),
                              obj->vertices.data(),
                              obj->normals.data(),
-                             mat_dft,
+                             mat_default,
                              mat4(1.0f));
     }
 }
@@ -169,10 +185,10 @@ Scene Scene::cornell_box()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f)));
-    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f)));
-    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 0.45f, 0.15f), vec3(0.0f)));
-    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f)));
+    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f), 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 0.45f, 0.15f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
 
     scene.objects.push_back(SceneObject("floor",
         Transform(
@@ -253,9 +269,9 @@ Scene Scene::simple_cube()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(1.0f)));
-    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f)));
-    scene.materials.push_back(SceneMaterial("grey", vec3(0.2, 0.2, 0.2), vec3(0.0f)));
+    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(1.0f), 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+    scene.materials.push_back(SceneMaterial("grey", vec3(0.2, 0.2, 0.2), vec3(0.0f), 1.0f, 0.5f, 0.1f));
 
     scene.objects.push_back(SceneObject("floor",
         Transform(

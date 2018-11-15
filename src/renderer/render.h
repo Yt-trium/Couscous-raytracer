@@ -60,6 +60,7 @@ class Render : public QObject
         const MeshGroup&                lights,
         const bool                      parallel,
         const bool                      get_normal_color,
+        const bool                      get_albedo_color,
         const bool                      display_photon_map,
         QImage&                         image,
         QProgressBar&                   progressBar);

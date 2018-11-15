@@ -35,15 +35,22 @@ DialogMaterial::~DialogMaterial()
 
 void DialogMaterial::on_buttonBox_accepted()
 {
-    vec3 color(ui->doubleSpinBox_color_r->value(),
-               ui->doubleSpinBox_color_g->value(),
-               ui->doubleSpinBox_color_b->value());
+    const vec3 color(
+        ui->doubleSpinBox_color_r->value(),
+        ui->doubleSpinBox_color_g->value(),
+        ui->doubleSpinBox_color_b->value());
 
-    vec3 emission(ui->doubleSpinBox_emission_r->value(),
-                  ui->doubleSpinBox_emission_g->value(),
-                  ui->doubleSpinBox_emission_b->value());
+    const vec3 emission(
+        ui->doubleSpinBox_emission_r->value(),
+        ui->doubleSpinBox_emission_g->value(),
+        ui->doubleSpinBox_emission_b->value());
 
-    SceneMaterial sm(ui->lineEdit_name->text().toStdString(), color, emission);
+    const float kd = ui->doubleSpinBox_kd->value();
+    const float ks = ui->doubleSpinBox_ks->value();
+    const float specExponent = ui->doubleSpinBox_specularExponent->value();
+
+    SceneMaterial sm(ui->lineEdit_name->text().toStdString(), color, emission, kd, ks, specExponent);
+
     if(id >= 0)
         scene->materials[std::size_t(id)] = sm;
     else
