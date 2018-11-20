@@ -86,7 +86,7 @@ namespace
                 color += (photon.mat->albedo * pweight) / (3.14f * (float)std::pow(dist, 2));
             }
 
-            return color / weight;
+            return (color / weight);
         }
         else
         {
@@ -164,8 +164,7 @@ glm::vec3 Render::get_ray_color_phong(
             {
                 float currentDirectLightIntensity = directLightRec.mat->emission.x * 0.21f + directLightRec.mat->emission.y * 0.72f  + directLightRec.mat->emission.z * 0.07;
 
-                // Compute direct light intensity : Li * ( (kd/PI) + (ks * (n+2)/2PI) * cos^n(dot(r.origin, pointOnLight)) )
-                //directLightIntensity += ((currentDirectLightIntensity/*/(glm::distance(rec.p, currentPointOnLight))*/)) * std::max(0.0f, glm::dot(glm::normalize (r.origin - rec.p), currentPointOnLight));
+                // Compute direct light intensity : Li * ( (kd/PI) + (ks * (n+2)/2PI) )
                 directLightIntensity += ((currentDirectLightIntensity/(glm::distance(rec.p, currentPointOnLight)))) /* * std::max(0.0f, glm::dot(glm::normalize(r.origin-rec.p), glm::normalize(rec.p - currentPointOnLight))) */;
 
                 // Precompute diffuse element of computation : Sum( dot(rec.normal, pointOnLight ) / nbValidLights
@@ -192,8 +191,10 @@ glm::vec3 Render::get_ray_color_phong(
 
             if(grid.hit(indirectLightRay, 0.0001f, numeric_limits<float>::max(), recIndirect))
             {
+                // Keep it just in case
                 //indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher)/*/(1.0f + (glm::distance(rec.p, recIndirect.p)))*/) /* * std::max(0.0f, glm::dot(rec.normal, glm::normalize(recIndirect.p - rec.p)))*/;
-                indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher) * (1.0f - std::max(0.0f, glm::dot(glm::normalize(rec.normal), glm::normalize(recIndirect.p-rec.p)))));
+                //indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher) * (1.0f - std::max(0.0f, glm::dot(glm::normalize(rec.normal), glm::normalize(recIndirect.p-rec.p)))));
+                indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher) * (0.96f / 3.14f) + (0.04f * ( (2.0f + 2) / (3.14f * 2.0f))));
                 nbSuccessfullRays++;
             }
             else
@@ -203,9 +204,9 @@ glm::vec3 Render::get_ray_color_phong(
         }
 
 
-        indirectColor = (indirectColor /((float)indirectLightRaysNumber));
-        //directLightIntensity = (directLightIntensity / lightPoints.size()) * (rec.mat->kd / 3.14f) + (rec.mat->ks * ( (rec.mat->specularExponent + 2) / (3.14f * 2.0f)));
-        directLightIntensity = (directLightIntensity / lightPoints.size()) * (0.96f / 3.14f) + (0.04f * ( (2.0f + 2) / (3.14f * 2.0f)));
+        indirectColor = (indirectColor /((float)nbSuccessfullRays));
+        directLightIntensity = (directLightIntensity / lightPoints.size()) * (rec.mat->kd / 3.14f) + (rec.mat->ks * ( (rec.mat->specularExponent + 2) / (3.14f * 2.0f)));
+        //directLightIntensity = (directLightIntensity / lightPoints.size()) * (0.96f / 3.14f) + (0.04f * ( (2.0f + 2) / (3.14f * 2.0f)));
 
         // Compute diffuse part
         albedo = rec.mat->albedo;
@@ -224,10 +225,16 @@ glm::vec3 Render::get_ray_color_phong(
         {
             glm::vec3 rVec = (2*(glm::dot(glm::normalize(rec.normal), lightPoints[0])) * glm::normalize(rec.normal)) - lightPoints[0];
             // Try inverse here
-            //specular += rec.mat->albedo * (directLightIntensity) * std::pow(std::max(0.0f, glm::dot(glm::normalize((r.origin - rec.p)), glm::normalize(rVec))), rec.mat->specularExponent) ;
-            specular += rec.mat->albedo * (directLightIntensity) * std::pow(std::max(0.0f, glm::dot(glm::normalize((r.origin - rec.p)), glm::normalize(rVec))), 2.0f) ;
+            specular += rec.mat->albedo * (directLightIntensity) * std::pow(std::max(0.0f, glm::dot(glm::normalize((r.origin - rec.p)), glm::normalize(rVec))), rec.mat->specularExponent) ;
+            //specular += rec.mat->albedo * (directLightIntensity) * std::pow(std::max(0.0f, glm::dot(glm::normalize((r.origin - rec.p)), glm::normalize(rVec))), 2.0f) ;
         }
 
+        if(lightPoints.size()>0)
+        {
+            specular = specular / (float)lightPoints.size();
+        }
+
+        // Security check
         if(diffuse.x < 0.0f)
         {
             diffuse.x = 0.0f;
@@ -240,8 +247,6 @@ glm::vec3 Render::get_ray_color_phong(
         {
             diffuse.z = 0.0f;
         }
-
-        //return /*(*/diffuse * rec.mat->kd /*+ specular * rec.mat->ks) */ + indirectColor;
 
         return diffuse * 0.96f + specular * 0.04f + indirectColor;
     }
