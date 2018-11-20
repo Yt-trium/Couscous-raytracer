@@ -8,6 +8,7 @@
 #include "renderer/utility.h"
 #include "renderer/visualobject.h"
 #include "renderer/photonMapping.h"
+#include "common/logger.h"
 
 // Math includes.
 #include <glm/glm.hpp>
@@ -20,9 +21,6 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-
-
-#define directlightRaysNumber 5
 
 
 using namespace glm;
@@ -81,11 +79,11 @@ namespace
             {
                 const auto& photon = pfetcher.photon(i);
 
-                const float dist = pfetcher.squared_dist(i);
+                const float dist = pfetcher.squared_dist(count-1);
                 const float pweight = photon.energy;
 
                 weight += pweight;
-                color += (photon.mat->albedo * pweight) / (dist * 0.01f);
+                color += (photon.mat->albedo * pweight) / (3.14f * (float)std::pow(dist, 2));
             }
 
             return color / weight;
@@ -123,6 +121,20 @@ vec3 Render::getRandomPointOnLights(const MeshGroup& lights)
 }
 
 
+vec3 Render::random_in_unit_sphere() const
+{
+    vec3 p;
+    do
+    {
+        p = 2.0f * vec3(
+            random<float>(),
+            random<float>(),
+            random<float>()) - vec3(1, 1, 1);
+    } while(dot(p, p) >= 1);
+    return p;
+}
+
+
 glm::vec3 Render::get_ray_color_phong(
     const Ray&                                      r,
     const VoxelGridAccelerator&                     grid,
@@ -133,59 +145,105 @@ glm::vec3 Render::get_ray_color_phong(
 
     if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
     {
-        float lightIntensity = 0.0f, directLightIntensity = 0.0f, inDirectLightIntensity = 0.0f, diffuseComp = 0.0f;
-        glm::vec3 diffuse, specular, currentPointOnLight, albedo;
+        float directLightIntensity = 0.0f, diffuseComp = 0.0f;
+        glm::vec3 diffuse, specular, currentPointOnLight, albedo, currentLightDir;
         HitRecord directLightRec;
         std::vector<glm::vec3> lightPoints;
+
+        glm::vec3 indirectColor = glm::vec3(0.0f);
 
 
         // Compute direct lighting by sending rays to lights
         for(int i=0; i<directlightRaysNumber; i++)
         {
             currentPointOnLight = getRandomPointOnLights(lights);
-            if(grid.hit(Ray(rec.p, currentPointOnLight), 0.0001f, numeric_limits<float>::max(), directLightRec) && (directLightRec.mat->emission != vec3(0.0f, 0.0f, 0.0f)) )
+            currentLightDir = glm::normalize(currentPointOnLight - rec.p);
+
+            bool answ = grid.hit(Ray(rec.p, currentLightDir), 0.00001f, numeric_limits<float>::max(), directLightRec);
+            if( answ && (directLightRec.mat->emission != vec3(0.0f, 0.0f, 0.0f)) )
             {
                 float currentDirectLightIntensity = directLightRec.mat->emission.x * 0.21f + directLightRec.mat->emission.y * 0.72f  + directLightRec.mat->emission.z * 0.07;
+
                 // Compute direct light intensity : Li * ( (kd/PI) + (ks * (n+2)/2PI) * cos^n(dot(r.origin, pointOnLight)) )
-                directLightIntensity += currentDirectLightIntensity * ( (rec.mat->kd / 3.14f) + (rec.mat->ks * ( (rec.mat->specularExponent + 2) / (3.14f * 2.0f) ) * std::pow( glm::dot(r.origin, currentPointOnLight), rec.mat->specularExponent)) );
+                //directLightIntensity += ((currentDirectLightIntensity/*/(glm::distance(rec.p, currentPointOnLight))*/)) * std::max(0.0f, glm::dot(glm::normalize (r.origin - rec.p), currentPointOnLight));
+                directLightIntensity += ((currentDirectLightIntensity/(glm::distance(rec.p, currentPointOnLight)))) /* * std::max(0.0f, glm::dot(glm::normalize(r.origin-rec.p), glm::normalize(rec.p - currentPointOnLight))) */;
 
                 // Precompute diffuse element of computation : Sum( dot(rec.normal, pointOnLight ) / nbValidLights
-                diffuseComp += glm::dot(rec.normal, currentPointOnLight);
+                diffuseComp += std::max(0.0f, glm::dot(glm::normalize(rec.normal), currentLightDir));
 
-                // Keep in memory valid lights point : valid light point means a visible one
-                lightPoints.push_back(currentPointOnLight);
+                // Keep in memory valid lights point directions : valid light point means a visible one
+                lightPoints.push_back(currentLightDir);
             }
         }
 
 
         // Compute indirect lighting with photon mapping
-        // TODO - NEED HELP FOR THIS SHIT, NOT SURE THAT WE HAVE TO HANDLE IT THAT WAY
-        const size_t count = pfetcher.find_closest(rec.p);
-        for (size_t i = 0; i < count; ++i)
+        int nbSuccessfullRays = 1;
+        for(int i=0; i<indirectLightRaysNumber; i++)
         {
-            const auto& photon = pfetcher.photon(i);
-            const float dist = pfetcher.squared_dist(i);
+            glm::vec3 rayDirIndirectLight = random_in_unit_sphere();
+            HitRecord recIndirect;
+            Ray indirectLightRay = Ray(rec.p, rayDirIndirectLight);
 
-            inDirectLightIntensity += photon.energy / (1 + dist * 0.01f) ;
+            if(glm::dot(rayDirIndirectLight, rec.normal) < 0.0f)
+            {
+                rayDirIndirectLight = -rayDirIndirectLight;
+            }
+
+            if(grid.hit(indirectLightRay, 0.0001f, numeric_limits<float>::max(), recIndirect))
+            {
+                //indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher)/*/(1.0f + (glm::distance(rec.p, recIndirect.p)))*/) /* * std::max(0.0f, glm::dot(rec.normal, glm::normalize(recIndirect.p - rec.p)))*/;
+                indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher) * (1.0f - std::max(0.0f, glm::dot(glm::normalize(rec.normal), glm::normalize(recIndirect.p-rec.p)))));
+                nbSuccessfullRays++;
+            }
+            else
+            {
+                indirectColor += get_ray_photon_map(indirectLightRay, grid, pfetcher);
+            }
         }
 
-        // Compute total light intensity
-        lightIntensity = directLightIntensity + inDirectLightIntensity;
+
+        indirectColor = (indirectColor /((float)indirectLightRaysNumber));
+        //directLightIntensity = (directLightIntensity / lightPoints.size()) * (rec.mat->kd / 3.14f) + (rec.mat->ks * ( (rec.mat->specularExponent + 2) / (3.14f * 2.0f)));
+        directLightIntensity = (directLightIntensity / lightPoints.size()) * (0.96f / 3.14f) + (0.04f * ( (2.0f + 2) / (3.14f * 2.0f)));
 
         // Compute diffuse part
         albedo = rec.mat->albedo;
 
-        diffuse = lightIntensity * albedo * (diffuseComp / lightPoints.size());
+        diffuse = glm::vec3(0.0f);
 
-        // Compute specular part
-        for(int i=0; i<lightPoints.size(); i++)
+        if(lightPoints.size() > 0)
         {
-            glm::vec3 rVec = 2*(glm::dot(rec.normal, lightPoints[i])) * rec.normal - lightPoints[i];
-
-            specular += (lightIntensity/lightPoints.size()) * std::pow(std::max(0.0f, glm::dot(r.origin, rVec)), rec.mat->specularExponent);
+            diffuse = directLightIntensity * albedo  * (diffuseComp / lightPoints.size());
         }
 
-        return diffuse * rec.mat->kd + specular * rec.mat->ks;
+        // Compute specular part
+        specular = glm::vec3(0.0f);
+
+        for(unsigned int i=0; i<lightPoints.size(); i++)
+        {
+            glm::vec3 rVec = (2*(glm::dot(glm::normalize(rec.normal), lightPoints[0])) * glm::normalize(rec.normal)) - lightPoints[0];
+            // Try inverse here
+            //specular += rec.mat->albedo * (directLightIntensity) * std::pow(std::max(0.0f, glm::dot(glm::normalize((r.origin - rec.p)), glm::normalize(rVec))), rec.mat->specularExponent) ;
+            specular += rec.mat->albedo * (directLightIntensity) * std::pow(std::max(0.0f, glm::dot(glm::normalize((r.origin - rec.p)), glm::normalize(rVec))), 2.0f) ;
+        }
+
+        if(diffuse.x < 0.0f)
+        {
+            diffuse.x = 0.0f;
+        }
+        if(diffuse.y < 0.0f)
+        {
+            diffuse.y = 0.0f;
+        }
+        if(diffuse.z < 0.0f)
+        {
+            diffuse.z = 0.0f;
+        }
+
+        //return /*(*/diffuse * rec.mat->kd /*+ specular * rec.mat->ks) */ + indirectColor;
+
+        return diffuse * 0.96f + specular * 0.04f + indirectColor;
     }
     else
     {

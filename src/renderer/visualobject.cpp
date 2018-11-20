@@ -229,6 +229,11 @@ void Triangle::getVertices(glm::vec3& v1, glm::vec3& v2, glm::vec3& v3)
     v3 = m_mesh->m_vertices[*(m_indices + 2)];
 }
 
+glm::vec3 Triangle::getNormal()
+{
+    return m_normal;
+}
+
 
 //
 // Mesh generation implementation.

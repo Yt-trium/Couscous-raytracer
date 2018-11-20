@@ -171,7 +171,12 @@ void PhotonMap::compute_map(
     const size_t nbRaysPerLight = samples / lights.size();
     const float totalEnergy = EnergyForOneLight * static_cast<float>(lights.size());
     // TODO: Use the light emmissive value to define the energy of each ray.
-    const float energyForOneRay = totalEnergy/ static_cast<float>(samples);
+    float energyForOneRay = totalEnergy/ static_cast<float>(samples);
+
+    if(energyForOneRay <= photonMinErnergy)
+    {
+        energyForOneRay = photonMinErnergy * 2.0f;
+    }
 
     Logger::log_debug("pm rays per light: " + to_string(nbRaysPerLight) + ".");
     Logger::log_debug("pm total initial rays: " + to_string(samples) + ".");
@@ -198,7 +203,14 @@ void PhotonMap::compute_map(
         {
             // Create a ray starting from the current light
             // and going in a random direction.
-            const Ray r(randomPointInTriangle(currentLight), random_in_unit_sphere());
+            glm::vec3 rayDir = random_in_unit_sphere();
+
+            if(glm::dot(rayDir, currentLight->getNormal()) < 0)
+            {
+                rayDir = -rayDir;
+            }
+
+            const Ray r(randomPointInTriangle(currentLight), rayDir);
 
 #ifdef FORCE_SINGLE_THREAD
             trace_photon_ray(r, ray_max_depth, grid, energyForOneRay);
