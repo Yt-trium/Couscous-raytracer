@@ -145,6 +145,13 @@ glm::vec3 Render::get_ray_color_phong(
 
     if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
     {
+
+        if(rec.mat->emission != vec3(0.0f, 0.0f, 0.0f))
+        {
+            return glm::normalize(rec.mat->emission);
+        }
+
+
         float directLightIntensity = 0.0f, diffuseComp = 0.0f;
         glm::vec3 diffuse, specular, currentPointOnLight, albedo, currentLightDir;
         HitRecord directLightRec;

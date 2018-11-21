@@ -21,7 +21,7 @@
 #include <map>
 #include <random>
 
-#define photonMinErnergy 0.2f
+#define photonMinErnergy 0.01f
 #define rangeMin 0.0f
 #define rangeMax 1.0f
 

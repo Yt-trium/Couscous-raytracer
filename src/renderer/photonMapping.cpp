@@ -160,17 +160,25 @@ void PhotonMap::compute_map(
     const VoxelGridAccelerator&     grid,
     const MeshGroup&                lights)
 {
-    static float EnergyForOneLight = 150.0f;
-
     // TODO: Tell the user if there isn't any light and stop safely.
-    assert(lights.size() > 0);
+    if( lights.size() == 0)
+    {
+        Logger::log_error("No lights were found in scene. Please, add at least one light before lighting computation.");
+        assert(lights.size() > 0);
+    }
 
     QTime timer;
     timer.start();
 
     const size_t nbRaysPerLight = samples / lights.size();
-    const float totalEnergy = EnergyForOneLight * static_cast<float>(lights.size());
-    // TODO: Use the light emmissive value to define the energy of each ray.
+
+    // Compute total energy
+    float totalEnergy = 0.0f;
+    for(unsigned int i = 0; i< lights.size(); i++)
+    {
+        totalEnergy += lights[i]->mat()->emission.x * 0.21f + lights[i]->mat()->emission.y * 0.72f  + lights[i]->mat()->emission.z * 0.07;
+    }
+
     float energyForOneRay = totalEnergy/ static_cast<float>(samples);
 
     if(energyForOneRay <= photonMinErnergy)
