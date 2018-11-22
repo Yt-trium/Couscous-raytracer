@@ -204,7 +204,6 @@ void MainWindow::slot_do_render()
     const size_t width = size_t(ui->spinBox_width->value());
     const size_t height = size_t(ui->spinBox_height->value());
     const size_t samples = size_t(ui->spinBox_spp->value());
-    const size_t ray_max_depth = size_t(ui->spinBox_ray_max_depth->value());
     m_image = QImage(int(width), int(height), QImage::Format_RGB888);
 
     const float pos_x = float(ui->doubleSpinBox_position_x->value());
@@ -263,7 +262,6 @@ void MainWindow::slot_do_render()
         width,
         height,
         samples,
-        ray_max_depth,
         camera,
         accelerator,
         ptree,

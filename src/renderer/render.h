@@ -34,7 +34,6 @@ class Render : public QObject
         const size_t                    width,
         const size_t                    height,
         const size_t                    spp,
-        const size_t                    ray_max_depth,
         const Camera&                   camera,
         const VoxelGridAccelerator&     grid,
         const PhotonTree&               ptree,
