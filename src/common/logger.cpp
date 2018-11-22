@@ -1,3 +1,5 @@
+
+// Interface.
 #include "logger.h"
 
 // Qt includes.

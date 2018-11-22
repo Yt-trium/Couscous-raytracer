@@ -1,3 +1,4 @@
+
 #ifndef COMMON_LOGGER_H
 #define COMMON_LOGGER_H
 
@@ -61,3 +62,4 @@ class Logger
 };
 
 #endif // COMMON_LOGGER_H
+
