@@ -40,12 +40,15 @@ set (renderer_sources
     src/renderer/photonMapping.h
     src/renderer/ray.cpp
     src/renderer/ray.h
-    src/renderer/render.h
     src/renderer/render.cpp
+    src/renderer/render.h
+    src/renderer/rng.cpp
+    src/renderer/rng.h
     src/renderer/samplegenerator.cpp
     src/renderer/samplegenerator.h
     src/renderer/visualobject.cpp
     src/renderer/visualobject.h
+    src/renderer/utility.cpp
     src/renderer/utility.h
 )
 

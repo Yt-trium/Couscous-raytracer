@@ -1,28 +1,23 @@
 #ifndef RENDERER_UTILITY_H
 #define RENDERER_UTILITY_H
 
-// Standard includes.
-#include <cstdlib>
+// couscous includes.
+#include "renderer/visualobject.h"
 
 // GLM includes.
 #include <glm/glm.hpp>
 
-// Generate a random number in [0, 1].
-template <typename T>
-inline T random();
+// Forward declarations.
+class RNG;
 
+glm::vec3 random_point_in_triangle(
+    const glm::vec3&    va,
+    const glm::vec3&    vb,
+    const glm::vec3&    vc,
+    RNG&                rng);
 
-//
-// Implementation.
-//
+glm::vec3 random_in_unit_sphere(RNG& rng);
 
-template <typename T>
-inline T random()
-{
-    static const T inv_rand_max = T(1) / static_cast<T>(RAND_MAX);
-    return std::rand() * inv_rand_max;
-}
-
-
+glm::vec3 random_point_on_lights(const MeshGroup& lights, RNG& rng);
 
 #endif // RENDERER_UTILITY_H

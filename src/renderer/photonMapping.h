@@ -25,6 +25,9 @@
 #define rangeMin 0.0f
 #define rangeMax 1.0f
 
+// Forward declarations.
+class RNG;
+
 // Class used to modelize the russian roulette principle
 class RussianRoulette
 {
@@ -94,7 +97,8 @@ class PhotonMap
         const size_t                    samples,
         const size_t                    ray_max_depth,
         const VoxelGridAccelerator&     grid,
-        const MeshGroup&                lights);
+        const MeshGroup&                lights,
+        RNG&                            rng);
 
     const Photon& photon(const size_t index) const;
 
@@ -108,16 +112,10 @@ class PhotonMap
 
     void add_photon(const Photon* photon);
 
-    glm::vec3 randomPointInTriangle(std::shared_ptr<Triangle> triangle);
-
-    glm::vec3 random_in_unit_sphere() const;
-
     std::vector<const Photon*>                map;
     QMutex                                    mapMutex;
     RussianRoulette                           terminationSystem;
     float                                     alpha;
-    std::mt19937                              engine;
-    std::uniform_real_distribution<>          distributor;
 };
 
 

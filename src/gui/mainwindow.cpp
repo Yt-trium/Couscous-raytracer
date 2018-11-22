@@ -12,6 +12,7 @@
 #include "renderer/photonMapping.h"
 #include "renderer/gridaccelerator.h"
 #include "renderer/ray.h"
+#include "renderer/rng.h"
 #include "renderer/visualobject.h"
 #include "test/test.h"
 
@@ -214,6 +215,10 @@ void MainWindow::slot_do_render()
     const float fov   = float(ui->doubleSpinBox_fov->value());
 
     const bool parallel = ui->checkBox_parallel_rendering->isChecked();
+
+    // Create a random number generator.
+    RNG rng;
+
     // Create the scene.
     Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
         yaw, pitch, fov, width, height);
@@ -241,7 +246,7 @@ void MainWindow::slot_do_render()
 
     // Create photon map.
     PhotonMap pmap;
-    pmap.compute_map(10000, 4, accelerator, lights);
+    pmap.compute_map(300000, 4, accelerator, lights, rng);
 
     // Create photon tree.
     PhotonTree ptree(pmap);
@@ -263,6 +268,7 @@ void MainWindow::slot_do_render()
         accelerator,
         ptree,
         lights,
+        rng,
         parallel,
         ui->actionDisplayNormals->isChecked(),
         ui->actionDisplayAlbedo->isChecked(),

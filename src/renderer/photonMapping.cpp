@@ -2,6 +2,8 @@
 
 // couscous includes.
 #include "common/logger.h"
+#include "renderer/rng.h"
+#include "renderer/utility.h"
 
 // Qt includes.
 #include <QtConcurrentRun>
@@ -70,8 +72,6 @@ float Photon::compute_energy(
 
 PhotonMap::PhotonMap()
   : alpha(0.6f)
-  , engine(random_device()())
-  , distributor(0.0f, 1.0f)
 {
 }
 
@@ -125,40 +125,12 @@ void PhotonMap::add_photon(const Photon* photon)
     mapMutex.unlock();
 }
 
-vec3 PhotonMap::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
-{
-    vec3 v1, v2, v3, answ;
-    float r1 = distributor(engine);
-    float r2 = distributor(engine);
-    float m1=1 - sqrt(r1);
-    float m2=sqrt(r1) * (1-r2);
-    float m3=r2 * sqrt(r1);
-
-    (*triangle).getVertices(v1, v2, v3);
-
-    answ = m1*v1 + m2*v2 + m3*v3;
-
-    return answ;
-}
-
-vec3 PhotonMap::random_in_unit_sphere() const
-{
-    vec3 p;
-    do
-    {
-        p = 2.0f * vec3(
-            random<float>(),
-            random<float>(),
-            random<float>()) - vec3(1, 1, 1);
-    } while(dot(p, p) >= 1);
-    return p;
-}
-
 void PhotonMap::compute_map(
     const size_t                    samples,
     const size_t                    ray_max_depth,
     const VoxelGridAccelerator&     grid,
-    const MeshGroup&                lights)
+    const MeshGroup&                lights,
+    RNG&                            rng)
 {
     // TODO: Tell the user if there isn't any light and stop safely.
     if( lights.size() == 0)
@@ -211,14 +183,17 @@ void PhotonMap::compute_map(
         {
             // Create a ray starting from the current light
             // and going in a random direction.
-            glm::vec3 rayDir = random_in_unit_sphere();
+            vec3 rayDir = random_in_unit_sphere(rng);
 
-            if(glm::dot(rayDir, currentLight->getNormal()) < 0)
+            if(dot(rayDir, currentLight->getNormal()) < 0)
             {
                 rayDir = -rayDir;
             }
 
-            const Ray r(randomPointInTriangle(currentLight), rayDir);
+            vec3 va, vb, vc;
+            currentLight->getVertices(va, vb, vc);
+
+            const Ray r(random_point_in_triangle(va, vb, vc, rng), rayDir);
 
 #ifdef FORCE_SINGLE_THREAD
             trace_photon_ray(r, ray_max_depth, grid, energyForOneRay);

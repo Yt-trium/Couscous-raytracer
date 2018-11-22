@@ -27,12 +27,14 @@ SOURCES += \
         src/gui/mainwindow.cpp \
     src/renderer/ray.cpp \
     src/renderer/render.cpp \
+    src/renderer/rng.cpp \
     src/renderer/visualobject.cpp \
     src/renderer/camera.cpp \
     src/gui/frameviewer.cpp \
     src/renderer/material.cpp \
     src/renderer/samplegenerator.cpp \
     src/test/test.cpp \
+    src/renderer/utility.cpp \
     src/renderer/photonMapping.cpp \
     src/renderer/gridaccelerator.cpp \
     src/renderer/aabb.cpp \
@@ -46,6 +48,7 @@ HEADERS += \
         src/gui/mainwindow.h \
     src/renderer/ray.h \
     src/renderer/render.h \
+    src/renderer/rng.h \
     src/renderer/visualobject.h \
     src/renderer/camera.h \
     src/gui/frameviewer.h \
