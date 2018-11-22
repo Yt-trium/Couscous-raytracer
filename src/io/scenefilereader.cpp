@@ -1,7 +1,11 @@
+
+// Inteface.
 #include "scenefilereader.h"
 
+// Qt includes.
 #include <QMessageBox>
 
+// Standard includes.
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -17,7 +21,11 @@ SceneObjectFile read_obj(const std::string& filename)
     // Can we read the file ?
     if(!objfile.is_open())
     {
-        QMessageBox::critical(nullptr, "ERREUR", "ERREUR : Impossible d'ouvrir le fichier : " + QString::fromStdString(filename));
+        QMessageBox::critical(
+            nullptr,
+            "ERREUR",
+            "ERREUR : Impossible d'ouvrir le fichier : " + QString::fromStdString(filename));
+
         return obj;
     }
 

@@ -1,8 +1,11 @@
+
 #ifndef IO_SCENEFILEREADER_H
 #define IO_SCENEFILEREADER_H
 
+// couscous includes.
 #include "gui/scene.h"
 
+// Standard includes.
 #include <string>
 
 /**
