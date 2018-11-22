@@ -1,5 +1,6 @@
-#ifndef DIALOGMATERIAL_H
-#define DIALOGMATERIAL_H
+
+#ifndef GUI_DIALOGMATERIAL_H
+#define GUI_DIALOGMATERIAL_H
 
 // couscous includes.
 #include "gui/scene.h"
@@ -10,26 +11,29 @@
 // glm includes.
 #include <glm/glm.hpp>
 
-namespace Ui {
-class DialogMaterial;
-}
+// Standard includes.
+#include <cstddef>
 
-class DialogMaterial : public QDialog
+// Forward declarations.
+namespace Ui { class DialogMaterial; }
+
+// Graphic interface for editing a material.
+class DialogMaterial
+  : public QDialog
 {
     Q_OBJECT
 
-public:
-    explicit DialogMaterial(QWidget *p, Scene *s, int i);
+  public:
+    DialogMaterial(QWidget* parent, Scene& scene, const size_t id);
     ~DialogMaterial();
 
-private slots:
+  private slots:
     void on_buttonBox_accepted();
 
-private:
-    QWidget *parent;
-    Scene *scene;
-    int id;
-    Ui::DialogMaterial *ui;
+  private:
+    Scene&                  m_scene;
+    size_t                  m_id;
+    Ui::DialogMaterial*     m_ui;
 };
 
-#endif // DIALOGMATERIAL_H
+#endif // GUI_DIALOGMATERIAL_H

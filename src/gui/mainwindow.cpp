@@ -25,6 +25,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 // Standard includes.
+#include <cstddef>
 #include <memory>
 
 using namespace glm;
@@ -376,32 +377,38 @@ void MainWindow::slot_treeWidget_customContextMenuRequested(const QPoint &p)
 
 void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    QString itmname = item->text(column);
-    for(std::size_t i = 0 ; i < scene.materials.size() ; ++i)
+    const QString itmname = item->text(column);
+
+    for(size_t i = 0; i < scene.materials.size(); ++i)
     {
         if(QString::fromStdString(scene.materials.at(i).name) == itmname)
         {
-            DialogMaterial *dlg = new DialogMaterial(this, &scene, int(i));
+            DialogMaterial* dlg = new DialogMaterial(this, scene, i);
             dlg->exec();
             update_scene_widget();
+
             return;
         }
     }
-    for(std::size_t i = 0 ; i < scene.objects.size() ; ++i)
+
+    for(size_t i = 0; i < scene.objects.size(); ++i)
     {
         if(QString::fromStdString(scene.objects.at(i).name) == itmname)
         {
-            DialogObject *dlg = new DialogObject(this, &scene, int(i));
+            DialogObject* dlg = new DialogObject(this, &scene, int(i));
             dlg->exec();
             update_scene_widget();
+
             return;
         }
     }
-    for(std::size_t i = 0 ; i < scene.cameras.size() ; ++i)
+
+    for(size_t i = 0; i < scene.cameras.size(); ++i)
     {
         if(QString::fromStdString(scene.cameras.at(i).name) == itmname)
         {
-            SceneCamera cam = scene.cameras.at(i);
+            const SceneCamera& cam = scene.cameras.at(i);
+
             ui->doubleSpinBox_position_x->setValue(double(cam.position.x));
             ui->doubleSpinBox_position_y->setValue(double(cam.position.y));
             ui->doubleSpinBox_position_z->setValue(double(cam.position.z));
@@ -412,15 +419,15 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
 
             ui->spinBox_height->setValue(int(cam.height));
             ui->spinBox_width->setValue(int(cam.width));
+
             return;
         }
     }
-
 }
 
 void MainWindow::slot_create_material()
 {
-    DialogMaterial *dlg = new DialogMaterial(this, &scene, -1);
+    DialogMaterial *dlg = new DialogMaterial(this, scene, size_t(~0));
     dlg->exec();
     update_scene_widget();
 }
