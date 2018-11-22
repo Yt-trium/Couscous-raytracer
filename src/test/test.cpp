@@ -1,3 +1,4 @@
+
 // Interface.
 #include "test.h"
 
@@ -22,7 +23,6 @@ int run_tests()
 
 TEST_CASE( "AABB Ray intersection", "[aabb]" )
 {
-
     AABB bbox(vec3(-1.0f), vec3(1.0f));
     Ray ray(vec3(0.0f, 0.0f, 200.0f), vec3(0.0f, 0.0f, -1.0f));
 
@@ -60,3 +60,4 @@ TEST_CASE( "AABB Triangle creation", "[aabb]" )
     REQUIRE(bbox.min == expected_min);
     REQUIRE(bbox.max == expected_max);
 }
+
