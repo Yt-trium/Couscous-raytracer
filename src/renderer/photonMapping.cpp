@@ -222,9 +222,6 @@ void PhotonMap::compute_map(
             : (QString::number(pm_elapsed % 1000) + "ms."));
 
     Logger::log_info(message.toStdString().c_str());
-
-    if (map.size() < samples)
-        Logger::log_warning("too few photons were generated.");
 }
 
 const Photon& PhotonMap::photon(const size_t index) const
