@@ -46,8 +46,10 @@ vec3 random_point_on_lights(const MeshGroup& lights, RNG& rng)
 {
     const size_t indice = rand() / ((RAND_MAX + 1u) / lights.size());
 
-    vec3 va, vb, vc;
-    lights[indice]->getVertices(va, vb, vc);
+    const shared_ptr<Triangle>& light = lights[indice];
+    const vec3& va = light->vertice(0);
+    const vec3& vb = light->vertice(1);
+    const vec3& vc = light->vertice(2);
 
     return random_point_in_triangle(va, vb, vc, rng);
 }

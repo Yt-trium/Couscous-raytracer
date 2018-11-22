@@ -190,8 +190,9 @@ void PhotonMap::compute_map(
                 rayDir = -rayDir;
             }
 
-            vec3 va, vb, vc;
-            currentLight->getVertices(va, vb, vc);
+            const vec3& va = currentLight->vertice(0);
+            const vec3& vb = currentLight->vertice(1);
+            const vec3& vc = currentLight->vertice(2);
 
             const Ray r(random_point_in_triangle(va, vb, vc, rng), rayDir);
 

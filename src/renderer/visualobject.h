@@ -120,7 +120,7 @@ class Triangle : public VisualObject
 
     const std::shared_ptr<Material>& mat() const override;
 
-    void getVertices(glm::vec3& v1, glm::vec3& v2, glm::vec3& v3);
+    const glm::vec3& vertice(const size_t indice) const;
 
     const glm::vec3& normal() const;
 

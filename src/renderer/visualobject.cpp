@@ -222,14 +222,13 @@ const std::shared_ptr<Material>& Triangle::mat() const
     return m_mesh->m_mat;
 }
 
-void Triangle::getVertices(glm::vec3& v1, glm::vec3& v2, glm::vec3& v3)
+const vec3& Triangle::vertice(const size_t indice) const
 {
-    v1 = m_mesh->m_vertices[*m_indices];
-    v2 = m_mesh->m_vertices[*(m_indices + 1)];
-    v3 = m_mesh->m_vertices[*(m_indices + 2)];
+    assert(indice == 0 || indice == 1 || indice == 2);
+    return m_mesh->m_vertices[*(m_indices + indice)];
 }
 
-const glm::vec3& Triangle::normal() const
+const vec3& Triangle::normal() const
 {
     return m_normal;
 }
