@@ -185,7 +185,7 @@ void PhotonMap::compute_map(
             // and going in a random direction.
             vec3 rayDir = random_in_unit_sphere(rng);
 
-            if(dot(rayDir, currentLight->getNormal()) < 0)
+            if(dot(rayDir, currentLight->normal()) < 0.0f)
             {
                 rayDir = -rayDir;
             }

@@ -122,7 +122,7 @@ class Triangle : public VisualObject
 
     void getVertices(glm::vec3& v1, glm::vec3& v2, glm::vec3& v3);
 
-    glm::vec3 getNormal();
+    const glm::vec3& normal() const;
 
   private:
     std::shared_ptr<TriangleMesh>       m_mesh;
