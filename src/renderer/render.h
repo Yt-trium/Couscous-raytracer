@@ -27,8 +27,6 @@ class PhotonTree;
 
 
 #define PHOTON_FETCH_SIZE 5
-#define directlightRaysNumber 16
-#define indirectLightRaysNumber 16
 
 class Render : public QObject
 {
@@ -37,7 +35,7 @@ class Render : public QObject
 
   private:
 
-    glm::vec3 randomPointInTriangle(std::shared_ptr<Triangle> triangle);
+    glm::vec3 randomPointInTriangle(const std::shared_ptr<Triangle>& triangle);
 
     glm::vec3 random_in_unit_sphere() const;
 

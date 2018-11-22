@@ -22,13 +22,14 @@
 #include <cmath>
 #include <limits>
 
-
 using namespace glm;
 using namespace std;
 
+#define directlightRaysNumber 8
+#define indirectLightRaysNumber 16
+
 namespace
 {
-
     vec3 get_albedo(
         const Ray&                      r,
         const VoxelGridAccelerator&     grid)
@@ -96,7 +97,7 @@ namespace
 }
 
 
-vec3 Render::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
+vec3 Render::randomPointInTriangle(const shared_ptr<Triangle>& triangle)
 {
     vec3 v1, v2, v3, answ;
     float r1 = distributor(engine);
@@ -115,9 +116,9 @@ vec3 Render::randomPointInTriangle(std::shared_ptr<Triangle> triangle)
 
 vec3 Render::getRandomPointOnLights(const MeshGroup& lights)
 {
-    int lightIndice = std::rand()/((RAND_MAX + 1u)/lights.size());
+    const size_t indice = std::rand() / ((RAND_MAX + 1u) / lights.size());
 
-    return randomPointInTriangle(lights[lightIndice]);
+    return randomPointInTriangle(lights[indice]);
 }
 
 
@@ -145,37 +146,42 @@ glm::vec3 Render::get_ray_color_phong(
 
     if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
     {
-
-        if(rec.mat->emission != vec3(0.0f, 0.0f, 0.0f))
+        // Display lights only by showing the emissive value.
+        if(rec.mat->emission != vec3(0.0f))
         {
-            return glm::normalize(rec.mat->emission);
+            return clamp(rec.mat->emission, 0.0f, 1.0f);
         }
 
-
+        // Compute Phong.
         float directLightIntensity = 0.0f, diffuseComp = 0.0f;
-        glm::vec3 diffuse, specular, currentPointOnLight, albedo, currentLightDir;
+        vec3 diffuse, specular, albedo;
         HitRecord directLightRec;
-        std::vector<glm::vec3> lightPoints;
+        vector<vec3> lightPoints;
 
-        glm::vec3 indirectColor = glm::vec3(0.0f);
+        vec3 indirectColor = vec3(0.0f);
 
-
-        // Compute direct lighting by sending rays to lights
-        for(int i=0; i<directlightRaysNumber; i++)
+        // Compute direct lighting by sending rays to lights.
+        for(size_t i = 0; i < directlightRaysNumber; ++i)
         {
-            currentPointOnLight = getRandomPointOnLights(lights);
-            currentLightDir = glm::normalize(currentPointOnLight - rec.p);
+            const vec3 currentPointOnLight = getRandomPointOnLights(lights);
+            const vec3 currentLightDir = normalize(currentPointOnLight - rec.p);
 
             bool answ = grid.hit(Ray(rec.p, currentLightDir), 0.00001f, numeric_limits<float>::max(), directLightRec);
-            if( answ && (directLightRec.mat->emission != vec3(0.0f, 0.0f, 0.0f)) )
+
+            // Only take into account emissive materials.
+            if (answ && (directLightRec.mat->emission != vec3(0.0f)))
             {
-                float currentDirectLightIntensity = directLightRec.mat->emission.x * 0.21f + directLightRec.mat->emission.y * 0.72f  + directLightRec.mat->emission.z * 0.07;
+                const float currentDirectLightIntensity =
+                    directLightRec.mat->emission.x * 0.21f
+                    + directLightRec.mat->emission.y * 0.72f
+                    + directLightRec.mat->emission.z * 0.07f;
 
                 // Compute direct light intensity : Li * ( (kd/PI) + (ks * (n+2)/2PI) )
-                directLightIntensity += ((currentDirectLightIntensity/(glm::distance(rec.p, currentPointOnLight)))) /* * std::max(0.0f, glm::dot(glm::normalize(r.origin-rec.p), glm::normalize(rec.p - currentPointOnLight))) */;
+                directLightIntensity += currentDirectLightIntensity / distance(rec.p, currentPointOnLight);
+                /* * std::max(0.0f, glm::dot(glm::normalize(r.origin-rec.p), glm::normalize(rec.p - currentPointOnLight))) */
 
                 // Precompute diffuse element of computation : Sum( dot(rec.normal, pointOnLight ) / nbValidLights
-                diffuseComp += std::max(0.0f, glm::dot(glm::normalize(rec.normal), currentLightDir));
+                diffuseComp += std::max(0.0f, dot(rec.normal, currentLightDir));
 
                 // Keep in memory valid lights point directions : valid light point means a visible one
                 lightPoints.push_back(currentLightDir);
@@ -242,18 +248,7 @@ glm::vec3 Render::get_ray_color_phong(
         }
 
         // Security check
-        if(diffuse.x < 0.0f)
-        {
-            diffuse.x = 0.0f;
-        }
-        if(diffuse.y < 0.0f)
-        {
-            diffuse.y = 0.0f;
-        }
-        if(diffuse.z < 0.0f)
-        {
-            diffuse.z = 0.0f;
-        }
+        diffuse = max(diffuse, 0.0f);
 
         return diffuse * 0.96f + specular * 0.04f + indirectColor;
     }
