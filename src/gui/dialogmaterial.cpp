@@ -27,6 +27,9 @@ DialogMaterial::DialogMaterial(QWidget* parent, Scene& scene, const size_t id)
         m_ui->doubleSpinBox_emission_r->setValue(double(emission[0]));
         m_ui->doubleSpinBox_emission_g->setValue(double(emission[1]));
         m_ui->doubleSpinBox_emission_b->setValue(double(emission[2]));
+        m_ui->doubleSpinBox_kd->setValue(double(object.kd));
+        m_ui->doubleSpinBox_ks->setValue(double(object.ks));
+        m_ui->doubleSpinBox_specularExponent->setValue(double(object.specularExponent));
     }
 }
 
