@@ -246,7 +246,7 @@ void MainWindow::slot_do_render()
 
     // Create photon map.
     PhotonMap pmap;
-    pmap.compute_map(300000, 4, accelerator, lights, rng);
+    pmap.compute_map(100000, 32, accelerator, lights, rng);
 
     // Create photon tree.
     PhotonTree ptree(pmap);

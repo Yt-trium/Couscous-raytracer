@@ -20,6 +20,8 @@
 // Standard library includes
 #include <map>
 #include <random>
+#include <utility>
+#include <vector>
 
 #define photonMinErnergy 0.01f
 #define rangeMin 0.0f
@@ -138,73 +140,10 @@ class PhotonTree
 
     const PhotonMap& map;
 
-    // Fetcher for a fixed count of photons.
-    // Using a fetcher is optimized since we need
-    // to allocate kd-tree fetching variables only
-    // one time.
-    template <size_t N>
-    class Fetcher
-    {
-      public:
-        Fetcher(
-            const PhotonMap&        map,
-            const PhotonTreeIndex&  index)
-          : m_index(index)
-          , m_map(map)
-        {
-            // Clear arrays.
-            for (size_t i = 0; i < N; ++i)
-            {
-                m_indices[i] = 0;
-                m_squared_dists[i] = 0.0f;
-            }
-        }
-
-        // Find all closest photons to a given point.
-        // Returns the number of match.
-        // Photons are not directly returned but
-        // they can be accessed via photon().
-        size_t find_closest(const glm::vec3& point)
-        {
-            static nanoflann::SearchParams search_params(32, 0.0f, true);
-
-            nanoflann::KNNResultSet<float, size_t> result(N);
-            result.init(m_indices, m_squared_dists);
-
-            // Fetch photon indices.
-            m_index.findNeighbors(result, glm::value_ptr(point), search_params);
-            return result.size();
-        }
-
-        // Returns the nth photon from previously fetched photons.
-        inline const Photon& photon(const size_t index) const
-        {
-            assert(index < N);
-            return m_map.photon(m_indices[index]);
-        }
-
-        // Returns the distance between the nth photon and
-        // previously used fetch point.
-        inline float squared_dist(const size_t index) const
-        {
-            assert(index < N);
-            return m_squared_dists[index];
-        }
-
-      private:
-        // Nanoflann members.
-        size_t  m_indices[N];
-        float   m_squared_dists[N];
-
-        const PhotonTreeIndex&                  m_index;
-        const PhotonMap&                        m_map;
-    };
-
-    template <size_t N>
-    Fetcher<N> create_fetcher() const
-    {
-        return Fetcher<N>(map, m_index);
-    }
+    size_t find_in_radius(
+        const glm::vec3&                        point,
+        const float                             radius,
+        std::vector<std::pair<size_t, float>>&  results) const;
 
   private:
     // Nanoflann used to search in the kd-tree.

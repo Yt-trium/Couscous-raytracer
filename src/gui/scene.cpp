@@ -186,9 +186,9 @@ Scene Scene::cornell_box()
     Scene scene;
 
     scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f), 0.0f, 0.0f, 0.0f));
-    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
-    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 0.45f, 0.15f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
-    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+    scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 1.0f, 1.0f));
+    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), vec3(0.0f), 1.0f, 1.0f, 1.0f));
+    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f), 1.0f, 1.0f, 1.0f));
 
     scene.objects.push_back(SceneObject("floor",
         Transform(
@@ -218,7 +218,7 @@ Scene Scene::cornell_box()
         Transform(
             vec3(0.0f, 199.0f, 0.0f),
             vec3(180.0f, 0.0f, 0.0f),
-            vec3(30.0f)),
+            vec3(45.0f)),
         ObjectType::PLANE,
         "light"));
 

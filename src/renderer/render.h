@@ -19,6 +19,7 @@
 #include <glm/vec3.hpp>
 
 // Forward declaration.
+class PhotonMap;
 class PhotonTree;
 class RNG;
 class VoxelGridAccelerator;

@@ -256,3 +256,13 @@ PhotonTree::PhotonTree(const PhotonMap& map)
     Logger::log_info(message.toStdString().c_str());
 }
 
+size_t PhotonTree::find_in_radius(
+    const vec3&                     point,
+    const float                     radius,
+    vector<pair<size_t, float>>&    results) const
+{
+    static nanoflann::SearchParams search_params(32, 0.0f, true); // true means we want photons to be sorted by dist
+
+    return m_index.radiusSearch(glm::value_ptr(point), radius, results, search_params);
+}
+

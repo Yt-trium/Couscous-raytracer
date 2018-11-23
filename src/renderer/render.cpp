@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <utility>
 
 using namespace glm;
 using namespace std;
@@ -67,26 +68,40 @@ namespace
     vec3 get_ray_photon_map(
         const Ray&                                      r,
         const VoxelGridAccelerator&                     grid,
-        PhotonTree::Fetcher<PHOTON_FETCH_SIZE>&         pfetcher)
+        const PhotonTree&                               ptree)
     {
+        const float radius = 20.0f;
+
         HitRecord rec;
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
-            const size_t count = pfetcher.find_closest(rec.p);
+            if (rec.mat->emission != vec3(0.0f))
+                return vec3(0.0f);
+
+            vector<pair<size_t, float>> find_result;
+
+            const size_t photons_count = ptree.find_in_radius(rec.p, radius, find_result);
+
+            if (photons_count == 0)
+                return vec3(0.0f);
+
+            const float max_dist = sqrt(find_result[photons_count - 1].second);
 
             float weight = 0.0f;
             vec3 color(0.0f);
 
-            for (size_t i = 0; i < count; ++i)
+            for (size_t i = 0; i < photons_count; ++i)
             {
-                const auto& photon = pfetcher.photon(i);
+                const size_t index = find_result[i].first;
+                const auto& photon = ptree.map.photon(index);
 
-                const float dist = pfetcher.squared_dist(count-1);
+                // if (photon.mat != rec.mat) continue;
+
                 const float pweight = photon.energy;
 
                 weight += pweight;
-                color += (photon.mat->albedo * pweight) / (3.14f * (float)std::pow(dist, 2));
+                color += (photon.mat->albedo * pweight) / (3.14f * max_dist);
             }
 
             return (color / weight);
@@ -97,11 +112,11 @@ namespace
         }
     }
 
-    glm::vec3 get_ray_color_phong(
+    vec3 get_ray_color_phong(
         const Ray&                                      r,
         const VoxelGridAccelerator&                     grid,
         const MeshGroup&                                lights,
-        PhotonTree::Fetcher<PHOTON_FETCH_SIZE>&         pfetcher,
+        const PhotonTree&                               ptree,
         RNG&                                            rng)
     {
         HitRecord rec;
@@ -152,7 +167,6 @@ namespace
                 }
             }
 
-
             // Compute indirect lighting with photon mapping
             int nbSuccessfullRays = 1;
             for(int i=0; i<indirectLightRaysNumber; i++)
@@ -173,14 +187,14 @@ namespace
                     // Keep it just in case
                     //indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher)/*/(1.0f + (glm::distance(rec.p, recIndirect.p)))*/) /* * std::max(0.0f, glm::dot(rec.normal, glm::normalize(recIndirect.p - rec.p)))*/;
                     //indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher) * (1.0f - std::max(0.0f, glm::dot(glm::normalize(rec.normal), glm::normalize(recIndirect.p-rec.p)))));
-                    indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher)
+                    indirectColor += (get_ray_photon_map(indirectLightRay, grid, ptree)
                                       /* * (0.96f / 3.14f) + (0.04f * ( (2.0f + 2) / (3.14f * 2.0f))) */)
                                     * (std::max(0.0f, glm::dot(rec.normal, rayDirIndirectLight)));
                     nbSuccessfullRays++;
                 }
                 else
                 {
-                    indirectColor += get_ray_photon_map(indirectLightRay, grid, pfetcher);
+                    indirectColor += get_ray_photon_map(indirectLightRay, grid, ptree);
                 }
             }
 
@@ -268,9 +282,6 @@ void Render::get_render_image(
         size_t y1,
         size_t y2)
     {
-        // Create a photon fetcher.
-        PhotonTree::Fetcher<PHOTON_FETCH_SIZE> photon_fetcher = ptree.create_fetcher<PHOTON_FETCH_SIZE>();
-
         for (size_t y = y1; y < y2; ++y)
         {
             for (size_t x = x1; x < x2; ++x)
@@ -298,11 +309,11 @@ void Render::get_render_image(
                     }
                     else if (display_photon_map)
                     {
-                        color += get_ray_photon_map(r, grid, photon_fetcher);
+                        color += get_ray_photon_map(r, grid, ptree);
                     }
                     else
                     {
-                        color += get_ray_color_phong(r, grid, lights, photon_fetcher, rng);
+                        color += get_ray_color_phong(r, grid, lights, ptree, rng);
                     }
                 }
 
