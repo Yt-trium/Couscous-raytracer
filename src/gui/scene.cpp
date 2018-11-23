@@ -206,6 +206,14 @@ Scene Scene::cornell_box()
         ObjectType::PLANE,
         "white"));
 
+    scene.objects.push_back(SceneObject("foreground",
+        Transform(
+            vec3(0.0f, 100.0f, 100.0f),
+            vec3(-90.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "white"));
+
     scene.objects.push_back(SceneObject("ceilling",
         Transform(
             vec3(0.0f, 200.0f, 0.0f),

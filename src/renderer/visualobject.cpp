@@ -155,8 +155,8 @@ bool Triangle::hit(
     // Parallel test between the plane and the ray.
     const float n_dot_ray_dir = dot(normal, r.dir);
 
-    // Near 0.
-    if (fabs(n_dot_ray_dir) < epsilon)
+    // Don't display objects pointing in the wrong direction.
+    if (n_dot_ray_dir > epsilon)
         return false;
 
     // Compute the parameter d that gives the direction to P.
