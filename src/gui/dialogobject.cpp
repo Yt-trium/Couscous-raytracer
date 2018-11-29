@@ -46,12 +46,14 @@ DialogObject::DialogObject(QWidget *p, Scene *s, int i) :
             case ObjectType::CUBE:
                 ui->comboBox_object_type->setCurrentIndex(1);
                 break;
-            case ObjectType::CYLINDER:
+            case ObjectType::CONE:
                 ui->comboBox_object_type->setCurrentIndex(2);
-                ui->spinBox_subdivisions->setEnabled(true);
-                ui->doubleSpinBox_height->setEnabled(true);
-                ui->doubleSpinBox_width->setEnabled(true);
-                ui->checkBox_caps->setEnabled(true);
+                break;
+            case ObjectType::CYLINDER:
+                ui->comboBox_object_type->setCurrentIndex(3);
+                break;
+            case ObjectType::SPHERE:
+                ui->comboBox_object_type->setCurrentIndex(4);
                 break;
         }
 
@@ -94,7 +96,13 @@ void DialogObject::on_buttonBox_accepted()
         ot = ObjectType::CUBE;
         break;
       case 2:
+        ot = ObjectType::CONE;
+        break;
+      case 3:
         ot = ObjectType::CYLINDER;
+        break;
+      case 4:
+        ot = ObjectType::SPHERE;
         break;
     }
 
@@ -143,7 +151,13 @@ void DialogObject::on_comboBox_object_type_currentIndexChanged(int index)
         ot = ObjectType::CUBE;
         break;
       case 2:
+        ot = ObjectType::CONE;
+        break;
+      case 3:
         ot = ObjectType::CYLINDER;
+        break;
+      case 4:
+        ot = ObjectType::SPHERE;
         break;
     }
 
@@ -163,12 +177,26 @@ void DialogObject::on_comboBox_object_type_currentIndexChanged(int index)
         ui->doubleSpinBox_width->setEnabled(false);
         ui->checkBox_caps->setEnabled(false);
         break;
-      case ObjectType::CYLINDER:
+      case ObjectType::CONE:
         ui->comboBox_object_type->setCurrentIndex(2);
+        ui->spinBox_subdivisions->setEnabled(false);
+        ui->doubleSpinBox_height->setEnabled(false);
+        ui->doubleSpinBox_width->setEnabled(false);
+        ui->checkBox_caps->setEnabled(false);
+        break;
+      case ObjectType::CYLINDER:
+        ui->comboBox_object_type->setCurrentIndex(3);
         ui->spinBox_subdivisions->setEnabled(true);
         ui->doubleSpinBox_height->setEnabled(true);
         ui->doubleSpinBox_width->setEnabled(true);
         ui->checkBox_caps->setEnabled(true);
+        break;
+      case ObjectType::SPHERE:
+        ui->comboBox_object_type->setCurrentIndex(4);
+        ui->spinBox_subdivisions->setEnabled(false);
+        ui->doubleSpinBox_height->setEnabled(false);
+        ui->doubleSpinBox_width->setEnabled(false);
+        ui->checkBox_caps->setEnabled(false);
         break;
     }
 }

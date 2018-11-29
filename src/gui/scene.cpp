@@ -136,10 +136,16 @@ void Scene::create_scene(MeshGroup &world)
           case ObjectType::CUBE:
             create_cube(world, mat_default, transform);
             break;
+          case ObjectType::CONE:
+            create_cone(world, mat_default, transform);
+            break;
           case ObjectType::CYLINDER:
             create_cylinder(world, mat_default, object->subdivisions,
                 object->height, object->width,
                 object->caps, transform);
+            break;
+          case ObjectType::SPHERE:
+            create_sphere(world, mat_default, transform);
             break;
         }
     }
@@ -303,6 +309,92 @@ Scene Scene::simple_cube()
             vec3(0.0f, 45.0f, 0.0f),
             vec3(0.5f)),
         ObjectType::CUBE,
+        "red"));
+
+    scene.cameras.push_back(SceneCamera("CAM_1",
+        vec3(0.0f, 0.8f, 3.0f),
+        -90.0f,
+        0.0f,
+        40.0f,
+        512,
+        512));
+
+    return scene;
+}
+
+Scene Scene::sphere()
+{
+    Scene scene;
+
+    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(1.0f), 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+    scene.materials.push_back(SceneMaterial("grey", vec3(0.2, 0.2, 0.2), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+
+    scene.objects.push_back(SceneObject("floor",
+        Transform(
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "grey"));
+
+    scene.objects.push_back(SceneObject("top_light",
+        Transform(
+            vec3(0.0f, 1.5f, 0.0f),
+            vec3(180.0f, 0.0f, 0.0f),
+            vec3(1.0f)),
+        ObjectType::PLANE,
+        "light"));
+
+    scene.objects.push_back(SceneObject("sphere",
+        Transform(
+            vec3(0.0f, 0.5, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(1.0f)),
+        ObjectType::SPHERE,
+        "red"));
+
+    scene.cameras.push_back(SceneCamera("CAM_1",
+        vec3(0.0f, 0.8f, 3.0f),
+        -90.0f,
+        0.0f,
+        40.0f,
+        512,
+        512));
+
+    return scene;
+}
+
+Scene Scene::cone()
+{
+    Scene scene;
+
+    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(1.0f), 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+    scene.materials.push_back(SceneMaterial("grey", vec3(0.2, 0.2, 0.2), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+
+    scene.objects.push_back(SceneObject("floor",
+        Transform(
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "grey"));
+
+    scene.objects.push_back(SceneObject("top_light",
+        Transform(
+            vec3(0.0f, 1.5f, 0.0f),
+            vec3(180.0f, 0.0f, 0.0f),
+            vec3(1.0f)),
+        ObjectType::PLANE,
+        "light"));
+
+    scene.objects.push_back(SceneObject("cone",
+        Transform(
+            vec3(0.0f, 0.5, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(1.0f)),
+        ObjectType::CONE,
         "red"));
 
     scene.cameras.push_back(SceneCamera("CAM_1",

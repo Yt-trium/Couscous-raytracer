@@ -12,7 +12,7 @@ using namespace glm;
 using namespace std;
 
 // Uncomment this to compute shapes normal at intersection.
-// #define COMPUTE_NORMALS_ON_FLY
+#define COMPUTE_NORMALS_ON_FLY
 
 //
 // 3D Object data structures implementation.
@@ -382,7 +382,6 @@ void create_plane(
         transform);
 }
 
-#include <iostream>
 // Procedurally generate a sphere.
 // Poles are not considered as subidivisions.
 void create_cylinder(
@@ -509,3 +508,79 @@ void create_cylinder(
         transform);
 }
 
+void create_cone(
+    MeshGroup&                      world,
+    const shared_ptr<Material>&     material,
+    const mat4&                     transform)
+{
+    const size_t subdivisions = 4;
+
+    // Create vertices.
+    vector<vec3> vertices = {
+        vec3(0.0f, 0.0f, 0.0f), // base
+        vec3(0.0f, 0.5f, 0.0f) // summit
+    };
+
+    // Create indices.
+    vector<size_t> indices = {
+        0, 1, 2
+    };
+
+    // Create normals.
+    vector<vec3> normals = {
+        vec3(0.0f, 1.0f, 0.0f),
+    };
+
+    const float angle_step = (-2.0f * M_PI) / static_cast<float>(subdivisions);
+    const vec3 base_normal(0.0f, -1.0f, 0.0f);
+
+    vertices.emplace_back(0.5f, 0.0f, 0.0f);
+
+    // Create vertices and indices.
+    for (size_t i = 1; i < subdivisions; ++i)
+    {
+        const float angle = static_cast<float>(i) * angle_step;
+
+        // X and Z depends on the angle.
+        const float x = 0.5f * cos(angle);
+        const float z = 0.5f * sin(angle);
+
+        // Create points;
+        vertices.emplace_back(x, 0.0f, z);
+
+        // Create the face.
+        const size_t index = i + 2;
+        indices.push_back(index - 1);
+        indices.push_back(index);
+        indices.push_back(1);
+        indices.push_back(index - 1);
+        indices.push_back(0);
+        indices.push_back(index);
+        face_count += 2;
+
+        // Create normals.
+        const vec3 ab = vertices[index] - vertices[index - 2];
+        const vec3 ac = vertices[index - 1] - vertices[index - 2];
+        normals.push_back(base_normal);
+        normals.push_back(cross(ab, ac));
+    }
+
+    create_triangle_mesh(
+        world,
+        indices.size() / 3,
+        vertices.size(),
+        indices.data(),
+        vertices.data(),
+        normals.data(),
+        material,
+        transform);
+}
+
+// Create a sphere.
+void create_sphere(
+    MeshGroup&                      world,
+    const shared_ptr<Material>&     material,
+    const mat4&                     transform)
+{
+    create_cube(world, material, transform);
+}

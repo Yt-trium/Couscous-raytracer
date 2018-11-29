@@ -165,4 +165,14 @@ void create_cylinder(
     const bool                          caps = true,
     const glm::mat4&                    transform = glm::mat4(1.0f));
 
+void create_cone(
+    MeshGroup&                          world,
+    const std::shared_ptr<Material>&    material,
+    const glm::mat4&                    transform = glm::mat4(1.0f));
+
+void create_sphere(
+    MeshGroup&                          world,
+    const std::shared_ptr<Material>&    material,
+    const glm::mat4&                    transform = glm::mat4(1.0f));
+
 #endif // VISUALOBJECT_H

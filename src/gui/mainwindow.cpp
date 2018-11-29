@@ -101,7 +101,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(presets_group, SIGNAL(triggered(QAction*)), SLOT(slot_presets_changed(QAction*)));
 
     // Create a default scene.
-    scene = Scene::cornell_box();
+    scene = Scene::cone();
+    update_camera_widget();
 
     // Hook up the gui status bar to the logger.
     Logger::set_gui_bar(ui->statusBar);
@@ -198,6 +199,24 @@ void MainWindow::update_scene_widget()
     ui->treeWidget_scene->expandAll();
 }
 
+void MainWindow::update_camera_widget()
+{
+    if(scene.cameras.size() > 0)
+    {
+        SceneCamera cam = scene.cameras.at(0);
+        ui->doubleSpinBox_position_x->setValue(double(cam.position.x));
+        ui->doubleSpinBox_position_y->setValue(double(cam.position.y));
+        ui->doubleSpinBox_position_z->setValue(double(cam.position.z));
+
+        ui->doubleSpinBox_yaw->setValue(double(cam.yaw));
+        ui->doubleSpinBox_pitch->setValue(double(cam.pitch));
+        ui->doubleSpinBox_fov->setValue(double(cam.fov));
+
+        ui->spinBox_height->setValue(int(cam.height));
+        ui->spinBox_width->setValue(int(cam.width));
+    }
+}
+
 void MainWindow::slot_do_render()
 {
     ui->pushButton_render->setEnabled(false);
@@ -223,10 +242,9 @@ void MainWindow::slot_do_render()
     Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
         yaw, pitch, fov, width, height);
 
-    // Create cornell box.
-    MeshGroup world;
 
     Logger::log_info("creating the scene...");
+    MeshGroup world;
     scene.create_scene(world);
 
     if (world.empty())
@@ -517,20 +535,7 @@ void MainWindow::slot_presets_changed(QAction *action)
         scene = Scene();
     }
 
-    if(scene.cameras.size() > 0)
-    {
-        SceneCamera cam = scene.cameras.at(0);
-        ui->doubleSpinBox_position_x->setValue(double(cam.position.x));
-        ui->doubleSpinBox_position_y->setValue(double(cam.position.y));
-        ui->doubleSpinBox_position_z->setValue(double(cam.position.z));
-
-        ui->doubleSpinBox_yaw->setValue(double(cam.yaw));
-        ui->doubleSpinBox_pitch->setValue(double(cam.pitch));
-        ui->doubleSpinBox_fov->setValue(double(cam.fov));
-
-        ui->spinBox_height->setValue(int(cam.height));
-        ui->spinBox_width->setValue(int(cam.width));
-    }
+    update_camera_widget();
 
     Logger::log_info("loaded a new preset.");
 

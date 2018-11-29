@@ -62,7 +62,7 @@ class Transform
 // An editable 3D object instance.
 //
 
-enum class ObjectType { PLANE, CUBE, CYLINDER };
+enum class ObjectType { PLANE, CUBE, CONE, CYLINDER, SPHERE };
 
 class SceneObject
 {
@@ -137,8 +137,9 @@ class Scene
 
     // Create a cornell box scene.
     static Scene cornell_box();
-
     static Scene simple_cube();
+    static Scene sphere();
+    static Scene cone();
 
     std::vector<SceneMaterial>      materials;
     std::vector<SceneObject>        objects;
