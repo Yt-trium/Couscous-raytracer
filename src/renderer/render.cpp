@@ -18,6 +18,7 @@
 // Qt includes.
 #include <QFuture>
 #include <QtConcurrentRun>
+#include <QTime>
 
 // Standard includes.
 #include <algorithm>
@@ -241,16 +242,12 @@ namespace
     }
 }
 
-
 void Render::get_render_image(
     const size_t                    width,
     const size_t                    height,
     const size_t                    spp,
     const Camera&                   camera,
-    const VoxelGridAccelerator&     grid,
-    const PhotonTree&               ptree,
-    const MeshGroup&                lights,
-    RNG&                            rng,
+    const MeshGroup&                world,
     const bool                      parallel,
     const bool                      get_normal_color,
     const bool                      get_albedo_color,
@@ -258,14 +255,29 @@ void Render::get_render_image(
     QImage&                         image,
     QProgressBar&                   progressBar)
 {
+    // Create a random number generator.
+    RNG rng;
+
+    // Get lights from the scene.
+    const MeshGroup lights = fetch_lights(world);
+    Logger::log_debug(to_string(lights.size()) + " light triangles");
+    Logger::log_debug(to_string(world.size() - lights.size()) + " triangles in the scene");
+
+    // Create the grid accelerator.
+    VoxelGridAccelerator grid(world);
+
+    // Create photon map.
+    PhotonMap pmap;
+    pmap.compute_map(100000, 32, grid, lights, rng);
+
+    // Create photon tree.
+    PhotonTree ptree(pmap);
+
     progressBar.setValue(53);
     progressBar.setRange(0, int((width/64)*(height/64)));
 
     // Precompute subpixel samples position
-    const size_t dimension_size =
-        std::max(
-            size_t(1),
-            static_cast<size_t>(sqrt(spp)));
+    const size_t dimension_size = static_cast<size_t>(std::max(1, static_cast<int>(sqrt(spp))));
     const size_t samples = dimension_size * dimension_size;
 
     SampleGenerator generator(dimension_size, rng);
@@ -333,6 +345,13 @@ void Render::get_render_image(
         }
     };
 
+    // Starts rendering.
+    Logger::log_info("rendering...");
+
+    QTime render_timer;
+    render_timer.start();
+    progressBar.setVisible(true);
+
     // Create tile jobs or render tiles.
     for (y0 = 0; y0 < height; y0+=64)
     {
@@ -382,5 +401,16 @@ void Render::get_render_image(
     }
 
     progressBar.setValue(progressBar.maximum());
+    progressBar.setVisible(false);
+
+    const int elapsed = render_timer.elapsed();
+
+    QString message =
+        QString("rendering finished in ")
+        + ((elapsed > 1000)
+            ? (QString::number(elapsed / 1000) + "s.")
+            : (QString::number(elapsed % 1000) + "ms."));
+
+    Logger::log_info(message.toStdString().c_str());
 }
 

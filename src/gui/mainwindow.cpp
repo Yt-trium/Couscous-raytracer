@@ -195,31 +195,26 @@ void MainWindow::slot_do_render()
 {
     ui->pushButton_render->setEnabled(false);
 
-    const size_t width = size_t(ui->spinBox_width->value());
-    const size_t height = size_t(ui->spinBox_height->value());
+    const size_t width   = size_t(ui->spinBox_width->value());
+    const size_t height  = size_t(ui->spinBox_height->value());
     const size_t samples = size_t(ui->spinBox_spp->value());
+    const float pos_x    = float(ui->doubleSpinBox_position_x->value());
+    const float pos_y    = float(ui->doubleSpinBox_position_y->value());
+    const float pos_z    = float(ui->doubleSpinBox_position_z->value());
+    const float yaw      = float(ui->doubleSpinBox_yaw->value());
+    const float pitch    = float(ui->doubleSpinBox_pitch->value());
+    const float fov      = float(ui->doubleSpinBox_fov->value());
+    const bool parallel  = ui->checkBox_parallel_rendering->isChecked();
+
     m_image = QImage(int(width), int(height), QImage::Format_RGB888);
 
-    const float pos_x = float(ui->doubleSpinBox_position_x->value());
-    const float pos_y = float(ui->doubleSpinBox_position_y->value());
-    const float pos_z = float(ui->doubleSpinBox_position_z->value());
-    const float yaw   = float(ui->doubleSpinBox_yaw->value());
-    const float pitch = float(ui->doubleSpinBox_pitch->value());
-    const float fov   = float(ui->doubleSpinBox_fov->value());
-
-    const bool parallel = ui->checkBox_parallel_rendering->isChecked();
-
-    // Create a random number generator.
-    RNG rng;
-
-    // Create the scene.
+    // Create the camera.
     Camera camera(vec3(pos_x, pos_y, pos_z), vec3(0.0f, 1.0f, 0.0f),
         yaw, pitch, fov, width, height);
 
-    // Create cornell box.
-    MeshGroup world;
-
+    // Create the scene.
     Logger::log_info("creating the scene...");
+    MeshGroup world;
     scene.create_scene(world);
 
     if (world.empty())
@@ -229,27 +224,6 @@ void MainWindow::slot_do_render()
         return;
     }
 
-    // Get lights from the scene.
-    const MeshGroup lights = fetch_lights(world);
-    Logger::log_debug(to_string(lights.size()) + " light triangles");
-    Logger::log_debug(to_string(world.size() - lights.size()) + " triangles");
-
-    // Create the grid accelerator.
-    VoxelGridAccelerator accelerator(world);
-
-    // Create photon map.
-    PhotonMap pmap;
-    pmap.compute_map(100000, 32, accelerator, lights, rng);
-
-    // Create photon tree.
-    PhotonTree ptree(pmap);
-
-    // Starts rendering.
-    QTime render_timer;
-    Logger::log_info("rendering...");
-    render_timer.start();
-    m_statusBarProgress.setVisible(true);
-
     m_frame_viewer.on_render_begin(width, height);
 
     m_render.get_render_image(
@@ -257,28 +231,13 @@ void MainWindow::slot_do_render()
         height,
         samples,
         camera,
-        accelerator,
-        ptree,
-        lights,
-        rng,
+        world,
         parallel,
         ui->actionDisplayNormals->isChecked(),
         ui->actionDisplayAlbedo->isChecked(),
         ui->actionDisplayPhotonMap->isChecked(),
         m_image,
         m_statusBarProgress);
-
-    m_statusBarProgress.setVisible(false);
-
-    const int elapsed = render_timer.elapsed();
-
-    QString message =
-        QString("rendering finished in ")
-        + ((elapsed > 1000)
-            ? (QString::number(elapsed / 1000) + "s.")
-            : (QString::number(elapsed % 1000) + "ms."));
-
-    Logger::log_info(message.toStdString().c_str());
 
     ui->pushButton_render->setEnabled(true);
 }
@@ -322,16 +281,19 @@ void MainWindow::slot_save_as_image()
     m_image.save(path);
 }
 
+// Zoom in the viewport.
 void MainWindow::slot_zoom_in()
 {
     m_frame_viewer.zoom_viewport(0.1f);
 }
 
+// Zoom out the viewport.
 void MainWindow::slot_zoom_out()
 {
     m_frame_viewer.zoom_viewport(-0.1f);
 }
 
+// Run unit tests and quit the application.
 void MainWindow::slot_run_unit_test()
 {
     int result = run_tests();
