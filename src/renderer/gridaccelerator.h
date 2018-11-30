@@ -37,6 +37,8 @@ class VoxelGridAccelerator
         float                               tmax,
         HitRecord&                          rec) const;
 
+    float voxel_size() const;
+
   private:
     const MeshGroup&            m_world;
     glm::ivec3                  m_voxels_per_axis;
@@ -44,6 +46,7 @@ class VoxelGridAccelerator
     glm::vec3                   m_inv_voxel_size;
     AABB                        m_bounds;
     std::unique_ptr<Voxel[]>    m_voxels;
+    float                       m_best_voxel_size;
 
     // Given a 3D position and an axis, return the index of
     // the voxel where the point is.

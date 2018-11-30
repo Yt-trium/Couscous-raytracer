@@ -71,7 +71,7 @@ namespace
         const VoxelGridAccelerator&                     grid,
         const PhotonTree&                               ptree)
     {
-        const float radius = 20.0f;
+        const float radius = grid.voxel_size();
 
         HitRecord rec;
 
@@ -82,12 +82,14 @@ namespace
 
             vector<pair<size_t, float>> find_result;
 
-            const size_t photons_count = ptree.find_in_radius(rec.p, radius, find_result);
+            size_t photons_count = ptree.find_in_radius(rec.p, radius, find_result);
 
             if (photons_count == 0)
                 return vec3(0.0f);
 
             const float max_dist = sqrt(find_result[photons_count - 1].second);
+
+            photons_count = photons_count > 20 ? 20 : photons_count;
 
             float weight = 0.0f;
             vec3 color(0.0f);
@@ -265,6 +267,8 @@ void Render::get_render_image(
 
     // Create the grid accelerator.
     VoxelGridAccelerator grid(world);
+
+    Logger::log_debug("fetching photons in a radius of " + to_string(grid.voxel_size()));
 
     // Create photon map.
     PhotonMap pmap;

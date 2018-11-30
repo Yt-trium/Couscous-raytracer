@@ -297,11 +297,11 @@ Scene Scene::simple_cube()
 
     scene.object_files.emplace_back(
         "floor",
-        "assets/plane.off",
+        "assets/plane_sub_01.off",
         Transform(
             vec3(0.0f, 0.0f, 0.0f),
             vec3(0.0f, 0.0f, 0.0f),
-            vec3(200.0f)),
+            vec3(100.0f)),
         "grey");
 
     scene.object_files.emplace_back(

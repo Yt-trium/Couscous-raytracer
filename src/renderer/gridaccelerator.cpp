@@ -68,14 +68,14 @@ VoxelGridAccelerator::VoxelGridAccelerator(
     const float inv_max_width = 1.0f / grid_size[max_extent];
     const float cube_root = 3.0f * pow(
         static_cast<float>(world.size()), 1.0f / 3.0f);
-    const float voxel_size = cube_root * inv_max_width;
+    m_best_voxel_size = cube_root * inv_max_width;
 
     // Compute the number of voxels to create on each axis.
     for (size_t i = 0; i < 3; ++i)
     {
         m_voxels_per_axis[i] =
             static_cast<int>(
-                round(grid_size[i] * voxel_size));
+                round(grid_size[i] * m_best_voxel_size));
         m_voxels_per_axis[i] = clamp(m_voxels_per_axis[i], 1, 64);
     }
 
@@ -85,6 +85,8 @@ VoxelGridAccelerator::VoxelGridAccelerator(
         m_voxel_size[i] = grid_size[i] / static_cast<float>(m_voxels_per_axis[i]);
         m_inv_voxel_size[i] = (m_voxel_size[i] == 0.0f) ? 0.0f : 1.0f / m_voxel_size[i];
     }
+
+    m_best_voxel_size = length(m_voxel_size) / 3.0f;
 
     const size_t resolution = m_voxels_per_axis[0] * m_voxels_per_axis[1] * m_voxels_per_axis[2];
     m_voxels.reset(new Voxel[resolution]);
@@ -231,6 +233,11 @@ bool VoxelGridAccelerator::hit(
 
     return hit_something;
 #endif
+}
+
+float VoxelGridAccelerator::voxel_size() const
+{
+    return m_best_voxel_size;
 }
 
 size_t VoxelGridAccelerator::voxel(const vec3& position, const size_t axis) const
