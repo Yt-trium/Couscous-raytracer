@@ -88,21 +88,19 @@ class SceneObject
 // A 3D object file instance.
 //
 
-enum class ObjectFileType { OBJ, OFF };
-
-class SceneObjectFile
+class SceneMeshFile
 {
   public:
-    SceneObjectFile();
+    SceneMeshFile(
+        const std::string&  name,
+        const std::string&  path,
+        const Transform&     transform,
+        const std::string&  material_name);
 
     std::string                 name;
+    std::string                 path;
     Transform                   transform;
-    ObjectFileType              type;
     std::string                 material;
-
-    std::vector<glm::vec3>      vertices;
-    std::vector<std::size_t>    triangles;
-    std::vector<glm::vec3>      normals;
 };
 
 //
@@ -142,7 +140,7 @@ class Scene
 
     std::vector<SceneMaterial>      materials;
     std::vector<SceneObject>        objects;
-    std::vector<SceneObjectFile>    object_files;
+    std::vector<SceneMeshFile>      object_files;
     std::vector<SceneCamera>        cameras;
 };
 

@@ -59,6 +59,9 @@ set (gui_sources
     src/gui/dialogmaterial.cpp
     src/gui/dialogmaterial.h
     src/gui/dialogmaterial.ui
+    src/gui/dialogmeshfile.cpp
+    src/gui/dialogmeshfile.h
+    src/gui/dialogmeshfile.ui
     src/gui/dialogobject.cpp
     src/gui/dialogobject.h
     src/gui/dialogobject.ui

@@ -13,70 +13,77 @@
 using namespace std;
 using namespace glm;
 
-SceneObjectFile read_obj(const std::string& filename)
+MeshOffFile read_off(const std::string& filename)
 {
-    SceneObjectFile obj;
-    ifstream objfile(filename);
+    MeshOffFile mesh;
+    ifstream reader(filename);
 
     // Can we read the file ?
-    if(!objfile.is_open())
+    if(!reader.is_open())
     {
         QMessageBox::critical(
             nullptr,
             "ERREUR",
             "ERREUR : Impossible d'ouvrir le fichier : " + QString::fromStdString(filename));
 
-        return obj;
+        return mesh;
     }
 
     string line; // reading buffer
 
-    while (getline(objfile, line, '\n'))
+    // Reading variables
+    std::string reader_str;
+    int reader_int;
+
+    // Check file type
+    reader >> reader_str;
+    if(reader_str.compare("OFF"))
     {
-        stringstream lineStream(line);
+        QMessageBox::critical(
+            nullptr,
+            "ERREUR",
+            "ERREUR : Le fichier n'est pas de type OFF : " + QString::fromStdString(filename));
 
-        while (getline(lineStream, line, ' '))
-        {
-            if(line.compare("v") == 0)
-            {
-                // Read a 3D point.
-                getline(lineStream, line, ' ');
-                const float x = stof(line);
-                getline(lineStream, line, ' ');
-                const float y = stof(line);
-                getline(lineStream, line, ' ');
-                const float z = stof(line);
-
-                obj.vertices.push_back(vec3(x, y, z));
-            }
-            else if(line.compare("f") == 0)
-            {
-                // Read a face.
-                getline(lineStream, line, ' ');
-                const size_t a = static_cast<size_t>(stoi(line) - 1);
-                getline(lineStream, line, ' ');
-                const size_t b = static_cast<size_t>(stoi(line) - 1);
-                getline(lineStream, line, ' ');
-                const size_t c = static_cast<size_t>(stoi(line) - 1);
-
-                obj.triangles.push_back(a);
-                obj.triangles.push_back(b);
-                obj.triangles.push_back(c);
-
-                vec3 n = cross(
-                    (obj.vertices.at(b) - obj.vertices.at(a)),
-                    (obj.vertices.at(c) - obj.vertices.at(a)));
-
-                obj.normals.push_back(n);
-            }
-        }
-
-        obj.name = filename;
-        obj.type = ObjectFileType::OBJ;
+        return mesh;
     }
 
-    objfile.close();
+    size_t vert_count, face_count;
+    reader >> vert_count >> face_count >> reader_int; // line ends with 0 (number of edges)
 
-    return obj;
+    // Read vertices.
+    {
+        float x, y, z;
+        for (size_t i = 0; i < vert_count; ++i)
+        {
+            reader >> x >> y >> z;
+            mesh.vertices.push_back(vec3(x, y, z));
+        }
+    }
+
+    // Read faces.
+    {
+        size_t ia, ib, ic;
+        for (size_t i = 0; i < face_count; ++i)
+        {
+            reader >> reader_int >> ia >> ib >> ic;
+            // We only support triangles.
+            assert(reader_int == 3);
+
+            mesh.faces.push_back(ia);
+            mesh.faces.push_back(ib);
+            mesh.faces.push_back(ic);
+
+            vec3 normal = cross(
+                (mesh.vertices.at(ib) - mesh.vertices.at(ia)),
+                (mesh.vertices.at(ic) - mesh.vertices.at(ia)));
+
+            mesh.normals.push_back(normal);
+        }
+    }
+
+    // Cleaning.
+    reader.close();
+
+    return mesh;
 }
 

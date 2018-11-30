@@ -6,6 +6,7 @@
 // couscous includes.
 #include "common/logger.h"
 #include "gui/scene.h"
+#include "gui/dialogmeshfile.h"
 #include "io/scenefilereader.h"
 #include "renderer/camera.h"
 #include "renderer/material.h"
@@ -72,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionNew_material, SIGNAL(triggered(bool)), SLOT(slot_create_material()));
     connect(ui->actionNew_object, SIGNAL(triggered(bool)), SLOT(slot_create_object()));
+    connect(ui->actionNew_mesh_file, SIGNAL(triggered(bool)), SLOT(slot_create_mesh_file()));
     connect(ui->actionDelete, SIGNAL(triggered(bool)), SLOT(slot_delete()));
 
     // Makes sure we can't select multiple log level at once.
@@ -114,6 +116,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// Update the scene tree view.
 void MainWindow::update_scene_widget()
 {
     ui->treeWidget_scene->clear();
@@ -173,17 +176,7 @@ void MainWindow::update_scene_widget()
     {
         QTreeWidgetItem *widgetItem = new QTreeWidgetItem();
         widgetItem->setText(0, QString::fromStdString(scene.object_files.at(i).name));
-
-        switch(scene.object_files.at(i).type)
-        {
-          case ObjectFileType::OBJ:
-            widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_obj.png"));
-            break;
-          case ObjectFileType::OFF:
-            widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_off.png"));
-            break;
-        }
-
+        widgetItem->setIcon(0, QIcon(":/sceneOptions/file_format_off.png"));
         widgetItemObjects->addChild(widgetItem);
     }
 
@@ -198,6 +191,7 @@ void MainWindow::update_scene_widget()
     ui->treeWidget_scene->expandAll();
 }
 
+// Do the render.
 void MainWindow::slot_do_render()
 {
     ui->pushButton_render->setEnabled(false);
@@ -290,6 +284,7 @@ void MainWindow::slot_do_render()
     ui->pushButton_render->setEnabled(true);
 }
 
+// Save the last rendered image.
 void MainWindow::slot_save_as_image()
 {
     // Create file filters.
@@ -370,11 +365,13 @@ void MainWindow::slot_treeWidget_customContextMenuRequested(const QPoint &p)
 
     menu.addAction(ui->actionNew_material);
     menu.addAction(ui->actionNew_object);
+    menu.addAction(ui->actionNew_mesh_file);
     menu.addAction(ui->actionDelete);
 
     menu.exec(ui->treeWidget_scene->mapToGlobal(p));
 }
 
+// Edit a scene element.
 void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     const QString itmname = item->text(column);
@@ -396,6 +393,18 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
         if(QString::fromStdString(scene.objects.at(i).name) == itmname)
         {
             DialogObject* dlg = new DialogObject(this, &scene, int(i));
+            dlg->exec();
+            update_scene_widget();
+
+            return;
+        }
+    }
+
+    for(size_t i = 0; i < scene.object_files.size(); ++i)
+    {
+        if(QString::fromStdString(scene.object_files.at(i).name) == itmname)
+        {
+            DialogMeshFile* dlg = new DialogMeshFile(this, scene, scene.object_files.at(i));
             dlg->exec();
             update_scene_widget();
 
@@ -425,6 +434,7 @@ void MainWindow::slot_treeWidget_itemDoubleClicked(QTreeWidgetItem *item, int co
     }
 }
 
+// Create a material.
 void MainWindow::slot_create_material()
 {
     DialogMaterial *dlg = new DialogMaterial(this, scene, size_t(~0));
@@ -432,6 +442,7 @@ void MainWindow::slot_create_material()
     update_scene_widget();
 }
 
+// Create a primitive.
 void MainWindow::slot_create_object()
 {
     DialogObject *dlg = new DialogObject(this, &scene, -1);
@@ -439,11 +450,29 @@ void MainWindow::slot_create_object()
     update_scene_widget();
 }
 
+// Create a mesh file.
+void MainWindow::slot_create_mesh_file()
+{
+    SceneMeshFile file("", "", Transform(), "");
+    DialogMeshFile *dlg = new DialogMeshFile(this, scene, file);
+    dlg->exec();
+
+    // Don't add it if it's empty.
+    if (file.name != "" || file.path != "")
+    {
+        scene.object_files.push_back(file);
+    }
+
+    update_scene_widget();
+}
+
+// Delete an item from the scene.
 void MainWindow::slot_delete()
 {
     QList<QTreeWidgetItem *> selection = ui->treeWidget_scene->selectedItems();
     QList<std::size_t> selection_materials;
     QList<std::size_t> selection_objects;
+    QList<std::size_t> selection_object_files;
 
     for(int x = 0 ; x < selection.size() ; ++x)
     {
@@ -463,6 +492,14 @@ void MainWindow::slot_delete()
                 selection_objects.push_front(i);
             }
         }
+
+        for(std::size_t i = 0 ; i < scene.object_files.size() ; ++i)
+        {
+            if(QString::fromStdString(scene.object_files.at(i).name) == name)
+            {
+                selection_object_files.push_front(i);
+            }
+        }
     }
 
     for(int x = 0 ; x < selection_materials.size() ; ++x)
@@ -475,9 +512,15 @@ void MainWindow::slot_delete()
         scene.objects.erase(scene.objects.begin() + selection_objects.at(x));
     }
 
+    for(int x = 0 ; x < selection_object_files.size() ; ++x)
+    {
+        scene.object_files.erase(scene.object_files.begin() + selection_object_files.at(x));
+    }
+
     update_scene_widget();
 }
 
+// Change the logging level.
 void MainWindow::slot_log_level_changed(QAction* action)
 {
     if (action == ui->actionLogLevelDebug)
@@ -502,6 +545,7 @@ void MainWindow::slot_log_level_changed(QAction* action)
     }
 }
 
+// Load a new scene.
 void MainWindow::slot_presets_changed(QAction *action)
 {
     if(action == ui->actionPresetsCornellBox)
@@ -537,6 +581,7 @@ void MainWindow::slot_presets_changed(QAction *action)
     update_scene_widget();
 }
 
+// Quit the application.
 void MainWindow::on_actionQuit_triggered()
 {
     QCoreApplication::quit();

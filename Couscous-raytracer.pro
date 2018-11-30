@@ -40,6 +40,7 @@ SOURCES += \
     src/renderer/aabb.cpp \
     src/gui/scene.cpp \
     src/gui/dialogmaterial.cpp \
+    src/gui/dialogmeshfile.cpp \
     src/gui/dialogobject.cpp \
     src/io/scenefilereader.cpp \
     src/common/logger.cpp
@@ -62,6 +63,7 @@ HEADERS += \
     src/renderer/gridaccelerator.h \
     src/gui/scene.h \
     src/gui/dialogmaterial.h \
+    src/gui/dialogmeshfile.h \
     src/gui/dialogobject.h \
     src/io/scenefilereader.h \
     src/common/logger.h
@@ -69,6 +71,7 @@ HEADERS += \
 FORMS += \
         src/gui/mainwindow.ui \
     src/gui/dialogmaterial.ui \
+    src/gui/dialogmeshfile.ui \
     src/gui/dialogobject.ui
 
 INCLUDEPATH += glm src distant

@@ -61,6 +61,7 @@ class MainWindow : public QMainWindow
 
     void slot_create_material();
     void slot_create_object();
+    void slot_create_mesh_file();
     void slot_delete();
 
     void slot_log_level_changed(QAction* action);

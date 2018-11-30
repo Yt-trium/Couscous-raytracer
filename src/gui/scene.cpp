@@ -1,6 +1,8 @@
 #include "scene.h"
 
+// couscous includes.
 #include "renderer/visualobject.h"
+#include "io/scenefilereader.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -80,7 +82,15 @@ SceneObject::SceneObject(
 {
 }
 
-SceneObjectFile::SceneObjectFile()
+SceneMeshFile::SceneMeshFile(
+    const std::string&  name,
+    const std::string&  path,
+    const Transform&    transform,
+    const std::string&  material_name)
+  : name(name)
+  , path(path)
+  , transform(transform)
+  , material(material_name)
 {
 }
 
@@ -88,7 +98,6 @@ void Scene::create_scene(MeshGroup &world)
 {
     SceneMaterial *material;
     SceneObject *object;
-    SceneObjectFile *obj;
     std::size_t i, j;
 
     std::vector<std::shared_ptr<Material>> mats;
@@ -146,23 +155,7 @@ void Scene::create_scene(MeshGroup &world)
 
     for(i = 0 ; i < object_files.size() ; ++i)
     {
-        obj = &object_files.at(i);
-
-        if(obj->normals.size() == 0 ||
-           obj->triangles.size() == 0 ||
-           obj->vertices.size() == 0)
-            continue;
-
-        /*
-        std::cout << obj->triangles.size() << " " <<
-                     obj->vertices.size() << " " <<
-                     obj->normals.size() << " " <<
-                     obj->triangles.data() << " " <<
-                     obj->vertices.data() << " " <<
-                     obj->normals.data() << std::endl;
-        */
-
-        obj = &object_files.at(i);
+        const auto& obj = object_files.at(i);
 
         shared_ptr<Material> mat_default(
             new Material(
@@ -170,14 +163,25 @@ void Scene::create_scene(MeshGroup &world)
                 vec3(1.0f, 0.0f, 1.0f),
                 1.0f, 1.0f, 1.0f));
 
+        for(j = 0 ; j < materials.size() ; ++j)
+        {
+            if(obj.material == materials.at(j).name)
+            {
+                mat_default = mats.at(j);
+                break;
+            }
+        }
+
+        const MeshOffFile data = read_off(obj.path);
+
         create_triangle_mesh(world,
-                             size_t(obj->triangles.size()/3),
-                             obj->vertices.size(),
-                             obj->triangles.data(),
-                             obj->vertices.data(),
-                             obj->normals.data(),
-                             mat_default,
-                             mat4(1.0f));
+             data.faces.size() / 3,
+             data.vertices.size(),
+             data.faces.data(),
+             data.vertices.data(),
+             data.normals.data(),
+             mat_default,
+             obj.transform.matrix());
     }
 }
 
@@ -281,29 +285,32 @@ Scene Scene::simple_cube()
     scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
     scene.materials.push_back(SceneMaterial("grey", vec3(0.2, 0.2, 0.2), vec3(0.0f), 1.0f, 0.5f, 0.1f));
 
-    scene.objects.push_back(SceneObject("floor",
-        Transform(
-            vec3(0.0f, 0.0f, 0.0f),
-            vec3(0.0f, 0.0f, 0.0f),
-            vec3(200.0f)),
-        ObjectType::PLANE,
-        "grey"));
-
-    scene.objects.push_back(SceneObject("top_light",
-        Transform(
-            vec3(0.0f, 1.5f, 0.0f),
-            vec3(180.0f, 0.0f, 0.0f),
-            vec3(1.0f)),
-        ObjectType::PLANE,
-        "light"));
-
-    scene.objects.push_back(SceneObject("right_box",
+    scene.object_files.emplace_back(
+        "cube",
+        "assets/cube.off",
         Transform(
             vec3(0.5f, 0.25f, 0.0f),
             vec3(0.0f, 45.0f, 0.0f),
             vec3(0.5f)),
-        ObjectType::CUBE,
-        "red"));
+        "red");
+
+    scene.object_files.emplace_back(
+        "floor",
+        "assets/plane.off",
+        Transform(
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        "grey");
+
+    scene.object_files.emplace_back(
+        "top_light",
+        "assets/plane.off",
+        Transform(
+            vec3(0.0f, 1.5f, 0.0f),
+            vec3(180.0f, 0.0f, 0.0f),
+            vec3(1.0f)),
+        "light");
 
     scene.cameras.push_back(SceneCamera("CAM_1",
         vec3(0.0f, 0.8f, 3.0f),

@@ -661,6 +661,14 @@
     <string>&amp;Albedo</string>
    </property>
   </action>
+  <action name="actionNew_mesh_file">
+   <property name="text">
+    <string>Add mesh file</string>
+   </property>
+   <property name="toolTip">
+    <string>Add mesh file</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
