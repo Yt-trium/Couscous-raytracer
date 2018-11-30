@@ -78,8 +78,8 @@ list (APPEND couscous_sources
     ${gui_sources})
 
 set (io_sources
-    src/io/scenefilereader.cpp
-    src/io/scenefilereader.h
+    src/io/filereader.cpp
+    src/io/filereader.h
 )
 
 list (APPEND couscous_sources

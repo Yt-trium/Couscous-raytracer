@@ -1,6 +1,6 @@
 
 // Inteface.
-#include "scenefilereader.h"
+#include "filereader.h"
 
 // Qt includes.
 #include <QMessageBox>

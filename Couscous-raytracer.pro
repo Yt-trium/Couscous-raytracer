@@ -42,7 +42,7 @@ SOURCES += \
     src/gui/dialogmaterial.cpp \
     src/gui/dialogmeshfile.cpp \
     src/gui/dialogobject.cpp \
-    src/io/scenefilereader.cpp \
+    src/io/filereader.cpp \
     src/common/logger.cpp
 
 HEADERS += \
@@ -65,7 +65,7 @@ HEADERS += \
     src/gui/dialogmaterial.h \
     src/gui/dialogmeshfile.h \
     src/gui/dialogobject.h \
-    src/io/scenefilereader.h \
+    src/io/filereader.h \
     src/common/logger.h
 
 FORMS += \

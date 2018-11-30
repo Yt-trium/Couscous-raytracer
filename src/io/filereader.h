@@ -1,6 +1,6 @@
 
-#ifndef IO_SCENEFILEREADER_H
-#define IO_SCENEFILEREADER_H
+#ifndef IO_FILEREADER_H
+#define IO_FILEREADER_H
 
 // glm includes.
 #include <glm/glm.hpp>
@@ -18,4 +18,4 @@ typedef struct MeshOffFile {
 
 MeshOffFile read_off(const std::string& filename);
 
-#endif // IO_SCENEFILEREADER_H
+#endif // IO_FILEREADER_H

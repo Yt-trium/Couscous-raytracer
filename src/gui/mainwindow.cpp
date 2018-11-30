@@ -7,7 +7,6 @@
 #include "common/logger.h"
 #include "gui/scene.h"
 #include "gui/dialogmeshfile.h"
-#include "io/scenefilereader.h"
 #include "renderer/camera.h"
 #include "renderer/material.h"
 #include "renderer/photonMapping.h"

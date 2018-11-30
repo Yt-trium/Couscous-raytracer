@@ -2,8 +2,9 @@
 
 // couscous includes.
 #include "renderer/visualobject.h"
-#include "io/scenefilereader.h"
+#include "io/filereader.h"
 
+// glm includes.
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
