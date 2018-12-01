@@ -88,6 +88,9 @@ MainWindow::MainWindow(QWidget *parent)
     debug_view_action_group->addAction(ui->actionDisplayNormals);
     debug_view_action_group->addAction(ui->actionDisplayAlbedo);
     debug_view_action_group->addAction(ui->actionDisplayPhotonMap);
+    debug_view_action_group->addAction(ui->actionDisplayDirectDiffuse);
+    debug_view_action_group->addAction(ui->actionDisplayDirectSpecular);
+    debug_view_action_group->addAction(ui->actionDisplayDirectPhong);
     debug_view_action_group->addAction(ui->actionDisplayNone);
 
     // Map log level events.
@@ -96,7 +99,10 @@ MainWindow::MainWindow(QWidget *parent)
     // Presets selection events.
     auto presets_group = new QActionGroup(this);
     presets_group->addAction(ui->actionPresetsCornellBox);
+    presets_group->addAction(ui->actionPresetsCornellBoxSuzanne);
+    presets_group->addAction(ui->actionPresetsOrangeBlueCornellBox);
     presets_group->addAction(ui->actionPresetsSimpleCube);
+    presets_group->addAction(ui->actionPresetsSphere);
     presets_group->addAction(ui->actionPresetsEmpty);
 
     connect(presets_group, SIGNAL(triggered(QAction*)), SLOT(slot_presets_changed(QAction*)));
@@ -195,16 +201,17 @@ void MainWindow::slot_do_render()
 {
     ui->pushButton_render->setEnabled(false);
 
-    const size_t width   = size_t(ui->spinBox_width->value());
-    const size_t height  = size_t(ui->spinBox_height->value());
-    const size_t samples = size_t(ui->spinBox_spp->value());
-    const float pos_x    = float(ui->doubleSpinBox_position_x->value());
-    const float pos_y    = float(ui->doubleSpinBox_position_y->value());
-    const float pos_z    = float(ui->doubleSpinBox_position_z->value());
-    const float yaw      = float(ui->doubleSpinBox_yaw->value());
-    const float pitch    = float(ui->doubleSpinBox_pitch->value());
-    const float fov      = float(ui->doubleSpinBox_fov->value());
-    const bool parallel  = ui->checkBox_parallel_rendering->isChecked();
+    const size_t width     = size_t(ui->spinBox_width->value());
+    const size_t height    = size_t(ui->spinBox_height->value());
+    const size_t samples   = size_t(ui->spinBox_spp->value());
+    const size_t direct_light_rays_count = size_t(ui->spinBox_dlrc->value());
+    const float  pos_x     = float(ui->doubleSpinBox_position_x->value());
+    const float  pos_y     = float(ui->doubleSpinBox_position_y->value());
+    const float  pos_z     = float(ui->doubleSpinBox_position_z->value());
+    const float  yaw       = float(ui->doubleSpinBox_yaw->value());
+    const float  pitch     = float(ui->doubleSpinBox_pitch->value());
+    const float  fov       = float(ui->doubleSpinBox_fov->value());
+    const bool   parallel  = ui->checkBox_parallel_rendering->isChecked();
 
     m_image = QImage(int(width), int(height), QImage::Format_RGB888);
 
@@ -232,10 +239,14 @@ void MainWindow::slot_do_render()
         samples,
         camera,
         world,
+        direct_light_rays_count,
         parallel,
         ui->actionDisplayNormals->isChecked(),
         ui->actionDisplayAlbedo->isChecked(),
         ui->actionDisplayPhotonMap->isChecked(),
+        ui->actionDisplayDirectDiffuse->isChecked(),
+        ui->actionDisplayDirectSpecular->isChecked(),
+        ui->actionDisplayDirectPhong->isChecked(),
         m_image,
         m_statusBarProgress);
 
@@ -513,9 +524,21 @@ void MainWindow::slot_presets_changed(QAction *action)
     {
         scene = Scene::cornell_box();
     }
+    else if(action == ui->actionPresetsCornellBoxSuzanne)
+    {
+        scene = Scene::cornell_box_suzanne();
+    }
+    else if(action == ui->actionPresetsOrangeBlueCornellBox)
+    {
+        scene = Scene::cornell_box_orange_and_blue();
+    }
     else if(action == ui->actionPresetsSimpleCube)
     {
         scene = Scene::simple_cube();
+    }
+    else if(action == ui->actionPresetsSphere)
+    {
+        scene = Scene::sphere();
     }
     else if(action == ui->actionPresetsEmpty)
     {

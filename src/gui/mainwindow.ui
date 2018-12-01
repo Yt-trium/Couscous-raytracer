@@ -93,6 +93,9 @@
      <addaction name="actionDisplayNormals"/>
      <addaction name="actionDisplayAlbedo"/>
      <addaction name="actionDisplayPhotonMap"/>
+     <addaction name="actionDisplayDirectDiffuse"/>
+     <addaction name="actionDisplayDirectSpecular"/>
+     <addaction name="actionDisplayDirectPhong"/>
      <addaction name="actionDisplayNone"/>
     </widget>
     <addaction name="menuLogLevel"/>
@@ -103,7 +106,10 @@
      <string>Presets</string>
     </property>
     <addaction name="actionPresetsCornellBox"/>
+    <addaction name="actionPresetsCornellBoxSuzanne"/>
+    <addaction name="actionPresetsOrangeBlueCornellBox"/>
     <addaction name="actionPresetsSimpleCube"/>
+    <addaction name="actionPresetsSphere"/>
     <addaction name="actionPresetsEmpty"/>
    </widget>
    <addaction name="menuFile"/>
@@ -130,7 +136,7 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_render">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_position_x">
        <property name="decimals">
         <number>2</number>
@@ -153,7 +159,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="9" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw">
        <property name="decimals">
         <number>4</number>
@@ -169,7 +175,7 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="11" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_fov">
        <property name="decimals">
         <number>4</number>
@@ -185,7 +191,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="10" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch">
        <property name="decimals">
         <number>4</number>
@@ -218,35 +224,35 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="label_position_z">
        <property name="text">
         <string>Position z</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="label_position_y">
        <property name="text">
         <string>Position y</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="label_pitch">
        <property name="text">
         <string>Pitch</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="label_fov">
        <property name="text">
         <string>Fov</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_position_z">
        <property name="minimum">
         <double>-9999.000000000000000</double>
@@ -272,14 +278,14 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="label_yaw">
        <property name="text">
         <string>Yaw</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="2">
+     <item row="5" column="0" colspan="2">
       <widget class="QLabel" name="label_camera">
        <property name="font">
         <font>
@@ -298,7 +304,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QDoubleSpinBox" name="doubleSpinBox_position_y">
        <property name="minimum">
         <double>-9999.000000000000000</double>
@@ -311,7 +317,7 @@
        </property>
       </widget>
      </item>
-     <item row="15" column="0" colspan="2">
+     <item row="16" column="0" colspan="2">
       <widget class="QCheckBox" name="checkBox_parallel_rendering">
        <property name="text">
         <string>Parallel rendering</string>
@@ -321,7 +327,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_position_x">
        <property name="text">
         <string>Position x</string>
@@ -344,7 +350,7 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0" colspan="2">
+     <item row="12" column="0" colspan="2">
       <widget class="QLabel" name="label_viewer">
        <property name="font">
         <font>
@@ -360,7 +366,7 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="0" colspan="2">
+     <item row="14" column="0" colspan="2">
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -373,7 +379,7 @@
        </property>
       </spacer>
      </item>
-     <item row="12" column="0" colspan="2">
+     <item row="13" column="0" colspan="2">
       <layout class="QHBoxLayout" name="horizontalLayout_zoom">
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
@@ -429,13 +435,30 @@
        </property>
       </widget>
      </item>
-     <item row="16" column="0" colspan="2">
+     <item row="17" column="0" colspan="2">
       <widget class="QPushButton" name="pushButton_render">
        <property name="text">
         <string>Render</string>
        </property>
        <property name="shortcut">
         <string>Ctrl+R</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Direct light rays</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="spinBox_dlrc">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="value">
+        <number>8</number>
        </property>
       </widget>
      </item>
@@ -669,6 +692,45 @@
     <string>Add mesh file</string>
    </property>
   </action>
+  <action name="actionDisplayDirectDiffuse">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Direct Diffuse</string>
+   </property>
+  </action>
+  <action name="actionPresetsOrangeBlueCornellBox">
+   <property name="text">
+    <string>Cornell &amp;Box Orange/Blue Lights</string>
+   </property>
+  </action>
+  <action name="actionPresetsCornellBoxSuzanne">
+   <property name="text">
+    <string>S&amp;uzanne</string>
+   </property>
+  </action>
+  <action name="actionDisplayDirectSpecular">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>D&amp;irect Specular</string>
+   </property>
+  </action>
+  <action name="actionDisplayDirectPhong">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Di&amp;rect Phong</string>
+   </property>
+  </action>
+  <action name="actionPresetsSphere">
+   <property name="text">
+    <string>Sphere</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
@@ -676,6 +738,7 @@
   <tabstop>spinBox_width</tabstop>
   <tabstop>spinBox_height</tabstop>
   <tabstop>spinBox_spp</tabstop>
+  <tabstop>spinBox_dlrc</tabstop>
   <tabstop>doubleSpinBox_position_x</tabstop>
   <tabstop>doubleSpinBox_position_y</tabstop>
   <tabstop>doubleSpinBox_position_z</tabstop>
@@ -685,6 +748,7 @@
   <tabstop>checkBox_parallel_rendering</tabstop>
   <tabstop>pushButton_zoom_in</tabstop>
   <tabstop>pushButton_zoom_out</tabstop>
+  <tabstop>treeWidget_scene</tabstop>
  </tabstops>
  <resources>
   <include location="../../icons/icons.qrc"/>

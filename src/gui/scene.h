@@ -135,8 +135,10 @@ class Scene
 
     // Create a cornell box scene.
     static Scene cornell_box();
-
+    static Scene cornell_box_suzanne();
+    static Scene cornell_box_orange_and_blue();
     static Scene simple_cube();
+    static Scene sphere();
 
     std::vector<SceneMaterial>      materials;
     std::vector<SceneObject>        objects;

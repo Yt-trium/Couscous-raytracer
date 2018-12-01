@@ -44,7 +44,7 @@ vec3 random_in_unit_sphere(RNG& rng)
 
 vec3 random_point_on_lights(const MeshGroup& lights, RNG& rng)
 {
-    const size_t indice = rand() / ((RAND_MAX + 1u) / lights.size());
+    const size_t indice = static_cast<size_t>(rng.next() * (lights.size() - 1));
 
     const shared_ptr<Triangle>& light = lights[indice];
     const vec3& va = light->vertice(0);

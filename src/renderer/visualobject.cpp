@@ -134,8 +134,6 @@ bool Triangle::hit(
     const float                     tmax,
     HitRecord&                      rec) const
 {
-    static const float epsilon = 0.0001f;
-
     const vec3& v0 = m_mesh->m_vertices[*m_indices];
     const vec3& v1 = m_mesh->m_vertices[*(m_indices + 1)];
     const vec3& v2 = m_mesh->m_vertices[*(m_indices + 2)];
@@ -143,7 +141,7 @@ bool Triangle::hit(
 #ifdef COMPUTE_NORMALS_ON_FLY
     const vec3 v0v1 = v1 - v0;
     const vec3 v0v2 = v2 - v0;
-    const vec3 normal = cross(v0v1, v0v2);
+    const vec3 normal = normalize(cross(v0v1, v0v2));
 #else
     const vec3& normal = m_normal;
 #endif
@@ -156,7 +154,7 @@ bool Triangle::hit(
     const float n_dot_ray_dir = dot(normal, r.dir);
 
     // Don't display objects pointing in the wrong direction.
-    if (n_dot_ray_dir > epsilon)
+    if (n_dot_ray_dir >= 0.0f)
         return false;
 
     // Compute the parameter d that gives the direction to P.
@@ -198,11 +196,7 @@ bool Triangle::hit(
     if (dot(normal, c) < 0.0f)
         return false;
 
-#ifdef COMPUTE_NORMALS_ON_FLY
-    rec.normal = normalize(normal);
-#else
     rec.normal = normal;
-#endif
 
     rec.mat = m_mesh->m_mat.get();
     rec.p = p;

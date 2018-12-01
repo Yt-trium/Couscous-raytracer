@@ -21,6 +21,7 @@ class Material
     const float       kd;
     const float       ks;
     const float       specularExponent;
+    const bool        light;
 
   private:
     const float       m_rf;

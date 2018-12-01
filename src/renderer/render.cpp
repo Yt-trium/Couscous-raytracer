@@ -29,8 +29,11 @@
 using namespace glm;
 using namespace std;
 
-#define directlightRaysNumber 8
 #define indirectLightRaysNumber 16
+#define COUCOUS_M_PI 3.1416f
+#define COUCOUS_M_2PI 2.0f * 3.1416f
+#define COUCOUS_M_INV_2PI 1.0f / (2.0f * 3.1416f)
+#define COUCOUS_M_INV_PI 1.0f / 3.1416f
 
 namespace
 {
@@ -115,8 +118,188 @@ namespace
         }
     }
 
-    vec3 get_ray_color_phong(
+    vec3 get_direct_diffuse(
         const Ray&                                      r,
+        const size_t                                    directLightRaysCount,
+        const VoxelGridAccelerator&                     grid,
+        const MeshGroup&                                lights,
+        RNG&                                            rng)
+    {
+        HitRecord rec;
+
+        if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+        {
+            // Display lights only by showing the emissive value.
+            if(rec.mat->light)
+            {
+                return normalize(rec.mat->emission);
+            }
+
+            HitRecord directLightRec;
+            vector<vec3> lightPoints;
+            const Material* mat = rec.mat;
+            vec3 diffuse(0.0f);
+
+            // We cast n rau per lights.
+            for (size_t l = 0; l < lights.size(); ++l)
+            {
+                const auto& light = lights[l];
+                const vec3& va = light->vertice(0);
+                const vec3& vb = light->vertice(1);
+                const vec3& vc = light->vertice(2);
+
+                // Compute direct lighting by sending rays to lights.
+                for(size_t i = 0; i < directLightRaysCount; ++i)
+                {
+                    const vec3 currentPointOnLight = random_point_in_triangle(va, vb, vc, rng);
+                    const vec3 currentLightDir = normalize(currentPointOnLight - rec.p);
+
+                    bool answ = grid.hit(Ray(rec.p, currentLightDir), 0.0001f, numeric_limits<float>::max(), directLightRec);
+
+                    // Only take into account emissive materials.
+                    if (answ && directLightRec.mat->light)
+                    {
+                        const Material* light_mat = directLightRec.mat;
+
+                        diffuse += mat->albedo * light_mat->emission *
+                            std::max(0.0f, dot(rec.normal, currentLightDir));
+                    }
+                }
+            }
+
+            return (diffuse * mat->kd) / static_cast<float>(lights.size() * directLightRaysCount);
+        }
+        else
+        {
+            return vec3(0.0f);
+        }
+    }
+
+    vec3 get_direct_specular(
+        const Ray&                                      r,
+        const size_t                                    directLightRaysCount,
+        const VoxelGridAccelerator&                     grid,
+        const MeshGroup&                                lights,
+        RNG&                                            rng)
+    {
+        HitRecord rec;
+
+        if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+        {
+            // Display lights only by showing the emissive value.
+            if(rec.mat->light)
+            {
+                return normalize(rec.mat->emission);
+            }
+
+            HitRecord directLightRec;
+            const Material* mat = rec.mat;
+            const float ray_count = static_cast<float>(lights.size() * directLightRaysCount);
+            const vec3 V = -r.dir;
+            vec3 specular(0.0f);
+
+            // We cast n rau per lights.
+            for (size_t l = 0; l < lights.size(); ++l)
+            {
+                const auto& light = lights[l];
+                const vec3& va = light->vertice(0);
+                const vec3& vb = light->vertice(1);
+                const vec3& vc = light->vertice(2);
+
+                // Compute direct lighting by sending rays to lights.
+                for(size_t i = 0; i < directLightRaysCount; ++i)
+                {
+                    const vec3 currentPointOnLight = random_point_in_triangle(va, vb, vc, rng);
+                    const vec3 currentLightDir = normalize(currentPointOnLight - rec.p);
+
+                    bool answ = grid.hit(Ray(rec.p, currentLightDir), 0.0001f, numeric_limits<float>::max(), directLightRec);
+
+                    // Only take into account emissive materials.
+                    if (answ && directLightRec.mat->light)
+                    {
+                        const Material* light_mat = directLightRec.mat;
+
+                        vec3 R = reflect(-currentLightDir, rec.normal);
+                        specular += light_mat->emission
+                            * pow(std::max(0.0f, dot(R, V)), mat->specularExponent);
+                    }
+                }
+            }
+
+            return (specular * mat->ks) / ray_count;
+        }
+        else
+        {
+            return vec3(0.0f);
+        }
+    }
+
+    vec3 get_direct_phong(
+        const Ray&                                      r,
+        const size_t                                    directLightRaysCount,
+        const VoxelGridAccelerator&                     grid,
+        const MeshGroup&                                lights,
+        RNG&                                            rng)
+    {
+        HitRecord rec;
+
+        if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+        {
+            // Display lights only by showing the emissive value.
+            if(rec.mat->light)
+            {
+                return clamp(rec.mat->emission, 0.0f, 1.0f);
+            }
+
+            HitRecord directLightRec;
+            const Material* mat = rec.mat;
+            vec3 specular(0.0f), diffuse(0.0f);
+            const vec3 V = -r.dir;
+            const float ray_count = static_cast<float>(lights.size() * directLightRaysCount);
+
+            // We cast n rau per lights.
+            for (size_t l = 0; l < lights.size(); ++l)
+            {
+                const auto& light = lights[l];
+                const vec3& va = light->vertice(0);
+                const vec3& vb = light->vertice(1);
+                const vec3& vc = light->vertice(2);
+
+                // Compute direct lighting by sending rays to lights.
+                for(size_t i = 0; i < directLightRaysCount; ++i)
+                {
+                    const vec3 currentPointOnLight = random_point_in_triangle(va, vb, vc, rng);
+                    const vec3 currentLightDir = normalize(currentPointOnLight - rec.p);
+
+                    bool answ = grid.hit(Ray(rec.p, currentLightDir), 0.0001f, numeric_limits<float>::max(), directLightRec);
+
+                    // Only take into account emissive materials.
+                    if (answ && directLightRec.mat->light)
+                    {
+                        const Material* light_mat = directLightRec.mat;
+
+                        vec3 R = reflect(-currentLightDir, rec.normal);
+
+                        specular += light_mat->emission
+                            * pow(std::max(0.0f, dot(R, V)), mat->specularExponent);
+
+                        diffuse += mat->albedo * light_mat->emission *
+                            std::max(0.0f, dot(rec.normal, currentLightDir));
+                    }
+                }
+            }
+
+            return (diffuse * mat->kd + specular * mat->ks) / ray_count;
+        }
+        else
+        {
+            return vec3(0.0f);
+        }
+    }
+
+    vec3 get_final(
+        const Ray&                                      r,
+        const size_t                                    directLightRaysCount,
         const VoxelGridAccelerator&                     grid,
         const MeshGroup&                                lights,
         const PhotonTree&                               ptree,
@@ -127,7 +310,7 @@ namespace
         if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
             // Display lights only by showing the emissive value.
-            if(rec.mat->emission != vec3(0.0f))
+            if(rec.mat->light)
             {
                 return clamp(rec.mat->emission, 0.0f, 1.0f);
             }
@@ -141,7 +324,7 @@ namespace
             vec3 indirectColor = vec3(0.0f);
 
             // Compute direct lighting by sending rays to lights.
-            for(size_t i = 0; i < directlightRaysNumber; ++i)
+            for(size_t i = 0; i < directLightRaysCount; ++i)
             {
                 const vec3 currentPointOnLight = random_point_on_lights(lights, rng);
                 const vec3 currentLightDir = normalize(currentPointOnLight - rec.p);
@@ -250,10 +433,14 @@ void Render::get_render_image(
     const size_t                    spp,
     const Camera&                   camera,
     const MeshGroup&                world,
+    const size_t                    direct_light_rays_count,
     const bool                      parallel,
     const bool                      get_normal_color,
     const bool                      get_albedo_color,
     const bool                      display_photon_map,
+    const bool                      direct_diffuse,
+    const bool                      direct_specular,
+    const bool                      direct_phong,
     QImage&                         image,
     QProgressBar&                   progressBar)
 {
@@ -327,9 +514,21 @@ void Render::get_render_image(
                     {
                         color += get_ray_photon_map(r, grid, ptree);
                     }
+                    else if (direct_diffuse)
+                    {
+                        color += get_direct_diffuse(r, direct_light_rays_count, grid, lights, rng);
+                    }
+                    else if (direct_specular)
+                    {
+                        color += get_direct_specular(r, direct_light_rays_count, grid, lights, rng);
+                    }
+                    else if (direct_phong)
+                    {
+                        color += get_direct_phong(r, direct_light_rays_count, grid, lights, rng);
+                    }
                     else
                     {
-                        color += get_ray_color_phong(r, grid, lights, ptree, rng);
+                        color += get_final(r, direct_light_rays_count, grid, lights, ptree, rng);
                     }
                 }
 

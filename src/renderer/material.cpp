@@ -18,6 +18,7 @@ Material::Material(
   , kd(kd)
   , ks(ks)
   , specularExponent(specularExponent)
+  , light(emission != vec3(0.0f))
   , m_rf(max(albedo.x, max(albedo.y, albedo.z)))
 {
 }

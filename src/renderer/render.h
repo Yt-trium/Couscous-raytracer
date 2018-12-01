@@ -24,9 +24,6 @@ class PhotonTree;
 class RNG;
 class VoxelGridAccelerator;
 
-
-#define PHOTON_FETCH_SIZE 5
-
 class Render : public QObject
 {
     Q_OBJECT
@@ -37,10 +34,14 @@ class Render : public QObject
         const size_t                    spp,
         const Camera&                   camera,
         const MeshGroup&                world,
+        const size_t                    direct_light_rays_count,
         const bool                      parallel,
         const bool                      get_normal_color,
         const bool                      get_albedo_color,
         const bool                      display_photon_map,
+        const bool                      direct_diffuse,
+        const bool                      direct_specular,
+        const bool                      direct_phong,
         QImage&                         image,
         QProgressBar&                   progressBar);
 
