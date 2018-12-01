@@ -167,7 +167,7 @@ namespace
                 }
             }
 
-            return (diffuse * mat->kd) / static_cast<float>(lights.size() * directLightRaysCount);
+            return (diffuse * mat->kd * COUCOUS_M_INV_PI) / static_cast<float>(lights.size() * directLightRaysCount);
         }
         else
         {
@@ -226,7 +226,7 @@ namespace
                 }
             }
 
-            return (specular * mat->ks) / ray_count;
+            return (specular * mat->ks * ((ray_count + 2.0f) * COUCOUS_M_INV_2PI)) / ray_count;
         }
         else
         {
@@ -289,7 +289,10 @@ namespace
                 }
             }
 
-            return (diffuse * mat->kd + specular * mat->ks) / ray_count;
+            return (
+                diffuse * mat->kd * COUCOUS_M_INV_PI
+                + specular * mat->ks * ((ray_count + 2.0f) * COUCOUS_M_INV_2PI))
+                / ray_count;
         }
         else
         {
