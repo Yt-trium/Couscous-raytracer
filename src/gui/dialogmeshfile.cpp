@@ -27,6 +27,7 @@ DialogMeshFile::DialogMeshFile(QWidget* parent, Scene& scene, SceneMeshFile& sce
     m_ui->doubleSpinBox_scale_x->setValue(double(transform.scale[0]));
     m_ui->doubleSpinBox_scale_y->setValue(double(transform.scale[1]));
     m_ui->doubleSpinBox_scale_z->setValue(double(transform.scale[2]));
+    m_ui->smoothShading->setChecked(scene_file.smooth_shading);
 
     for(size_t x = 0; x < scene.materials.size(); ++x)
     {
@@ -60,5 +61,6 @@ void DialogMeshFile::on_buttonBox_accepted()
     m_scene_file.path = m_ui->lineEdit_path->text().toStdString();
     m_scene_file.transform = transform;
     m_scene_file.material = m_ui->comboBox_material->currentText().toStdString();
+    m_scene_file.smooth_shading = m_ui->smoothShading->isChecked();
 }
 
