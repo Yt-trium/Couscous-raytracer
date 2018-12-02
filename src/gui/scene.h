@@ -94,13 +94,15 @@ class SceneMeshFile
     SceneMeshFile(
         const std::string&  name,
         const std::string&  path,
-        const Transform&     transform,
-        const std::string&  material_name);
+        const Transform&    transform,
+        const std::string&  material_name,
+        const bool          smooth_shading = false);
 
     std::string                 name;
     std::string                 path;
     Transform                   transform;
     std::string                 material;
+    bool                        smooth_shading;
 };
 
 //

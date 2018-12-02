@@ -11,9 +11,6 @@
 using namespace glm;
 using namespace std;
 
-// Uncomment this to compute shapes normal at intersection.
-// #define COMPUTE_NORMALS_ON_FLY
-
 //
 // 3D Object data structures implementation.
 //
@@ -68,10 +65,12 @@ TriangleMesh::TriangleMesh(
     const vec3*                     vertices,
     const vec3*                     normals,
     const shared_ptr<Material>&     material,
-    const mat4&                     transform)
+    const mat4&                     transform,
+    const bool                      smooth_shading)
   : m_triangle_count(triangle_count)
   , m_vertices_count(vertices_count)
   , m_mat(material)
+  , m_smooth_shading(smooth_shading)
 {
     assert(indices);
     assert(vertices);
@@ -91,8 +90,9 @@ TriangleMesh::TriangleMesh(
     const mat3 normals_transform = transpose(inverse(transform));
 
     // Copy normals.
-    m_normals.reset(new vec3[m_triangle_count]);
-    for (size_t i = 0; i < m_triangle_count; ++i)
+    const size_t normal_count = smooth_shading ? m_vertices_count : m_triangle_count;
+    m_normals.reset(new vec3[normal_count]);
+    for (size_t i = 0; i < normal_count; ++i)
     {
         m_normals[i] = normalize(normals_transform * normals[i]);
     }
@@ -113,7 +113,7 @@ Triangle::Triangle(
     const size_t                        indice)
   : m_mesh(mesh)
   , m_indices(&mesh->m_indices[3 * indice])
-  , m_normal(mesh->m_normals[indice])
+  , m_triangle_indice(indice)
 {
     assert(*m_indices == m_mesh->m_indices[3 * indice]);
     assert(*(m_indices + 1) == m_mesh->m_indices[3 * indice + 1]);
@@ -137,69 +137,53 @@ bool Triangle::hit(
     const vec3& v0 = m_mesh->m_vertices[*m_indices];
     const vec3& v1 = m_mesh->m_vertices[*(m_indices + 1)];
     const vec3& v2 = m_mesh->m_vertices[*(m_indices + 2)];
-
-#ifdef COMPUTE_NORMALS_ON_FLY
     const vec3 v0v1 = v1 - v0;
     const vec3 v0v2 = v2 - v0;
-    const vec3 normal = normalize(cross(v0v1, v0v2));
-#else
-    const vec3& normal = m_normal;
-#endif
 
-    // 1.
-    // Find the intersection point with the ray and the plane lying on
-    // the triangle.
+    const vec3 h = cross(r.dir, v0v2);
+    const float a = dot(v0v1, h);
 
-    // Parallel test between the plane and the ray.
-    const float n_dot_ray_dir = dot(normal, r.dir);
-
-    // Don't display objects pointing in the wrong direction.
-    if (n_dot_ray_dir >= 0.0f)
+    // Parallel or behind ?
+    if (a <= 0.0f)
         return false;
 
-    // Compute the parameter d that gives the direction to P.
-    const float d = dot(normal, v0);
+    const float f = 1.0f / a;
+    const vec3 s = r.origin - v0;
+    const float u = f * dot(s, h);
 
-    // Compute the parameter t that satisfies
-    // origin + t * dir = P
-    const float t = - (dot(normal, r.origin) - d) / n_dot_ray_dir;
-
-    // Is the triangle behind the ray ?
-    if (t < 0.0f || t >= tmax || t < tmin)
+    if (u < 0.0f || u > 1.0f)
         return false;
 
-    // Calculate Ray/Plane intersection point.
-    const vec3 p = r.origin + t * r.dir;
+    const vec3 q = cross(s, v0v1);
+    const float v = f * dot(r.dir, q);
 
-    // 2.
-    // Check if the point P is inside the triangle.
-    vec3 c;
-
-    // First edge.
-    const vec3& edge0 = v1 - v0;
-    const vec3 vp0 = p - v0;
-    c = cross(edge0, vp0);
-    if (dot(normal, c) < 0.0f)
+    if (v < 0.0f || u + v > 1.0f)
         return false;
 
-    // Second ege.
-    const vec3 edge1 = v2 - v1;
-    const vec3 vp1 = p - v1;
-    c = cross(edge1, vp1);
-    if (dot(normal, c) < 0.0f)
+    const float t = f * dot(v0v2, q);
+
+    if (t <= 0.0f || t >= tmax || t < tmin)
         return false;
 
-    // Third ege.
-    const vec3 edge2 = v0 - v2;
-    const vec3 vp2 = p - v2;
-    c = cross(edge2, vp2);
-    if (dot(normal, c) < 0.0f)
-        return false;
+    if (!m_mesh->m_smooth_shading)
+    {
+        rec.normal = m_mesh->m_normals[m_triangle_indice];
+    }
+    else
+    {
+        // Interpolate normals.
+        const vec3& n0 = m_mesh->m_normals[*m_indices];
+        const vec3& n1 = m_mesh->m_normals[*(m_indices + 1)];
+        const vec3& n2 = m_mesh->m_normals[*(m_indices + 2)];
+        const float w = 1.0f - u - v;
+        rec.normal = u * n1 + v * n2 + w * n0;
+    }
 
-    rec.normal = normal;
-
+    //const vec3 normal = normalize(cross(v0v1, v0v2));
+    //const vec3& normal = m_normal;
+    //const vec3& v0 = m_mesh->m_vertices[*m_indices];
     rec.mat = m_mesh->m_mat.get();
-    rec.p = p;
+    rec.p = r.origin + r.dir * t;
     rec.t = t;
     rec.triangle = this;
 
@@ -222,12 +206,6 @@ const vec3& Triangle::vertice(const size_t indice) const
     return m_mesh->m_vertices[*(m_indices + indice)];
 }
 
-const vec3& Triangle::normal() const
-{
-    return m_normal;
-}
-
-
 //
 // Mesh generation implementation.
 //
@@ -240,7 +218,8 @@ void create_triangle_mesh(
     const vec3*                 vertices,
     const vec3*                 normals,
     const shared_ptr<Material>& material,
-    const mat4&                 transform)
+    const mat4&                 transform,
+    const bool                  smooth_shading)
 {
     shared_ptr<TriangleMesh> mesh = make_shared<TriangleMesh>(
         triangle_count,
@@ -249,7 +228,8 @@ void create_triangle_mesh(
         vertices,
         normals,
         material,
-        transform);
+        transform,
+        smooth_shading);
 
     for (size_t i = 0; i < triangle_count; ++i)
     {

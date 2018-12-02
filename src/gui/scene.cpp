@@ -87,11 +87,13 @@ SceneMeshFile::SceneMeshFile(
     const std::string&  name,
     const std::string&  path,
     const Transform&    transform,
-    const std::string&  material_name)
+    const std::string&  material_name,
+    const bool          smooth_shading)
   : name(name)
   , path(path)
   , transform(transform)
   , material(material_name)
+  , smooth_shading(smooth_shading)
 {
 }
 
@@ -180,9 +182,10 @@ void Scene::create_scene(MeshGroup &world)
              data.vertices.size(),
              data.faces.data(),
              data.vertices.data(),
-             data.normals.data(),
+             obj.smooth_shading ? data.vertex_normals.data() : data.face_normals.data(),
              mat_default,
-             obj.transform.matrix());
+             obj.transform.matrix(),
+             obj.smooth_shading);
     }
 }
 
@@ -525,7 +528,8 @@ Scene Scene::sphere()
             vec3(0.0f),
             vec3(0.0f),
             vec3(2.0f)),
-        "grey");
+        "grey",
+        true);
 
     scene.cameras.push_back(SceneCamera("CAM_1",
         vec3(0.0f, 0.8f, 20.0f),

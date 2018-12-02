@@ -13,7 +13,8 @@
 typedef struct MeshOffFile {
     std::vector<glm::vec3> vertices;
     std::vector<size_t> faces;
-    std::vector<glm::vec3> normals;
+    std::vector<glm::vec3> face_normals;
+    std::vector<glm::vec3> vertex_normals;
 } MeshOffFile;
 
 MeshOffFile read_off(const std::string& filename);

@@ -185,14 +185,14 @@ void PhotonMap::compute_map(
             // and going in a random direction.
             vec3 rayDir = random_in_unit_sphere(rng);
 
-            if(dot(rayDir, currentLight->normal()) < 0.0f)
-            {
-                rayDir = -rayDir;
-            }
-
             const vec3& va = currentLight->vertice(0);
             const vec3& vb = currentLight->vertice(1);
             const vec3& vc = currentLight->vertice(2);
+
+            if(dot(rayDir, cross(vc - va, vb - va)) > 0.0f)
+            {
+                rayDir = -rayDir;
+            }
 
             const Ray r(random_point_in_triangle(va, vb, vc, rng), rayDir);
 

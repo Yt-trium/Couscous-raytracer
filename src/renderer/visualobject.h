@@ -86,7 +86,8 @@ class TriangleMesh
         const glm::vec3*                    vertices,
         const glm::vec3*                    normals,
         const std::shared_ptr<Material>&    material,
-        const glm::mat4&                    transform = glm::mat4(1.0f));
+        const glm::mat4&                    transform = glm::mat4(1.0f),
+        const bool                          smooth_shading = false);
 
     std::shared_ptr<Material> getMaterial();
 
@@ -99,6 +100,7 @@ class TriangleMesh
     std::unique_ptr<glm::vec3[]>    m_vertices;
     std::unique_ptr<glm::vec3[]>    m_normals;
     std::shared_ptr<Material>       m_mat;
+    bool                            m_smooth_shading;
 };
 
 // A triangle linked directly to 1 triangle mesh.
@@ -122,12 +124,10 @@ class Triangle : public VisualObject
 
     const glm::vec3& vertice(const size_t indice) const;
 
-    const glm::vec3& normal() const;
-
   private:
     std::shared_ptr<TriangleMesh>       m_mesh;
     size_t*                             m_indices;
-    const glm::vec3&                    m_normal;
+    const size_t                        m_triangle_indice;
     AABB                                m_bbox;
 };
 
@@ -144,7 +144,8 @@ void create_triangle_mesh(
     const glm::vec3*                    vertices,
     const glm::vec3*                    normals,
     const std::shared_ptr<Material>&    material,
-    const glm::mat4&                    transform);
+    const glm::mat4&                    transform,
+    const bool                          smooth_shading = false);
 
 void create_cube(
     MeshGroup&                          world,

@@ -77,7 +77,34 @@ MeshOffFile read_off(const std::string& filename)
                 (mesh.vertices.at(ib) - mesh.vertices.at(ia)),
                 (mesh.vertices.at(ic) - mesh.vertices.at(ia)));
 
-            mesh.normals.push_back(normal);
+            mesh.face_normals.push_back(normal);
+        }
+    }
+
+    // Compute vertex normals.
+    {
+        // For each vertex.
+        for (size_t v = 0; v < vert_count; ++v)
+        {
+            vec3 normal(0.0f);
+            size_t normal_count = 0;
+
+            // Add normals of attached faces.
+            for (size_t i = 0; i < face_count; ++i)
+            {
+                const size_t ia = mesh.faces.at(i * 3);
+                const size_t ib = mesh.faces.at(i * 3 + 1);
+                const size_t ic = mesh.faces.at(i * 3 + 2);
+
+                if (ia == v || ib == v || ic == v)
+                {
+                    normal += mesh.face_normals.at(i);
+                    normal_count += 1;
+                }
+            }
+
+            normal = normal_count > 0 ? normal / static_cast<float>(normal_count) : normal;
+            mesh.vertex_normals.push_back(normal);
         }
     }
 
