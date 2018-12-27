@@ -20,25 +20,21 @@ using namespace glm;
 // For the creation of the photon map on a single thread.
 // #define FORCE_SINGLE_THREAD
 
-//
-// Russian roulette.
-//
-
-RussianRoulette::RussianRoulette()
+namespace
 {
-    std::random_device rd;
-    engine = std::mt19937(rd());
-    distributor = std::uniform_real_distribution<>(rangeMin, rangeMax);
-}
+    // Generate a random number U between 0-1, 0<alpha<1
+    //      if U <= alpha then return 0
+    //      else return energy/(1-alpha) to compensate energy loss during process due to russian roulette
+    float russian_roulette(
+        const float alpha,
+        const float energy,
+        RNG&        rng)
+    {
+        if(rng.next() <= alpha)
+            return 0.0f;
 
-float RussianRoulette::modifyEnergy(
-    const float alpha,
-    const float energy)
-{
-    if(distributor(engine) <= alpha)
-        return 0.0f;
-
-    return energy / (1.0f - alpha);
+        return energy / (1.0f - alpha);
+    }
 }
 
 
@@ -90,30 +86,33 @@ void PhotonMap::trace_photon_ray(
     const size_t                    ray_max_depth,
     const VoxelGridAccelerator&     grid,
     const float                     inEnergy,
-    const int                       depth)
+    RNG&                            rng,
+    const size_t                    depth)
 {
     HitRecord rec;
 
     if(grid.hit(r, 0.0001f, std::numeric_limits<float>::max(), rec))
     {
-        // TODO: apply fuzziness ? Or not.
-        const Ray scattered(rec.p, reflect(normalize(r.dir), rec.normal));
+        const vec3 reflection = reflect(r.dir, rec.normal);
+        const Ray scattered(rec.p, rec.mat->roughness
+                ? random_in_cone(reflection, rec.mat->roughness, rng)
+                : reflection);
+
+        // Check validity.
         const bool isScatterValid = dot(scattered.dir, rec.normal) > 0.0f;
 
         float hitPointEnergy = Photon::compute_energy(inEnergy, rec.mat->brdf());
 
-        // Russian roulette here to know if we stop ourselves or not
-        hitPointEnergy = terminationSystem.modifyEnergy(alpha, hitPointEnergy);
-        if(hitPointEnergy >= photonMinErnergy)
-        {
-            Photon* photon = new Photon(rec.p, r.origin, hitPointEnergy, rec.mat);
-            add_photon(photon);
+        Photon* photon = new Photon(rec.p, r.origin, hitPointEnergy, rec.mat);
+        add_photon(photon);
 
-            // scatterd ray (cast here should not cause any problem, because ray depth will not be greater thant MAX_INT in practice)
-            if(depth < static_cast<int>(ray_max_depth) && isScatterValid)
-            {
-                trace_photon_ray(scattered, ray_max_depth, grid, hitPointEnergy, depth + 1);
-            }
+        // Russian roulette here to know if we stop ourselves or not
+        hitPointEnergy = russian_roulette(alpha, hitPointEnergy, rng);
+
+        // Reflect the photon if not absorbed.
+        if(isScatterValid && hitPointEnergy < 0.8f && depth < ray_max_depth)
+        {
+            trace_photon_ray(scattered, ray_max_depth, grid, hitPointEnergy, rng, depth + 1);
         }
     }
 }
@@ -132,11 +131,10 @@ void PhotonMap::compute_map(
     const MeshGroup&                lights,
     RNG&                            rng)
 {
-    // TODO: Tell the user if there isn't any light and stop safely.
-    if( lights.size() == 0)
+    if(lights.size() == 0)
     {
         Logger::log_error("No lights were found in scene. Please, add at least one light before lighting computation.");
-        assert(lights.size() > 0);
+        return;
     }
 
     QTime timer;
@@ -144,23 +142,7 @@ void PhotonMap::compute_map(
 
     const size_t nbRaysPerLight = samples / lights.size();
 
-    // Compute total energy
-    float totalEnergy = 0.0f;
-    for(unsigned int i = 0; i< lights.size(); i++)
-    {
-        totalEnergy += lights[i]->mat()->light_power;
-    }
-
-    float energyForOneRay = totalEnergy/ static_cast<float>(samples);
-
-    if(energyForOneRay <= photonMinErnergy)
-    {
-        energyForOneRay = photonMinErnergy * 2.0f;
-    }
-
     Logger::log_debug("pm rays per light: " + to_string(nbRaysPerLight) + ".");
-    Logger::log_debug("pm total initial rays: " + to_string(samples) + ".");
-    Logger::log_debug("pm initial rays energy: " + to_string(energyForOneRay) + " W.");
 
     // Job for computing a photon path
     auto compute =
@@ -169,7 +151,7 @@ void PhotonMap::compute_map(
         const float                     inEnergy
        )
     {
-        this->trace_photon_ray(r, ray_max_depth, grid, inEnergy);
+        this->trace_photon_ray(r, ray_max_depth, grid, inEnergy, rng);
     };
 
     std::vector<QFuture<void>> threads;
@@ -178,6 +160,7 @@ void PhotonMap::compute_map(
     for(auto it = lights.begin(); it != lights.end(); ++it)
     {
         const auto& currentLight = *it;
+        const float energyForOneRay = currentLight->mat()->light_power / float(nbRaysPerLight);
 
         for(size_t i = 0; i < nbRaysPerLight; ++i)
         {
@@ -189,6 +172,7 @@ void PhotonMap::compute_map(
             const vec3& vb = currentLight->vertice(1);
             const vec3& vc = currentLight->vertice(2);
 
+            // Make it point in the correct direction.
             if(dot(rayDir, cross(vc - va, vb - va)) > 0.0f)
             {
                 rayDir = -rayDir;
@@ -197,7 +181,7 @@ void PhotonMap::compute_map(
             const Ray r(random_point_in_triangle(va, vb, vc, rng), rayDir);
 
 #ifdef FORCE_SINGLE_THREAD
-            trace_photon_ray(r, ray_max_depth, grid, energyForOneRay);
+            trace_photon_ray(r, ray_max_depth, grid, energyForOneRay, rng);
 #else
             QFuture<void> future = QtConcurrent::run(compute, r, energyForOneRay);
             threads.push_back(future);

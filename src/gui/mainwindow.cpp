@@ -91,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent)
     debug_view_action_group->addAction(ui->actionDisplayDirectDiffuse);
     debug_view_action_group->addAction(ui->actionDisplayDirectSpecular);
     debug_view_action_group->addAction(ui->actionDisplayDirectPhong);
+    debug_view_action_group->addAction(ui->actionDisplayIndirectLight);
     debug_view_action_group->addAction(ui->actionDisplayNone);
 
     // Map log level events.
@@ -99,6 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Presets selection events.
     auto presets_group = new QActionGroup(this);
     presets_group->addAction(ui->actionPresetsCornellBox);
+    presets_group->addAction(ui->actionPresetsCornellBoxWindow);
     presets_group->addAction(ui->actionPresetsCornellBoxMetal);
     presets_group->addAction(ui->actionPresetsCornellBoxSuzanne);
     presets_group->addAction(ui->actionPresetsOrangeBlueCornellBox);
@@ -205,7 +207,9 @@ void MainWindow::slot_do_render()
     const size_t width     = size_t(ui->spinBox_width->value());
     const size_t height    = size_t(ui->spinBox_height->value());
     const size_t samples   = size_t(ui->spinBox_spp->value());
-    const size_t direct_light_rays_count = size_t(ui->spinBox_dlrc->value());
+    const size_t direct_light_rays_count   = size_t(ui->spinBox_dlrc->value());
+    const size_t indirect_light_rays_count = size_t(ui->spinBox_idlrc->value());
+    const size_t photons   = size_t(ui->spinBox_photons->value());
     const float  pos_x     = float(ui->doubleSpinBox_position_x->value());
     const float  pos_y     = float(ui->doubleSpinBox_position_y->value());
     const float  pos_z     = float(ui->doubleSpinBox_position_z->value());
@@ -241,6 +245,8 @@ void MainWindow::slot_do_render()
         camera,
         world,
         direct_light_rays_count,
+        indirect_light_rays_count,
+        photons,
         parallel,
         ui->actionDisplayNormals->isChecked(),
         ui->actionDisplayAlbedo->isChecked(),
@@ -248,6 +254,7 @@ void MainWindow::slot_do_render()
         ui->actionDisplayDirectDiffuse->isChecked(),
         ui->actionDisplayDirectSpecular->isChecked(),
         ui->actionDisplayDirectPhong->isChecked(),
+        ui->actionDisplayIndirectLight->isChecked(),
         m_image,
         m_statusBarProgress);
 
@@ -524,6 +531,10 @@ void MainWindow::slot_presets_changed(QAction *action)
     if(action == ui->actionPresetsCornellBox)
     {
         scene = Scene::cornell_box();
+    }
+    else if(action == ui->actionPresetsCornellBoxWindow)
+    {
+        scene = Scene::cornell_box_window();
     }
     else if(action == ui->actionPresetsCornellBoxMetal)
     {

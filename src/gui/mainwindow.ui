@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>608</height>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,6 +96,7 @@
      <addaction name="actionDisplayDirectDiffuse"/>
      <addaction name="actionDisplayDirectSpecular"/>
      <addaction name="actionDisplayDirectPhong"/>
+     <addaction name="actionDisplayIndirectLight"/>
      <addaction name="actionDisplayNone"/>
     </widget>
     <addaction name="menuLogLevel"/>
@@ -106,6 +107,7 @@
      <string>Presets</string>
     </property>
     <addaction name="actionPresetsCornellBox"/>
+    <addaction name="actionPresetsCornellBoxWindow"/>
     <addaction name="actionPresetsCornellBoxMetal"/>
     <addaction name="actionPresetsCornellBoxSuzanne"/>
     <addaction name="actionPresetsOrangeBlueCornellBox"/>
@@ -137,132 +139,42 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_render">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="6" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_x">
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="minimum">
-        <double>-9999.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>10000.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_height">
-       <property name="text">
-        <string>Height</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw">
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="minimum">
-        <double>-360.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>360.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>-90.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_fov">
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="minimum">
-        <double>25.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>160.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>40.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch">
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="minimum">
-        <double>-360.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>360.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_spp">
-       <property name="text">
-        <string>Samples/Pixel</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QSpinBox" name="spinBox_spp">
+     <item row="2" column="1">
+      <widget class="QSpinBox" name="spinBox_height">
        <property name="minimum">
         <number>1</number>
        </property>
        <property name="maximum">
-        <number>1024</number>
+        <number>10000</number>
        </property>
        <property name="value">
-        <number>8</number>
+        <number>512</number>
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_position_z">
+     <item row="14" column="0" colspan="2">
+      <widget class="QLabel" name="label_viewer">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="text">
-        <string>Position z</string>
+        <string>Viewer</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_position_y">
+     <item row="18" column="0" colspan="2">
+      <widget class="QCheckBox" name="checkBox_parallel_rendering">
        <property name="text">
-        <string>Position y</string>
+        <string>Parallel rendering</string>
        </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="label_pitch">
-       <property name="text">
-        <string>Pitch</string>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="label_fov">
-       <property name="text">
-        <string>Fov</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_z">
-       <property name="minimum">
-        <double>-9999.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>10000.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>385.000000000000000</double>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -279,108 +191,7 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label_yaw">
-       <property name="text">
-        <string>Yaw</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0" colspan="2">
-      <widget class="QLabel" name="label_camera">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Camera</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <property name="openExternalLinks">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_y">
-       <property name="minimum">
-        <double>-9999.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>10000.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>100.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="16" column="0" colspan="2">
-      <widget class="QCheckBox" name="checkBox_parallel_rendering">
-       <property name="text">
-        <string>Parallel rendering</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_position_x">
-       <property name="text">
-        <string>Position x</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <widget class="QLabel" name="label_render">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Render</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="12" column="0" colspan="2">
-      <widget class="QLabel" name="label_viewer">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Viewer</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="14" column="0" colspan="2">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="13" column="0" colspan="2">
+     <item row="15" column="0" colspan="2">
       <layout class="QHBoxLayout" name="horizontalLayout_zoom">
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
@@ -416,16 +227,26 @@
        </item>
       </layout>
      </item>
-     <item row="2" column="1">
-      <widget class="QSpinBox" name="spinBox_height">
-       <property name="minimum">
-        <number>1</number>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_position_y">
+       <property name="text">
+        <string>Position y</string>
        </property>
-       <property name="maximum">
-        <number>10000</number>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <widget class="QLabel" name="label_render">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
        </property>
-       <property name="value">
-        <number>512</number>
+       <property name="text">
+        <string>Render</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -436,20 +257,42 @@
        </property>
       </widget>
      </item>
-     <item row="17" column="0" colspan="2">
-      <widget class="QPushButton" name="pushButton_render">
-       <property name="text">
-        <string>Render</string>
+     <item row="9" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_y">
+       <property name="minimum">
+        <double>-9999.000000000000000</double>
        </property>
-       <property name="shortcut">
-        <string>Ctrl+R</string>
+       <property name="maximum">
+        <double>10000.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>100.000000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label">
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_position_z">
        <property name="text">
-        <string>Direct light rays</string>
+        <string>Position z</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="2">
+      <widget class="QLabel" name="label_camera">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Camera</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="openExternalLinks">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -460,6 +303,196 @@
        </property>
        <property name="value">
         <number>8</number>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabel" name="label_fov">
+       <property name="text">
+        <string>Fov</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_yaw">
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>-360.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>360.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>-90.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Direct light rays</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="label_position_x">
+       <property name="text">
+        <string>Position x</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_pitch">
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>-360.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>360.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_fov">
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>25.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>160.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>40.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="label_yaw">
+       <property name="text">
+        <string>Yaw</string>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="0" colspan="2">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_height">
+       <property name="text">
+        <string>Height</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="spinBox_spp">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>1024</number>
+       </property>
+       <property name="value">
+        <number>8</number>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QSpinBox" name="spinBox_photons">
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="value">
+        <number>10000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_x">
+       <property name="decimals">
+        <number>2</number>
+       </property>
+       <property name="minimum">
+        <double>-9999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>10000.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QDoubleSpinBox" name="doubleSpinBox_position_z">
+       <property name="minimum">
+        <double>-9999.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>10000.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>385.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
+      <widget class="QLabel" name="label_pitch">
+       <property name="text">
+        <string>Pitch</string>
+       </property>
+      </widget>
+     </item>
+     <item row="19" column="0" colspan="2">
+      <widget class="QPushButton" name="pushButton_render">
+       <property name="text">
+        <string>Render</string>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+R</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Total photons tracing</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_spp">
+       <property name="text">
+        <string>Samples/Pixel</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Indirect light rays</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QSpinBox" name="spinBox_idlrc">
+       <property name="value">
+        <number>4</number>
        </property>
       </widget>
      </item>
@@ -734,7 +767,23 @@
   </action>
   <action name="actionPresetsCornellBoxMetal">
    <property name="text">
-    <string>Cornell Box Metal</string>
+    <string>Cornell Box &amp;Metal</string>
+   </property>
+  </action>
+  <action name="actionDisplayIndirectLight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Indirect &amp;Light</string>
+   </property>
+  </action>
+  <action name="actionPresetsCornellBoxWindow">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cornell Box Window</string>
    </property>
   </action>
  </widget>

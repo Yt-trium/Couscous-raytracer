@@ -141,6 +141,7 @@ class Scene
 
     // Create a cornell box scene.
     static Scene cornell_box();
+    static Scene cornell_box_window();
     static Scene cornell_box_metal();
     static Scene cornell_box_suzanne();
     static Scene cornell_box_orange_and_blue();

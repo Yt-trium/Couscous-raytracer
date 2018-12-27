@@ -285,6 +285,97 @@ Scene Scene::cornell_box()
     return scene;
 }
 
+Scene Scene::cornell_box_window()
+{
+    Scene scene;
+
+    scene.materials.push_back(SceneMaterial("light", vec3(1.0f), 1.0f, 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("yellow", vec3(0.73f, 0.73f, 0.03f), 0.0f, 1.0f, 1.0f, 3.0f));
+
+    scene.objects.push_back(SceneObject("floor",
+        Transform(
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "white"));
+
+    scene.objects.push_back(SceneObject("background",
+        Transform(
+            vec3(0.0f, 100.0f, -100.0f),
+            vec3(90.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "white"));
+
+    scene.objects.push_back(SceneObject("foreground",
+        Transform(
+            vec3(0.0f, 100.0f, 100.0f),
+            vec3(-90.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "white"));
+
+    scene.objects.push_back(SceneObject("ceilling",
+        Transform(
+            vec3(0.0f, 200.0f, 0.0f),
+            vec3(180.0f, 0.0f, 0.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "white"));
+
+    scene.object_files.emplace_back(
+        "left_sphere",
+        "assets/sphere_16_16.off",
+        Transform(
+            vec3(-50.0f, 40.0f, 0.0f),
+            vec3(0.0f),
+            vec3(40.0f)),
+        "yellow",
+        true);
+
+    scene.objects.push_back(SceneObject("top_light",
+        Transform(
+            vec3(200.0f, 120.0f, 0.0f),
+            vec3(90.0f, 20.0f, 90.0f),
+            vec3(45.0f)),
+        ObjectType::PLANE,
+        "light"));
+
+    scene.objects.push_back(SceneObject("left",
+        Transform(
+            vec3(-100.0f, 100.0f, 0.0f),
+            vec3(0.0f, 0.0f, -90.0f),
+            vec3(200.0f)),
+        ObjectType::PLANE,
+        "red"));
+
+
+    scene.object_files.emplace_back(
+        "window",
+        "assets/wall_window.off",
+        Transform(
+            vec3(100.0f, 100.0f, 0.0f),
+            vec3(-90.0f, 0.0f, -90.0f),
+            vec3(200.0f)),
+        "green",
+        true);
+
+    scene.cameras.push_back(SceneCamera("CAM_1",
+        vec3(0.0f, 100.0f, 385.0f),
+        -90.0f,
+        0.0f,
+        40.0f,
+        512,
+        512));
+
+    return scene;
+}
+
+
 Scene Scene::cornell_box_metal()
 {
     Scene scene;
@@ -576,7 +667,7 @@ Scene Scene::simple_cube()
         Transform(
             vec3(0.0f, 0.0f, 0.0f),
             vec3(0.0f, 0.0f, 0.0f),
-            vec3(100.0f)),
+            vec3(5.0f)),
         "grey");
 
     scene.object_files.emplace_back(

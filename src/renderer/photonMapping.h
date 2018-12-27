@@ -23,30 +23,8 @@
 #include <utility>
 #include <vector>
 
-#define photonMinErnergy 0.01f
-#define rangeMin 0.0f
-#define rangeMax 1.0f
-
 // Forward declarations.
 class RNG;
-
-// Class used to modelize the russian roulette principle
-class RussianRoulette
-{
-  public:
-    RussianRoulette();
-
-    // Generate a random number U between 0-1, 0<alpha<1
-    //      if U <= alpha then return 0
-    //      else return energy/(1-alpha) to compensate energy loss during process due to russian roulette
-    float modifyEnergy(
-        const float alpha,
-        const float energy);
-
-  private:
-    std::mt19937 engine;
-    std::uniform_real_distribution<> distributor;
-};
 
 class Photon
 {
@@ -110,13 +88,13 @@ class PhotonMap
         const size_t                    ray_max_depth,
         const VoxelGridAccelerator&     grid,
         const float                     inEnergy,
-        const int                       depth = 0);
+        RNG&                            rng,
+        const size_t                    depth = 0);
 
     void add_photon(const Photon* photon);
 
     std::vector<const Photon*>                map;
     QMutex                                    mapMutex;
-    RussianRoulette                           terminationSystem;
     float                                     alpha;
 };
 

@@ -29,11 +29,11 @@
 using namespace glm;
 using namespace std;
 
-#define indirectLightRaysNumber 16
 #define COUCOUS_M_PI 3.1416f
 #define COUCOUS_M_2PI 2.0f * 3.1416f
 #define COUCOUS_M_INV_2PI 1.0f / (2.0f * 3.1416f)
 #define COUCOUS_M_INV_PI 1.0f / 3.1416f
+#define MAX_PHOTONS_COUNT 100
 
 namespace
 {
@@ -64,9 +64,10 @@ namespace
     vec3 get_ray_photon_map(
         const Ray&                                      r,
         const VoxelGridAccelerator&                     grid,
-        const PhotonTree&                               ptree)
+        const PhotonTree&                               ptree,
+        vector<pair<size_t, float>>&                    photons_find_result)
     {
-        const float radius = grid.voxel_size();
+        const float radius = grid.voxel_size() * 1.5f;
 
         HitRecord rec;
 
@@ -75,26 +76,24 @@ namespace
             if (rec.mat->light)
                 return vec3(0.0f);
 
-            vector<pair<size_t, float>> find_result;
-
-            size_t photons_count = ptree.find_in_radius(rec.p, radius, find_result);
+            photons_find_result.clear();
+            size_t photons_count = ptree.find_in_radius(rec.p, radius, photons_find_result);
 
             if (photons_count == 0)
                 return vec3(0.0f);
 
-            const float max_dist = sqrt(find_result[photons_count - 1].second);
+            // We don't take all photons into acount.
+            photons_count = photons_count > MAX_PHOTONS_COUNT ? MAX_PHOTONS_COUNT : photons_count;
 
-            photons_count = photons_count > 20 ? 20 : photons_count;
+            const float max_dist = sqrt(photons_find_result[photons_count - 1].second);
 
             float weight = 0.0f;
             vec3 color(0.0f);
 
             for (size_t i = 0; i < photons_count; ++i)
             {
-                const size_t index = find_result[i].first;
+                const size_t index = photons_find_result[i].first;
                 const auto& photon = ptree.map.photon(index);
-
-                // if (photon.mat != rec.mat) continue;
 
                 const float pweight = photon.energy;
 
@@ -305,13 +304,86 @@ namespace
         }
     }
 
+    vec3 get_indirect_light(
+        const Ray&                                      r,
+        const size_t                                    indirectLightRaysCount,
+        const VoxelGridAccelerator&                     grid,
+        const PhotonTree&                               ptree,
+        RNG&                                            rng,
+        vector<pair<size_t, float>>&                    photons_find_result)
+    {
+        HitRecord rec;
+
+        if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+        {
+            // Display lights only by showing the emissive value.
+            if(rec.mat->light)
+                return vec3(0.0f);
+
+            // Compute the photons search radius.
+            const float radius = grid.voxel_size() * 1.5f;
+
+            HitRecord recIndirect;
+            vec3 indirect(0.0f);
+
+            // Compute indirect lighting with photon mapping
+            size_t nbSuccessfullRays = 0;
+            float photons_weight = 0.0f;
+
+            for(size_t i = 0; i < indirectLightRaysCount; ++i)
+            {
+                // Generate random direction.
+                const vec3 indirect_dir = random_in_hemisphere(rec.normal, rng);
+                const Ray indirectLightRay = Ray(rec.p, indirect_dir);
+
+                // Gather photons on that point.
+                if(grid.hit(indirectLightRay, 0.000001f, numeric_limits<float>::max(), recIndirect)
+                    && dot(rec.normal, indirect_dir) > 0.0f)
+                {
+                    nbSuccessfullRays++;
+                    photons_find_result.clear();
+                    size_t photons_count = ptree.find_in_radius(recIndirect.p, radius, photons_find_result);
+
+                    if (photons_count == 0)
+                        continue;
+
+                    // We don't take all photons into acount.
+                    photons_count = photons_count > MAX_PHOTONS_COUNT ? MAX_PHOTONS_COUNT : photons_count;
+
+                    // Photons are ordered.
+                    const float max_dist = sqrt(photons_find_result[photons_count - 1].second);
+                    const float coef = 1.0f / (COUCOUS_M_PI * max_dist);
+
+                    vec3 color(0.0f);
+
+                    for (size_t i = 0; i < photons_count; ++i)
+                    {
+                        const size_t index = photons_find_result[i].first;
+                        const auto& photon = ptree.map.photon(index);
+
+                        photons_weight += photon.energy;
+                        indirect += (photon.mat->albedo * photon.energy) * coef;
+                    }
+                }
+            }
+
+            return indirect / photons_weight;
+        }
+        else
+        {
+            return vec3(0.0f);
+        }
+    }
+
     vec3 get_final(
         const Ray&                                      r,
         const size_t                                    directLightRaysCount,
+        const size_t                                    indirectLightRaysCount,
         const VoxelGridAccelerator&                     grid,
         const MeshGroup&                                lights,
         const PhotonTree&                               ptree,
         RNG&                                            rng,
+        vector<pair<size_t, float>>&                    photons_find_result,
         size_t                                          max_depth = 8)
     {
         HitRecord rec;
@@ -337,7 +409,7 @@ namespace
                 if (dot(reflected.dir, rec.normal) <= 0.0f)
                     return vec3(0.0f);
 
-                return get_final(reflected, directLightRaysCount, grid, lights, ptree, rng, max_depth - 1);
+                return get_final(reflected, directLightRaysCount, indirectLightRaysCount, grid, lights, ptree, rng, photons_find_result, max_depth - 1);
             }
 
             // Compute Phong.
@@ -377,7 +449,7 @@ namespace
 
             // Compute indirect lighting with photon mapping
             int nbSuccessfullRays = 1;
-            for(int i=0; i<indirectLightRaysNumber; i++)
+            for(size_t i=0; i<indirectLightRaysCount; ++i)
             {
                 glm::vec3 rayDirIndirectLight = random_in_unit_sphere(rng);
                 HitRecord recIndirect;
@@ -395,14 +467,14 @@ namespace
                     // Keep it just in case
                     //indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher)/*/(1.0f + (glm::distance(rec.p, recIndirect.p)))*/) /* * std::max(0.0f, glm::dot(rec.normal, glm::normalize(recIndirect.p - rec.p)))*/;
                     //indirectColor += (get_ray_photon_map(indirectLightRay, grid, pfetcher) * (1.0f - std::max(0.0f, glm::dot(glm::normalize(rec.normal), glm::normalize(recIndirect.p-rec.p)))));
-                    indirectColor += (get_ray_photon_map(indirectLightRay, grid, ptree)
+                    indirectColor += (get_ray_photon_map(indirectLightRay, grid, ptree, photons_find_result)
                                       /* * (0.96f / 3.14f) + (0.04f * ( (2.0f + 2) / (3.14f * 2.0f))) */)
                                     * (std::max(0.0f, glm::dot(rec.normal, rayDirIndirectLight)));
                     nbSuccessfullRays++;
                 }
                 else
                 {
-                    indirectColor += get_ray_photon_map(indirectLightRay, grid, ptree);
+                    indirectColor += get_ray_photon_map(indirectLightRay, grid, ptree, photons_find_result);
                 }
             }
 
@@ -456,6 +528,8 @@ void Render::get_render_image(
     const Camera&                   camera,
     const MeshGroup&                world,
     const size_t                    direct_light_rays_count,
+    const size_t                    indirect_light_rays_count,
+    const size_t                    photons_count,
     const bool                      parallel,
     const bool                      get_normal_color,
     const bool                      get_albedo_color,
@@ -463,6 +537,7 @@ void Render::get_render_image(
     const bool                      direct_diffuse,
     const bool                      direct_specular,
     const bool                      direct_phong,
+    const bool                      indirect_light,
     QImage&                         image,
     QProgressBar&                   progressBar)
 {
@@ -481,7 +556,7 @@ void Render::get_render_image(
 
     // Create photon map.
     PhotonMap pmap;
-    pmap.compute_map(100000, 32, grid, lights, rng);
+    pmap.compute_map(photons_count, 32, grid, lights, rng);
 
     // Create photon tree.
     PhotonTree ptree(pmap);
@@ -507,6 +582,9 @@ void Render::get_render_image(
         size_t y1,
         size_t y2)
     {
+        // Create a unique photon buffer for each thread.
+        vector<pair<size_t, float>> photons_find_result;
+
         for (size_t y = y1; y < y2; ++y)
         {
             for (size_t x = x1; x < x2; ++x)
@@ -534,7 +612,7 @@ void Render::get_render_image(
                     }
                     else if (display_photon_map)
                     {
-                        color += get_ray_photon_map(r, grid, ptree);
+                        color += get_ray_photon_map(r, grid, ptree, photons_find_result);
                     }
                     else if (direct_diffuse)
                     {
@@ -548,9 +626,13 @@ void Render::get_render_image(
                     {
                         color += get_direct_phong(r, direct_light_rays_count, grid, lights, rng);
                     }
+                    else if (indirect_light)
+                    {
+                        color += get_indirect_light(r, indirect_light_rays_count, grid, ptree, rng, photons_find_result);
+                    }
                     else
                     {
-                        color += get_final(r, direct_light_rays_count, grid, lights, ptree, rng);
+                        color += get_final(r, direct_light_rays_count, indirect_light_rays_count, grid, lights, ptree, rng, photons_find_result);
                     }
                 }
 

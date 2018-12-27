@@ -42,6 +42,18 @@ vec3 random_in_unit_sphere(RNG& rng)
     return p;
 }
 
+vec3 random_in_hemisphere(const vec3& direction, RNG& rng)
+{
+    // Generate in sphere.
+    vec3 res = random_in_unit_sphere(rng);
+
+    // Reverse it if it's in the wrong direction.
+    if(dot(res, direction) < 0.0f)
+        res = -res;
+
+    return res;
+}
+
 vec3 random_point_on_lights(const MeshGroup& lights, RNG& rng)
 {
     const size_t indice = static_cast<size_t>(rng.next() * (lights.size() - 1));

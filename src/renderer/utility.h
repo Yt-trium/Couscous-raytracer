@@ -18,6 +18,8 @@ glm::vec3 random_point_in_triangle(
 
 glm::vec3 random_in_unit_sphere(RNG& rng);
 
+glm::vec3 random_in_hemisphere(const glm::vec3& direction, RNG& rng);
+
 glm::vec3 random_point_on_lights(const MeshGroup& lights, RNG& rng);
 
 glm::vec3 random_in_cone(const glm::vec3& direction, const float roughness, RNG& rng);

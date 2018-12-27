@@ -35,6 +35,8 @@ class Render : public QObject
         const Camera&                   camera,
         const MeshGroup&                world,
         const size_t                    direct_light_rays_count,
+        const size_t                    indirect_light_rays_count,
+        const size_t                    photons_count,
         const bool                      parallel,
         const bool                      get_normal_color,
         const bool                      get_albedo_color,
@@ -42,6 +44,7 @@ class Render : public QObject
         const bool                      direct_diffuse,
         const bool                      direct_specular,
         const bool                      direct_phong,
+        const bool                      indirect_light,
         QImage&                         image,
         QProgressBar&                   progressBar);
 
