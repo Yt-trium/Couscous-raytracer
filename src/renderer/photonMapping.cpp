@@ -148,7 +148,7 @@ void PhotonMap::compute_map(
     float totalEnergy = 0.0f;
     for(unsigned int i = 0; i< lights.size(); i++)
     {
-        totalEnergy += lights[i]->mat()->emission.x * 0.21f + lights[i]->mat()->emission.y * 0.72f  + lights[i]->mat()->emission.z * 0.07;
+        totalEnergy += lights[i]->mat()->light_power;
     }
 
     float energyForOneRay = totalEnergy/ static_cast<float>(samples);

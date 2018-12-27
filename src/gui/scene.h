@@ -23,7 +23,7 @@ class SceneMaterial
     SceneMaterial(
         const std::string&  name,
         const glm::vec3&    color,
-        const glm::vec3&    emission,
+        const float         light_power,
         const float         kd,
         const float         ks,
         const float         specularExponent,
@@ -32,7 +32,7 @@ class SceneMaterial
 
     std::string name;
     glm::vec3   color;
-    glm::vec3   emission;
+    float       light_power;
     float       kd;
     float       ks;
     float       specularExponent;

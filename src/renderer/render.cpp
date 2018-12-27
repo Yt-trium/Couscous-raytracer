@@ -44,13 +44,9 @@ namespace
         HitRecord rec;
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
-        {
             return rec.mat->albedo;
-        }
         else
-        {
             return vec3(0.0f);
-        }
     }
 
     vec3 get_normal(
@@ -60,13 +56,9 @@ namespace
         HitRecord rec;
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
-        {
             return 0.5f * vec3(rec.normal.x + 1.0f, rec.normal.y + 1.0f, rec.normal.z + 1.0f);
-        }
         else
-        {
             return vec3(0.0f);
-        }
     }
 
     vec3 get_ray_photon_map(
@@ -80,7 +72,7 @@ namespace
 
         if(grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
         {
-            if (rec.mat->emission != vec3(0.0f))
+            if (rec.mat->light)
                 return vec3(0.0f);
 
             vector<pair<size_t, float>> find_result;
@@ -131,9 +123,7 @@ namespace
         {
             // Display lights only by showing the emissive value.
             if(rec.mat->light)
-            {
-                return normalize(rec.mat->emission);
-            }
+                return max(rec.mat->emission, vec3(1.0f));
 
             HitRecord directLightRec;
             vector<vec3> lightPoints;
@@ -188,9 +178,7 @@ namespace
         {
             // Display lights only by showing the emissive value.
             if(rec.mat->light)
-            {
-                return normalize(rec.mat->emission);
-            }
+                return max(rec.mat->emission, vec3(1.0f));
 
             HitRecord directLightRec;
             const Material* mat = rec.mat;
@@ -220,7 +208,7 @@ namespace
                         const Material* light_mat = directLightRec.mat;
 
                         vec3 R = reflect(-currentLightDir, rec.normal);
-                        specular += light_mat->emission
+                        specular += light_mat->light_power
                             * pow(std::max(0.0f, dot(R, V)), mat->specularExponent);
                     }
                 }
@@ -248,9 +236,7 @@ namespace
         {
             // Display lights only by showing the emissive value.
             if(rec.mat->light)
-            {
-                return clamp(rec.mat->emission, 0.0f, 1.0f);
-            }
+                return max(rec.mat->emission, vec3(1.0f));
 
             // Check if it's metal.
             if (rec.mat->metallic)
@@ -299,7 +285,7 @@ namespace
 
                         vec3 R = reflect(-currentLightDir, rec.normal);
 
-                        specular += light_mat->emission
+                        specular += light_mat->light_power
                             * pow(std::max(0.0f, dot(R, V)), mat->specularExponent);
 
                         diffuse += mat->albedo * light_mat->emission *
@@ -334,9 +320,7 @@ namespace
         {
             // Display lights only by showing the emissive value.
             if(rec.mat->light)
-            {
-                return clamp(rec.mat->emission, 0.0f, 1.0f);
-            }
+                return max(rec.mat->emission, vec3(1.0f));
 
             // Check if it's metal.
             if (rec.mat->metallic)
@@ -373,12 +357,9 @@ namespace
                 bool answ = grid.hit(Ray(rec.p, currentLightDir), 0.00001f, numeric_limits<float>::max(), directLightRec);
 
                 // Only take into account emissive materials.
-                if (answ && (directLightRec.mat->emission != vec3(0.0f)))
+                if (answ && directLightRec.mat->light)
                 {
-                    const float currentDirectLightIntensity =
-                        directLightRec.mat->emission.x * 0.21f
-                        + directLightRec.mat->emission.y * 0.72f
-                        + directLightRec.mat->emission.z * 0.07f;
+                    const float currentDirectLightIntensity = directLightRec.mat->light_power;
 
                     // Compute direct light intensity : Li * ( (kd/PI) + (ks * (n+2)/2PI) )
                     directLightIntensity += currentDirectLightIntensity / distance(rec.p, currentPointOnLight)

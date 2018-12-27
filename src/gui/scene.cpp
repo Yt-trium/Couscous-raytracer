@@ -17,7 +17,7 @@ using namespace glm;
 SceneMaterial::SceneMaterial(
     const string&       name,
     const vec3&         color,
-    const vec3&         emission,
+    const float         light_power,
     const float         kd,
     const float         ks,
     const float         specularExponent,
@@ -25,7 +25,7 @@ SceneMaterial::SceneMaterial(
     const float         roughness)
   : name(name)
   , color(color)
-  , emission(emission)
+  , light_power(light_power)
   , kd(kd)
   , ks(ks)
   , specularExponent(specularExponent)
@@ -115,7 +115,7 @@ void Scene::create_scene(MeshGroup &world)
 
         shared_ptr<Material> mat(new Material(
             material->color,
-            material->emission,
+            material->light_power,
             material->kd,
             material->ks,
             material->specularExponent,
@@ -134,8 +134,7 @@ void Scene::create_scene(MeshGroup &world)
         shared_ptr<Material> mat_default(
             new Material(
                 vec3(1.0f, 0.0f, 1.0f),
-                vec3(1.0f, 0.0f, 1.0f),
-                1.0f, 1.0f, 1.0f, 0.0f, 0.0f));
+                1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f));
 
         for(j = 0 ; j < materials.size() ; ++j)
         {
@@ -169,8 +168,7 @@ void Scene::create_scene(MeshGroup &world)
         shared_ptr<Material> mat_default(
             new Material(
                 vec3(1.0f, 0.0f, 1.0f),
-                vec3(1.0f, 0.0f, 1.0f),
-                1.0f, 1.0f, 1.0f, 0.0f, 0.0f));
+                1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f));
 
         for(j = 0 ; j < materials.size() ; ++j)
         {
@@ -199,10 +197,10 @@ Scene Scene::cornell_box()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f), 0.0f, 0.0f, 0.0f));
-    scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
-    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
-    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("light", vec3(1.0f), 15.0f, 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), 0.0f, 1.0f, 1.0f, 3.0f));
 
     scene.objects.push_back(SceneObject("floor",
         Transform(
@@ -291,12 +289,12 @@ Scene Scene::cornell_box_metal()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(15.0f), 0.0f, 0.0f, 0.0f));
-    scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
-    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
-    scene.materials.push_back(SceneMaterial("metal", vec3(0.12f, 1.0, 0.15f), vec3(0.0f), 1.0f, 1.0f, 3.0f, 1.0f, 0.0f));
-    scene.materials.push_back(SceneMaterial("roughmetal", vec3(0.12f, 1.0, 0.15f), vec3(0.0f), 1.0f, 1.0f, 3.0f, 1.0f, 0.1f));
-    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("light", vec3(1.0f), 1.0f, 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("metal", vec3(0.12f, 1.0, 0.15f), 0.0f, 1.0f, 1.0f, 3.0f, 1.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("roughmetal", vec3(0.12f, 1.0, 0.15f), 0.0f, 1.0f, 1.0f, 3.0f, 1.0f, 0.1f));
+    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), 0.0f, 1.0f, 1.0f, 3.0f));
 
     scene.objects.push_back(SceneObject("floor",
         Transform(
@@ -390,10 +388,10 @@ Scene Scene::cornell_box_suzanne()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(1.0f), 0.0f, 0.0f, 0.0f));
-    scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
-    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
-    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("light", vec3(1.0f), 1.0f, 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), 0.0f, 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), 0.0f, 1.0f, 1.0f, 3.0f));
 
     scene.objects.push_back(SceneObject("floor",
         Transform(
@@ -475,9 +473,9 @@ Scene Scene::cornell_box_orange_and_blue()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("blue_light", vec3(0.0f), vec3(0.2f, 2.0f, 1.8f), 0.0f, 0.0f, 3.0f));
-    scene.materials.push_back(SceneMaterial("orange_light", vec3(0.0f), vec3(1.9f, 0.6f, 0.2f), 0.0f, 0.0f, 3.0f));
-    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), vec3(0.0f), 1.0f, 1.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("blue_light", vec3(0.2f, 2.0f, 1.0f), 1.0f, 0.0f, 0.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("orange_light", vec3(1.0f, 0.6f, 0.2f), 1.0f, 0.0f, 0.0f, 3.0f));
+    scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), 0.0f, 1.0f, 1.0f, 3.0f));
 
     scene.objects.push_back(SceneObject("floor",
         Transform(
@@ -559,9 +557,9 @@ Scene Scene::simple_cube()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(1.0f), 0.0f, 0.0f, 0.0f));
-    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), vec3(0.0f), 1.0f, 0.5f, 0.1f));
-    scene.materials.push_back(SceneMaterial("grey", vec3(0.2, 0.2, 0.2), vec3(0.0f), 1.0f, 0.5f, 0.1f));
+    scene.materials.push_back(SceneMaterial("light", vec3(1.0f), 1.0f, 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("red", vec3(0.65f, 0.05f, 0.05f), 0.0f, 1.0f, 0.5f, 0.1f));
+    scene.materials.push_back(SceneMaterial("grey", vec3(0.2, 0.2, 0.2), 0.0f, 1.0f, 0.5f, 0.1f));
 
     scene.object_files.emplace_back(
         "cube",
@@ -605,8 +603,8 @@ Scene Scene::sphere()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("light", vec3(0.0f), vec3(2.0f), 0.0f, 0.0f, 0.0f));
-    scene.materials.push_back(SceneMaterial("grey", vec3(0.73f), vec3(0.0f), 1.0f, 0.2f, 2.0f));
+    scene.materials.push_back(SceneMaterial("light", vec3(1.0f), 1.0f, 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("grey", vec3(0.73f), 0.0f, 1.0f, 0.2f, 2.0f));
 
     scene.object_files.emplace_back(
         "floor",

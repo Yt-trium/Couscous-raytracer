@@ -9,7 +9,7 @@ class Material
   public:
     Material(
         const glm::vec3&    albedo,
-        const glm::vec3&    emission,
+        const float         light_power,
         const float         kd,
         const float         ks,
         const float         specularExponent,
@@ -19,7 +19,7 @@ class Material
     float brdf() const;
 
     const glm::vec3     albedo;
-    const glm::vec3     emission;
+    const float         light_power;
     const float         kd;
     const float         ks;
     const float         specularExponent;
@@ -27,6 +27,7 @@ class Material
     const float         roughness;
     const bool          metallic;
     const bool          light;
+    const glm::vec3     emission;
 
   private:
     const float         m_rf;

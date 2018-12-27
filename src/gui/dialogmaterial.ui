@@ -27,7 +27,7 @@
    <item row="2" column="0">
     <widget class="QLabel" name="label_emission">
      <property name="text">
-      <string>Emission</string>
+      <string>Light power</string>
      </property>
     </widget>
    </item>
@@ -55,19 +55,6 @@
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Kd</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_emission_g">
-     <property name="decimals">
-      <number>4</number>
-     </property>
-     <property name="maximum">
-      <double>99999999.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.010000000000000</double>
      </property>
     </widget>
    </item>
@@ -138,7 +125,7 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_emission_r">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_light_power">
      <property name="decimals">
       <number>4</number>
      </property>
@@ -187,19 +174,6 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="3">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_emission_b">
-     <property name="decimals">
-      <number>4</number>
-     </property>
-     <property name="maximum">
-      <double>99999999.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.010000000000000</double>
-     </property>
-    </widget>
-   </item>
    <item row="7" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
@@ -234,9 +208,7 @@
   <tabstop>doubleSpinBox_color_r</tabstop>
   <tabstop>doubleSpinBox_color_g</tabstop>
   <tabstop>doubleSpinBox_color_b</tabstop>
-  <tabstop>doubleSpinBox_emission_r</tabstop>
-  <tabstop>doubleSpinBox_emission_g</tabstop>
-  <tabstop>doubleSpinBox_emission_b</tabstop>
+  <tabstop>doubleSpinBox_light_power</tabstop>
  </tabstops>
  <resources/>
  <connections>
