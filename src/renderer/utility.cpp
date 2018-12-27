@@ -54,3 +54,8 @@ vec3 random_point_on_lights(const MeshGroup& lights, RNG& rng)
     return random_point_in_triangle(va, vb, vc, rng);
 }
 
+vec3 random_in_cone(const vec3& direction, const float roughness, RNG& rng)
+{
+    return direction + roughness * random_in_unit_sphere(rng);
+}
+

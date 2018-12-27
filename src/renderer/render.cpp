@@ -239,7 +239,8 @@ namespace
         const size_t                                    directLightRaysCount,
         const VoxelGridAccelerator&                     grid,
         const MeshGroup&                                lights,
-        RNG&                                            rng)
+        RNG&                                            rng,
+        size_t                                          max_depth = 8)
     {
         HitRecord rec;
 
@@ -251,13 +252,31 @@ namespace
                 return clamp(rec.mat->emission, 0.0f, 1.0f);
             }
 
+            // Check if it's metal.
+            if (rec.mat->metallic)
+            {
+                if (!max_depth)
+                    return vec3(0.0f);
+
+                const vec3 scattered = reflect(r.dir, rec.normal);
+                const Ray reflected(rec.p, rec.mat->roughness
+                    ? random_in_cone(scattered, rec.mat->roughness, rng)
+                    : scattered);
+
+                // Check validity.
+                if (dot(reflected.dir, rec.normal) <= 0.0f)
+                    return vec3(0.0f);
+
+                return get_direct_phong(reflected, directLightRaysCount, grid, lights, rng, max_depth - 1);
+            }
+
             HitRecord directLightRec;
             const Material* mat = rec.mat;
             vec3 specular(0.0f), diffuse(0.0f);
             const vec3 V = -r.dir;
             const float ray_count = static_cast<float>(lights.size() * directLightRaysCount);
 
-            // We cast n rau per lights.
+            // We cast n rays per lights.
             for (size_t l = 0; l < lights.size(); ++l)
             {
                 const auto& light = lights[l];
@@ -306,7 +325,8 @@ namespace
         const VoxelGridAccelerator&                     grid,
         const MeshGroup&                                lights,
         const PhotonTree&                               ptree,
-        RNG&                                            rng)
+        RNG&                                            rng,
+        size_t                                          max_depth = 8)
     {
         HitRecord rec;
 
@@ -316,6 +336,24 @@ namespace
             if(rec.mat->light)
             {
                 return clamp(rec.mat->emission, 0.0f, 1.0f);
+            }
+
+            // Check if it's metal.
+            if (rec.mat->metallic)
+            {
+                if (!max_depth)
+                    return vec3(0.0f);
+
+                const vec3 scattered = reflect(r.dir, rec.normal);
+                const Ray reflected(rec.p, rec.mat->roughness
+                    ? random_in_cone(scattered, rec.mat->roughness, rng)
+                    : scattered);
+
+                // Check validity.
+                if (dot(reflected.dir, rec.normal) <= 0.0f)
+                    return vec3(0.0f);
+
+                return get_final(reflected, directLightRaysCount, grid, lights, ptree, rng, max_depth - 1);
             }
 
             // Compute Phong.

@@ -20,4 +20,6 @@ glm::vec3 random_in_unit_sphere(RNG& rng);
 
 glm::vec3 random_point_on_lights(const MeshGroup& lights, RNG& rng);
 
+glm::vec3 random_in_cone(const glm::vec3& direction, const float roughness, RNG& rng);
+
 #endif // RENDERER_UTILITY_H

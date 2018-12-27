@@ -30,6 +30,8 @@ DialogMaterial::DialogMaterial(QWidget* parent, Scene& scene, const size_t id)
         m_ui->doubleSpinBox_kd->setValue(double(object.kd));
         m_ui->doubleSpinBox_ks->setValue(double(object.ks));
         m_ui->doubleSpinBox_specularExponent->setValue(double(object.specularExponent));
+        m_ui->doubleSpinBox_metal->setValue(double(object.metal));
+        m_ui->doubleSpinBox_roughness->setValue(double(object.roughness));
     }
 }
 
@@ -53,8 +55,18 @@ void DialogMaterial::on_buttonBox_accepted()
     const float kd = m_ui->doubleSpinBox_kd->value();
     const float ks = m_ui->doubleSpinBox_ks->value();
     const float specExponent = m_ui->doubleSpinBox_specularExponent->value();
+    const float metal = m_ui->doubleSpinBox_metal->value();
+    const float roughness = m_ui->doubleSpinBox_roughness->value();
 
-    SceneMaterial sm(m_ui->lineEdit_name->text().toStdString(), color, emission, kd, ks, specExponent);
+    SceneMaterial sm(
+        m_ui->lineEdit_name->text().toStdString(),
+        color,
+        emission,
+        kd,
+        ks,
+        specExponent,
+        metal,
+        roughness);
 
     if(m_id != size_t(~0))
         m_scene.materials[m_id] = sm;

@@ -106,6 +106,7 @@
      <string>Presets</string>
     </property>
     <addaction name="actionPresetsCornellBox"/>
+    <addaction name="actionPresetsCornellBoxMetal"/>
     <addaction name="actionPresetsCornellBoxSuzanne"/>
     <addaction name="actionPresetsOrangeBlueCornellBox"/>
     <addaction name="actionPresetsSimpleCube"/>
@@ -728,7 +729,12 @@
   </action>
   <action name="actionPresetsSphere">
    <property name="text">
-    <string>Sphere</string>
+    <string>S&amp;phere</string>
+   </property>
+  </action>
+  <action name="actionPresetsCornellBoxMetal">
+   <property name="text">
+    <string>Cornell Box Metal</string>
    </property>
   </action>
  </widget>

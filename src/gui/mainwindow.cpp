@@ -99,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Presets selection events.
     auto presets_group = new QActionGroup(this);
     presets_group->addAction(ui->actionPresetsCornellBox);
+    presets_group->addAction(ui->actionPresetsCornellBoxMetal);
     presets_group->addAction(ui->actionPresetsCornellBoxSuzanne);
     presets_group->addAction(ui->actionPresetsOrangeBlueCornellBox);
     presets_group->addAction(ui->actionPresetsSimpleCube);
@@ -523,6 +524,10 @@ void MainWindow::slot_presets_changed(QAction *action)
     if(action == ui->actionPresetsCornellBox)
     {
         scene = Scene::cornell_box();
+    }
+    else if(action == ui->actionPresetsCornellBoxMetal)
+    {
+        scene = Scene::cornell_box_metal();
     }
     else if(action == ui->actionPresetsCornellBoxSuzanne)
     {

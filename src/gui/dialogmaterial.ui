@@ -14,21 +14,31 @@
    <string>Material Editor</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Kd</string>
+   <item row="0" column="1" colspan="3">
+    <widget class="QLineEdit" name="lineEdit_name"/>
+   </item>
+   <item row="5" column="1">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_specularExponent">
+     <property name="value">
+      <double>0.500000000000000</double>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_color">
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_emission">
      <property name="text">
-      <string>Color</string>
+      <string>Emission</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="0" colspan="4">
+   <item row="4" column="1">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_ks">
+     <property name="value">
+      <double>0.200000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="4">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -41,20 +51,23 @@
      </property>
     </spacer>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_emission">
+   <item row="3" column="0">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Emission</string>
+      <string>Kd</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="0" colspan="4">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="2" column="2">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_emission_g">
+     <property name="decimals">
+      <number>4</number>
      </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     <property name="maximum">
+      <double>99999999.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
      </property>
     </widget>
    </item>
@@ -71,6 +84,16 @@
      </property>
      <property name="value">
       <double>1.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
@@ -93,6 +116,27 @@
      </property>
     </widget>
    </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Metal</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_color">
+     <property name="text">
+      <string>Color</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_kd">
+     <property name="value">
+      <double>1.000000000000000</double>
+     </property>
+    </widget>
+   </item>
    <item row="2" column="1">
     <widget class="QDoubleSpinBox" name="doubleSpinBox_emission_r">
      <property name="decimals">
@@ -106,39 +150,17 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="3">
-    <widget class="QLineEdit" name="lineEdit_name"/>
-   </item>
-   <item row="2" column="3">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_emission_b">
-     <property name="decimals">
-      <number>4</number>
-     </property>
-     <property name="maximum">
-      <double>99999999.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.010000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_name">
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Name</string>
+      <string>Specular Exponent</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="2">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_emission_g">
-     <property name="decimals">
-      <number>4</number>
-     </property>
-     <property name="maximum">
-      <double>99999999.000000000000000</double>
-     </property>
-     <property name="singleStep">
-      <double>0.010000000000000</double>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Ks</string>
      </property>
     </widget>
    </item>
@@ -158,38 +180,50 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_2">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_name">
      <property name="text">
-      <string>Ks</string>
+      <string>Name</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Specular Exponent</string>
+   <item row="2" column="3">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_emission_b">
+     <property name="decimals">
+      <number>4</number>
+     </property>
+     <property name="maximum">
+      <double>99999999.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_kd">
-     <property name="value">
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Roughness</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_metal">
+     <property name="maximum">
       <double>1.000000000000000</double>
      </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_ks">
-     <property name="value">
-      <double>0.200000000000000</double>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_specularExponent">
-     <property name="value">
-      <double>0.500000000000000</double>
+   <item row="7" column="1">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_roughness">
+     <property name="maximum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
      </property>
     </widget>
    </item>

@@ -26,7 +26,9 @@ class SceneMaterial
         const glm::vec3&    emission,
         const float         kd,
         const float         ks,
-        const float         specularExponent);
+        const float         specularExponent,
+        const float         metal = 0.0f,
+        const float         roughness = 0.0f);
 
     std::string name;
     glm::vec3   color;
@@ -34,6 +36,8 @@ class SceneMaterial
     float       kd;
     float       ks;
     float       specularExponent;
+    float       metal;
+    float       roughness;
 };
 
 
@@ -137,6 +141,7 @@ class Scene
 
     // Create a cornell box scene.
     static Scene cornell_box();
+    static Scene cornell_box_metal();
     static Scene cornell_box_suzanne();
     static Scene cornell_box_orange_and_blue();
     static Scene simple_cube();
