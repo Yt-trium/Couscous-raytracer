@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Couscous</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../../icons/icons.qrc">
+    <normaloff>:/mainwindowIcon/couscous-48.png</normaloff>:/mainwindowIcon/couscous-48.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
@@ -49,7 +53,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -794,15 +798,17 @@
   <tabstop>spinBox_height</tabstop>
   <tabstop>spinBox_spp</tabstop>
   <tabstop>spinBox_dlrc</tabstop>
+  <tabstop>spinBox_idlrc</tabstop>
+  <tabstop>spinBox_photons</tabstop>
   <tabstop>doubleSpinBox_position_x</tabstop>
   <tabstop>doubleSpinBox_position_y</tabstop>
   <tabstop>doubleSpinBox_position_z</tabstop>
   <tabstop>doubleSpinBox_yaw</tabstop>
   <tabstop>doubleSpinBox_pitch</tabstop>
   <tabstop>doubleSpinBox_fov</tabstop>
-  <tabstop>checkBox_parallel_rendering</tabstop>
   <tabstop>pushButton_zoom_in</tabstop>
   <tabstop>pushButton_zoom_out</tabstop>
+  <tabstop>checkBox_parallel_rendering</tabstop>
   <tabstop>treeWidget_scene</tabstop>
  </tabstops>
  <resources>
