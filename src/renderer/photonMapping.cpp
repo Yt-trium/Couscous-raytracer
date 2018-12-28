@@ -6,7 +6,7 @@
 #include "renderer/utility.h"
 
 // Qt includes.
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentRun>
 #include <QFuture>
 #include <QObject>
 #include <QTime>
