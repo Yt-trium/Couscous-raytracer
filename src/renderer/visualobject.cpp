@@ -11,6 +11,8 @@
 using namespace glm;
 using namespace std;
 
+#define COUCOUS_M_PI 3.1416f
+
 //
 // 3D Object data structures implementation.
 //
@@ -378,7 +380,7 @@ void create_cylinder(
     vector<size_t> indices;
     size_t face_count = 0;
 
-    const float angle_step = (-2.0f * M_PI) / static_cast<float>(subidivisions);
+    const float angle_step = (-2.0f * COUCOUS_M_PI) / static_cast<float>(subidivisions);
 
     // Initial points.
     vertices.emplace_back(radius, -hheight, 0.0f);
