@@ -418,7 +418,7 @@
         <number>100000</number>
        </property>
        <property name="value">
-        <number>10000</number>
+        <number>12000</number>
        </property>
       </widget>
      </item>
@@ -492,7 +492,7 @@
      <item row="5" column="1">
       <widget class="QSpinBox" name="spinBox_idlrc">
        <property name="value">
-        <number>4</number>
+        <number>8</number>
        </property>
       </widget>
      </item>
@@ -783,7 +783,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Cornell Box Window</string>
+    <string>Cornell Box &amp;Window</string>
    </property>
   </action>
  </widget>

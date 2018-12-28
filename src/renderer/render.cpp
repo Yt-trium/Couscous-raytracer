@@ -37,6 +37,11 @@ using namespace std;
 
 namespace
 {
+    bool is_vec3_nan(const vec3& lhs)
+    {
+        return lhs.x != lhs.x || lhs.y != lhs.y || lhs.z != lhs.z;
+    }
+
     vec3 get_albedo(
         const Ray&                      r,
         const VoxelGridAccelerator&     grid)
@@ -122,7 +127,7 @@ namespace
         {
             // Display lights only by showing the emissive value.
             if(rec.mat->light)
-                return max(rec.mat->emission, vec3(1.0f));
+                return min(rec.mat->emission, vec3(1.0f));
 
             HitRecord directLightRec;
             vector<vec3> lightPoints;
@@ -177,7 +182,7 @@ namespace
         {
             // Display lights only by showing the emissive value.
             if(rec.mat->light)
-                return max(rec.mat->emission, vec3(1.0f));
+                return min(rec.mat->emission, vec3(1.0f));
 
             HitRecord directLightRec;
             const Material* mat = rec.mat;
@@ -235,7 +240,7 @@ namespace
         {
             // Display lights only by showing the emissive value.
             if(rec.mat->light)
-                return max(rec.mat->emission, vec3(1.0f));
+                return min(rec.mat->emission, vec3(1.0f));
 
             // Check if it's metal.
             if (rec.mat->metallic)
@@ -392,7 +397,138 @@ namespace
         {
             // Display lights only by showing the emissive value.
             if(rec.mat->light)
-                return max(rec.mat->emission, vec3(1.0f));
+                return min(rec.mat->emission, vec3(1.0f));
+
+            // Check if it's metal.
+            if (rec.mat->metallic)
+            {
+                if (!max_depth)
+                    return vec3(0.0f);
+
+                const vec3 scattered = reflect(r.dir, rec.normal);
+                const Ray reflected(rec.p, rec.mat->roughness
+                    ? random_in_cone(scattered, rec.mat->roughness, rng)
+                    : scattered);
+
+                // Check validity.
+                if (dot(reflected.dir, rec.normal) <= 0.0f)
+                    return vec3(0.0f);
+
+                return get_direct_phong(reflected, directLightRaysCount, grid, lights, rng, max_depth - 1);
+            }
+
+            // Compute direct light.
+            vec3 direct(0.0f);
+            {
+                HitRecord directLightRec;
+                const Material* mat = rec.mat;
+                vec3 specular(0.0f), diffuse(0.0f);
+                const vec3 V = -r.dir;
+                const float ray_count = static_cast<float>(lights.size() * directLightRaysCount);
+
+                // We cast n rays per lights.
+                for (size_t l = 0; l < lights.size(); ++l)
+                {
+                    const auto& light = lights[l];
+                    const vec3& va = light->vertice(0);
+                    const vec3& vb = light->vertice(1);
+                    const vec3& vc = light->vertice(2);
+
+                    // Compute direct lighting by sending rays to lights.
+                    for(size_t i = 0; i < directLightRaysCount; ++i)
+                    {
+                        const vec3 currentPointOnLight = random_point_in_triangle(va, vb, vc, rng);
+                        const vec3 currentLightDir = normalize(currentPointOnLight - rec.p);
+
+                        bool answ = grid.hit(Ray(rec.p, currentLightDir), 0.0001f, numeric_limits<float>::max(), directLightRec);
+
+                        // Only take into account emissive materials.
+                        if (answ && directLightRec.mat->light)
+                        {
+                            const Material* light_mat = directLightRec.mat;
+
+                            vec3 R = reflect(-currentLightDir, rec.normal);
+
+                            specular += light_mat->light_power
+                                * pow(std::max(0.0f, dot(R, V)), mat->specularExponent);
+
+                            diffuse += mat->albedo * light_mat->emission *
+                                std::max(0.0f, dot(rec.normal, currentLightDir));
+                        }
+                    }
+                }
+
+                direct = (
+                    diffuse * mat->kd * COUCOUS_M_INV_PI
+                    + specular * mat->ks * ((ray_count + 2.0f) * COUCOUS_M_INV_2PI))
+                    / ray_count;
+
+                if (is_vec3_nan(direct))
+                    direct = vec3(0.0f);
+            }
+
+            // Compute indirect light.
+            vec3 indirect(0.0f);
+            {
+                // Compute the photons search radius.
+                const float radius = grid.voxel_size() * 1.5f;
+
+                HitRecord recIndirect;
+                // Compute indirect lighting with photon mapping
+                size_t nbSuccessfullRays = 0;
+                float photons_weight = 0.0f;
+
+                for(size_t i = 0; i < indirectLightRaysCount; ++i)
+                {
+                    // Generate random direction.
+                    const vec3 indirect_dir = random_in_hemisphere(rec.normal, rng);
+                    const Ray indirectLightRay = Ray(rec.p, indirect_dir);
+
+                    // Gather photons on that point.
+                    if(grid.hit(indirectLightRay, 0.000001f, numeric_limits<float>::max(), recIndirect)
+                        && dot(rec.normal, indirect_dir) > 0.0f)
+                    {
+                        nbSuccessfullRays++;
+                        photons_find_result.clear();
+                        size_t photons_count = ptree.find_in_radius(recIndirect.p, radius, photons_find_result);
+
+                        if (photons_count == 0)
+                            continue;
+
+                        // We don't take all photons into acount.
+                        photons_count = photons_count > MAX_PHOTONS_COUNT ? MAX_PHOTONS_COUNT : photons_count;
+
+                        // Photons are ordered.
+                        const float max_dist = sqrt(photons_find_result[photons_count - 1].second);
+                        const float coef = 1.0f / (COUCOUS_M_PI * max_dist);
+
+                        vec3 color(0.0f);
+
+                        for (size_t i = 0; i < photons_count; ++i)
+                        {
+                            const size_t index = photons_find_result[i].first;
+                            const auto& photon = ptree.map.photon(index);
+
+                            photons_weight += photon.energy;
+                            indirect += (photon.mat->albedo * photon.energy) * coef;
+                        }
+                    }
+                }
+
+                indirect /= photons_weight;
+
+                if (is_vec3_nan(indirect))
+                    indirect = vec3(0.0f);
+            }
+
+            return min(direct + indirect, vec3(1.0f));
+        }
+#if 0
+        if (grid.hit(r, 0.0001f, numeric_limits<float>::max(), rec))
+        {
+            // Display lights only by showing the emissive value.
+            if(rec.mat->light)
+                return min(rec.mat->emission, vec3(1.0f));
 
             // Check if it's metal.
             if (rec.mat->metallic)
@@ -514,6 +650,7 @@ namespace
 
             return diffuse * 0.96f + specular * 0.04f + indirectColor;
         }
+#endif
         else
         {
             return vec3(0.0f);

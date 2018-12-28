@@ -197,7 +197,7 @@ Scene Scene::cornell_box()
 {
     Scene scene;
 
-    scene.materials.push_back(SceneMaterial("light", vec3(1.0f), 15.0f, 0.0f, 0.0f, 0.0f));
+    scene.materials.push_back(SceneMaterial("light", vec3(1.0f), 1.0f, 0.0f, 0.0f, 0.0f));
     scene.materials.push_back(SceneMaterial("red", vec3(1.0f, 0.05f, 0.05f), 0.0f, 1.0f, 1.0f, 3.0f));
     scene.materials.push_back(SceneMaterial("green", vec3(0.12f, 1.0, 0.15f), 0.0f, 1.0f, 1.0f, 3.0f));
     scene.materials.push_back(SceneMaterial("white", vec3(0.73f, 0.73f, 0.73f), 0.0f, 1.0f, 1.0f, 3.0f));
