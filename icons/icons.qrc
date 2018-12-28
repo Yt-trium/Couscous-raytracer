@@ -17,4 +17,7 @@
         <file>baseline_videocam_black_18dp.png</file>
         <file>baseline_photo_camera_black_18dp.png</file>
     </qresource>
+    <qresource prefix="/mainwindowIcon">
+        <file>couscous-48.png</file>
+    </qresource>
 </RCC>
