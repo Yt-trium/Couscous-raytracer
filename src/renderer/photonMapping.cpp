@@ -6,7 +6,11 @@
 #include "renderer/utility.h"
 
 // Qt includes.
+#ifdef _MSC_VER
 #include <QtConcurrent/QtConcurrentRun>
+#else
+#include <QtConcurrentRun>
+#endif
 #include <QFuture>
 #include <QObject>
 #include <QTime>

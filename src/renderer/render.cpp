@@ -17,7 +17,11 @@
 
 // Qt includes.
 #include <QFuture>
-#include <QtConcurrent/QtConcurrent>
+#ifdef _MSC_VER
+#include <QtConcurrent/QtConcurrentRun>
+#else
+#include <QtConcurrentRun>
+#endif
 #include <QTime>
 
 // Standard includes.
