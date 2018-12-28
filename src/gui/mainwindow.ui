@@ -783,9 +783,6 @@
    </property>
   </action>
   <action name="actionPresetsCornellBoxWindow">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="text">
     <string>Cornell Box &amp;Window</string>
    </property>
