@@ -1,6 +1,13 @@
+TODO: Expliquer ou est l'executable (seulement dans le rendu finale) et exporter en PDF
+TODO: Ajouter le prof en viewer sur le git pour qu'il puisse accéder aux liens
+
 ## Démo en vidéo
 
+TODO: Inserer videos
+
 ## Quelques rendus
+
+TODO: Inserer quelques images
 
 ## Lancer de rayons stochastique
 
@@ -12,13 +19,27 @@
 
 [:book:](https://github.com/Yt-trium/Couscous-raytracer/blob/master/src/renderer/visualobject.cpp#L38) Les sources de lumières sont des maillages qui ont un matériel avec une émission.
 
+[:book:](https://github.com/Yt-trium/Couscous-raytracer/blob/master/src/renderer/render.cpp#L420) Utilisation du modèle Phong pour l'éclairage direct.
+
+[:book:](https://github.com/Yt-trium/Couscous-raytracer/blob/master/src/renderer/gridaccelerator.cpp#L136) Accélération des tests d'intersection avec une grille de voxels. Parcourt de la grille par *Digital Differential Analyser*.
+
+[:book:](https://github.com/Yt-trium/Couscous-raytracer/blob/master/src/renderer/samplegenerator.cpp#L23) *Anti-Aliasing* par *Jittered sampling*.
+
+[:book:](https://github.com/Yt-trium/Couscous-raytracer/blob/master/src/renderer/render.cpp#L403) Réflexions avec coéfficient de lissage réglable.
+
+[:book:](https://github.com/Yt-trium/Couscous-raytracer/blob/master/src/renderer/photonMapping.cpp#L127) Lancement de photons et *scattering*.
+
+[:book:](https://github.com/Yt-trium/Couscous-raytracer/blob/master/src/renderer/photonMapping.cpp#L222) Stockage des photons dans un kd-tree. Utilisation de [*nanoflann*](https://github.com/jlblancoc/nanoflann).
+
+[:book:](https://github.com/Yt-trium/Couscous-raytracer/blob/master/src/renderer/render.cpp#L470) Utilisation des photons pour l'éclairage indirect.
+
 ## Fonctionnalités supplémentaires
 
 - Rendu de différents buffers (*Normals*, *Direct Diffuse*, *Dirrect Specular*, *Photon Map*, ...) disponible dans *Debug > View*
 - Personalisation de la scène depuis la GUI
-	- Modification et ajout des matériaux
-	- Modification et ajout des primitves
-	- Modification et ajout des instances de fichier *OFF*
+	- Modification et ajout de matériaux
+	- Modification et ajout de primitves
+	- Modification et ajout d'instances de fichier *.OFF*
 	- Modification de la caméra et des paramètres de rendu
 - Plusieurs scènes par défaut disponibles dans *Presets*
 
@@ -27,3 +48,4 @@
 - [Ray Tracing in One Weekend by Peter Shirley](https://github.com/petershirley/raytracinginoneweekend)
 - [Ray Tracing The Next Week by Peter Shirley](https://github.com/petershirley/raytracingthenextweek)
 - [Physically Based Rendering: From Theory To Implementation](https://github.com/mmp/pbrt-v3/)
+- [Photon Mapping by Zack Waters ](https://web.cs.wpi.edu/~emmanuel/courses/cs563/write_ups/zackw/photon_mapping/PhotonMapping.html)
