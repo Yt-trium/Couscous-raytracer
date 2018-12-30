@@ -13,6 +13,10 @@ Cornell Box
 Cornell Box Metal
 ![Cornell Box](results/cornell_box_metal_1920_1080_512_12_12_25000_13350.png)
 
+![Sphere](results/sphere_1920_1080_1024_12_12_50000_1903.png)
+
+sphere_1920_1080_1024_12_12_50000_1903.png
+
 ## Lancer de rayons stochastique
 
 > **Cliquez sur **:book:** pour accéder au code source associé à la fonctionnalitée.**
