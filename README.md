@@ -7,7 +7,11 @@ TODO: Inserer videos
 
 ## Quelques rendus
 
-TODO: Inserer quelques images
+Cornell Box
+![Cornell Box](results/cornell_box_1920_1080_512_12_12_25000_36271.png)
+
+Cornell Box Metal
+![Cornell Box](results/cornell_box_metal_1920_1080_512_12_12_25000_13350.png)
 
 ## Lancer de rayons stochastique
 
