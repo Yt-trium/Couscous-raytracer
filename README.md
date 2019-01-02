@@ -3,6 +3,14 @@ Les binaires sont disponibles dans l'onglet release. Seuls les binaires windows 
 
 * [1.0](https://github.com/Yt-trium/Couscous-raytracer/releases)
 
+## Builds
+### Dépendances
+Le projet dépend de la bibliothèque Qt. Le projet est compatible avec Qt4 et Qt5.
+Aucune autre dépendance n'a besoin d'être installé.
+
+### Production
+Pour compiler le projet, vous pouvez utiliser le fichier CMakeLists.txt (CMake) ou Couscous-raytracer.pro (QtCreator).
+
 ## Démo en vidéo
 
 TODO: Inserer videos
