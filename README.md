@@ -1,5 +1,7 @@
-TODO: Expliquer ou est l'executable (seulement dans le rendu finale) et exporter en PDF
-TODO: Ajouter le prof en viewer sur le git pour qu'il puisse accéder aux liens
+## Binaires
+Les binaires sont disponible dans l'onglet release. La dernière en date est la version 1.0. Seuls les binaires windows (32 et 64 bits) sont disponibles.
+
+* [1.0](https://github.com/Yt-trium/Couscous-raytracer/releases)
 
 ## Démo en vidéo
 
