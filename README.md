@@ -1,5 +1,5 @@
 ## Binaires
-Les binaires sont disponible dans l'onglet release. La dernière en date est la version 1.0. Seuls les binaires windows (32 et 64 bits) sont disponibles.
+Les binaires sont disponibles dans l'onglet release. Seuls les binaires windows (32 et 64 bits) sont disponibles.
 
 * [1.0](https://github.com/Yt-trium/Couscous-raytracer/releases)
 
