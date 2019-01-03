@@ -1,7 +1,7 @@
 ## Binaires
 Les binaires sont disponibles dans l'onglet release. Seuls les binaires windows (32 et 64 bits) sont disponibles.
 
-* [1.0](https://github.com/Yt-trium/Couscous-raytracer/releases)
+* [Couscous Raytracer 1.0](https://github.com/Yt-trium/Couscous-raytracer/releases)
 
 ## Builds
 ### Dépendances
