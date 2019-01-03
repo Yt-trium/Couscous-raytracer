@@ -11,9 +11,9 @@ Aucune autre dépendance n'a besoin d'être installé.
 ### Production
 Pour compiler le projet, vous pouvez utiliser le fichier CMakeLists.txt (CMake) ou Couscous-raytracer.pro (QtCreator).
 
-## Démo en vidéo
+## Démonstration Vidéo
 
-TODO: Inserer videos
+[![Couscous Raytracer 1.0](https://img.youtube.com/vi/oP_BXQ2LL1E/0.jpg)](https://youtu.be/oP_BXQ2LL1E)
 
 ## Quelques rendus
 
